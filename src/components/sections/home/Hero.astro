@@ -1,0 +1,199 @@
+---
+// Hero component for the landing page
+import LoaderSplitText from "../../react/LoaderSplitText";
+---
+
+<!-- Page loader overlay -->
+<div
+  class="page-loader fixed inset-0 z-[9999] bg-gradient-to-br from-deepest via-deepest to-dark flex items-center justify-center"
+>
+  <div class="loader-content text-center">
+    <LoaderSplitText client:load className="-mt-2" />
+  </div>
+</div>
+
+<section
+  class="relative min-h-screen flex items-center justify-center overflow-hidden bg-white"
+>
+  <!-- Background Image with Overlay -->
+  <div class="absolute inset-0 z-0">
+    <!-- Gradient overlay for better text readability -->
+    <div
+      class="absolute inset-0 bg-gradient-to-b from-deepest/45 via-deepest/40 to-deepest/55 z-10"
+    >
+    </div>
+    <!-- Background image from Cloudinary -->
+    <img
+      src="https://res.cloudinary.com/dxrzwnjee/image/upload/v1771868014/29255bea-5f11-45ff-8049-72048d96a3a4.png"
+      alt="Background"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+  </div>
+
+  <!-- Content Container -->
+  <div
+    class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center"
+  >
+    <!-- Main Content with animations -->
+    <div class="hero-content space-y-8">
+      <!-- Main Heading -->
+      <h1
+        class="hero-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-extrabold tracking-tight leading-tight"
+      >
+        <span class="block text-white">Construimos confianza,</span>
+        <span class="block text-mid mt-2">creamos tu futuro</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p
+        class="hero-subtitle text-lg sm:text-xl md:text-2xl text-light/90 max-w-3xl mx-auto font-heading"
+      >
+        Acompañamiento y asesoría experta en bienes raíces y servicios
+        inmobiliarios.
+      </p>
+
+      <!-- CTA Button -->
+      <div class="hero-cta pt-4">
+        <a
+          href="/propiedades"
+          class="inline-block px-8 py-4 bg-transparent border-2 border-light text-light font-heading text-lg rounded-lg transition-all duration-300 hover:bg-light hover:text-deepest hover:shadow-2xl hover:scale-105 hover:border-light"
+        >
+          Ver Propiedades
+        </a>
+      </div>
+    </div>
+  </div>
+  <!-- Decorative wave separator -->
+  <div
+    class="absolute -bottom-px left-0 right-0 z-20 leading-none pointer-events-none overflow-hidden"
+  >
+    <svg
+      viewBox="0 0 1440 120"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class="block w-full h-auto translate-y-px"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M0 124L60 111C120 101 240 81 360 71C480 61 600 61 720 66C840 71 960 81 1080 86C1200 91 1320 91 1380 91L1440 91V121H1380C1320 121 1200 121 1080 121C960 121 840 121 720 121C600 121 480 121 360 121C240 121 120 121 60 121H0Z"
+        fill="#ffffff"></path>
+    </svg>
+  </div>
+</section>
+
+<style>
+  /* Page loader animations */
+  @keyframes logoFade {
+    0% {
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes loaderFadeOut {
+    0% {
+      opacity: 1;
+      visibility: visible;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  .page-loader {
+    animation: loaderFadeOut 0.6s ease-out 3.8s forwards;
+  }
+
+  .animate-logo-fade {
+    animation: logoFade 1.2s cubic-bezier(0.22, 0.03, 0.26, 1) forwards;
+  }
+
+  /* Fade in and slide up animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(60px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInScale {
+    from {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Hero title animation with stagger effect on spans - start after loader */
+  .hero-title span {
+    display: block;
+    opacity: 0;
+  }
+
+  .hero-title span:first-child {
+    animation: fadeInUp 1s cubic-bezier(0.22, 0.03, 0.26, 1) 4.6s both;
+  }
+
+  .hero-title span:last-child {
+    animation: fadeInUp 1s cubic-bezier(0.22, 0.03, 0.26, 1) 4.8s both;
+  }
+
+  /* Subtitle animation */
+  .hero-subtitle {
+    opacity: 0;
+    animation: fadeInUp 0.9s cubic-bezier(0.22, 0.03, 0.26, 1) 5.1s both;
+  }
+
+  /* CTA button animation */
+  .hero-cta {
+    opacity: 0;
+    animation: fadeInScale 0.8s cubic-bezier(0.22, 0.03, 0.26, 1) 5.5s both;
+  }
+
+  /* Scroll indicator animation */
+  .hero-scroll {
+    opacity: 0;
+    animation: fadeInUp 0.7s ease-out 6s both;
+  }
+
+  /* Smooth transitions for hover effects */
+  .hero-cta a {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-cta a::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(238, 244, 237, 0.1);
+    transform: translate(-50%, -50%);
+    transition:
+      width 0.6s ease,
+      height 0.6s ease;
+  }
+
+  .hero-cta a:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+</style>

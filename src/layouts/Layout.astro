@@ -1,23 +1,130 @@
+---
+import { ViewTransitions } from "astro:transitions";
+import "@fontsource/antic-didone";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Propiedades en Guanacaste | Roca Business",
+  description = "Casas, fincas y lotes en Costa Rica. Amplio catálogo disponible. Contáctanos hoy.",
+} = Astro.props;
+---
+
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <ViewTransitions />
+
+    <!-- Schema.org JSON-LD -->
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "RealEstateAgent",
+        name: "Roca Business",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Liberia",
+          addressRegion: "Guanacaste",
+          addressCountry: "CR",
+        },
+        url: "https://rocabusiness.com",
+      })}
+    />
+  </head>
+  <body>
+    <slot />
+  </body>
 </html>
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+<style is:global>
+  /* TODO: Self-host Sansation font - place .woff2 files in public/fonts/ */
+  /* For now using system fonts as fallback */
+  @font-face {
+    font-family: "Sansation";
+    src: local("Arial"), local("Helvetica");
+    font-weight: 400;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "Sansation";
+    src: local("Arial"), local("Helvetica");
+    font-weight: 700;
+    font-display: swap;
+  }
+
+  :root {
+    /* Paleta Principal */
+    --color-deepest: #0b2545;
+    --color-primary: #134074;
+    --color-dark: #13315c;
+    --color-mid: #8da9c4;
+    --color-light: #ffffff;
+
+    /* Semántica de uso */
+    --background: #ffffff;
+    --surface: #eef4ed;
+    --surface-dark: #134074;
+    --text-main: #0b2545;
+    --text-on-dark: #eef4ed;
+    --text-muted: #8da9c4;
+    --border: #8da9c4;
+    --success: #2d9e6b;
+    --error: #d64045;
+
+    /* Tipografía */
+    --font-heading: "Sansation", sans-serif;
+    --font-body: "Sansation", sans-serif;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    background: var(--background);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 </style>

@@ -1,0 +1,66 @@
+---
+import NavbarMobile from '../react/NavbarMobile';
+
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Contacto', href: '/contacto' },
+  { name: 'Propiedades', href: '/propiedades' },
+  { name: 'Servicios', href: '/servicios' },
+];
+
+const isActive = (href: string) => {
+  if (href === '/') return currentPath === '/';
+  return currentPath.startsWith(href);
+};
+---
+
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-mid/20 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-20">
+      <!-- Logo -->
+      <a href="/" class="flex items-center group">
+        <img 
+          src="https://res.cloudinary.com/dxrzwnjee/image/upload/v1771881666/jhznh9nfygztx5q8ry4m.png" 
+          alt="Roca Business Logo" 
+          class="h-16 w-auto transition-transform group-hover:scale-105"
+        />
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center space-x-1">
+        {navLinks.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "relative px-4 py-2 font-heading text-deepest transition-colors duration-300",
+              "hover:text-primary",
+              "group"
+            ]}
+          >
+            {link.name}
+            <!-- Active indicator line -->
+            <span
+              class:list={[
+                "absolute bottom-0 left-0 right-0 h-0.5 bg-primary transition-all duration-300",
+                isActive(link.href) ? "opacity-100 scale-x-100" : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
+              ]}
+            />
+          </a>
+        ))}
+      </div>
+
+      <!-- CTA Button -->
+      <a
+        href="/solicitudes"
+        class="hidden md:block px-6 py-2.5 bg-primary text-white font-heading rounded-lg transition-all duration-300 hover:bg-deepest hover:shadow-lg hover:scale-105"
+      >
+        Contáctanos
+      </a>
+
+      <!-- Mobile Menu Button wrapped in React Component -->
+      <NavbarMobile client:visible navLinks={navLinks} currentPath={currentPath} />
+    </div>
+  </div>
+</nav>
