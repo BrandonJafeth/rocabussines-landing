@@ -1,0 +1,585 @@
+---
+import { getActiveServicesForHome } from "../../../lib/queries/services";
+
+const fallbackServices = [
+  {
+    id: "fallback-1",
+    title: "Asesoría en Bienes y Raíces",
+    description:
+      "Acompañamiento integral en compra, venta e inversión inmobiliaria con análisis de mercado y respaldo estratégico.",
+    icon: "chart",
+  },
+  {
+    id: "fallback-2",
+    title: "Asesoría Contable",
+    description:
+      "Gestión y planificación contable especializada para proyectos inmobiliarios, cumpliendo normativa y control financiero.",
+    icon: "document",
+  },
+  {
+    id: "fallback-3",
+    title: "Asesoría Financiera",
+    description:
+      "Evaluación y estructuración financiera para inversiones y adquisición de propiedades, maximizando rentabilidad.",
+    icon: "currency",
+  },
+  {
+    id: "fallback-4",
+    title: "Asesoría y Dirección en Proyectos Constructivos",
+    description:
+      "Supervisión y dirección técnica de proyectos de construcción, desde la planificación hasta la ejecución.",
+    icon: "building",
+  },
+  {
+    id: "fallback-5",
+    title: "Asesoría en Recursos Humanos",
+    description:
+      "Desarrollo y gestión de talento humano, contratación y optimización del desempeño para equipos empresariales.",
+    icon: "users",
+  },
+];
+
+const servicesFromDb = await getActiveServicesForHome(20);
+const services = servicesFromDb.length > 0 ? servicesFromDb : fallbackServices;
+const shouldUseCarousel = services.length > 4;
+---
+
+<section id="servicios" class="py-20 bg-[#F6F8FB] scroll-mt-28">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <h2
+        class="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-deepest"
+      >
+        Soluciones Inmobiliarias Integrales
+      </h2>
+      <div class="w-20 h-1 bg-primary rounded-full mx-auto mt-4 mb-6"></div>
+      <p class="text-deepest/75 font-heading text-base sm:text-lg">
+        Servicios profesionales diseñados para proteger tu inversión y acelerar
+        tus resultados con criterio estratégico.
+      </p>
+    </div>
+
+    {
+      shouldUseCarousel ? (
+        <>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-12 lg:hidden">
+            {services.map((service) => (
+              <article class="service-card group relative isolate min-h-[320px] min-w-[250px] rounded-[1.6rem] border border-mid/20 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
+                <div class="service-head absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-deepest via-primary to-deepest" />
+
+                <div class="relative z-30 p-6 pt-20 text-center flex flex-col items-center gap-4">
+                  <div class="w-14 h-14 rounded-full border-2 border-primary/80 text-primary bg-white flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:border-deepest">
+                    {service.icon === "chart" && (
+                      <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M5 12l4-4 3 3 7-7"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M5 19h14"
+                        />
+                      </svg>
+                    )}
+                    {service.icon === "document" && (
+                      <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 12h6m-6 4h6M7 4h8l3 3v13H7z"
+                        />
+                      </svg>
+                    )}
+                    {service.icon === "currency" && (
+                      <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 3v18m4-14H9.5a2.5 2.5 0 100 5H14a2.5 2.5 0 110 5H8"
+                        />
+                      </svg>
+                    )}
+                    {service.icon === "building" && (
+                      <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4 20h16M6 20V8l6-4 6 4v12M9 11h1M9 14h1M14 11h1M14 14h1M11 20v-3h2v3"
+                        />
+                      </svg>
+                    )}
+                    {service.icon === "users" && (
+                      <svg
+                        class="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 11a3 3 0 110-6 3 3 0 010 6zM16 12a2.5 2.5 0 110-5 2.5 2.5 0 010 5zM3.5 19a5.5 5.5 0 0111 0M13 19a4 4 0 018 0"
+                        />
+                      </svg>
+                    )}
+                  </div>
+
+                  <h3 class="font-heading font-bold text-xl text-deepest leading-tight max-w-[17ch]">
+                    {service.title}
+                  </h3>
+
+                  <p class="service-description font-heading text-sm leading-6 text-deepest/80 text-center mt-2">
+                    {service.description}
+                  </p>
+
+                  <div class="mt-4 h-1.5 w-10 rounded-full bg-primary/70 transition-all duration-300 group-hover:w-16 group-hover:bg-deepest" />
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div
+            class="services-carousel relative hidden lg:block lg:-mx-4 xl:-mx-6"
+            data-services-carousel
+            style="--cards-per-view: 4;"
+          >
+            <button
+              type="button"
+              class="services-side-btn services-side-btn--prev inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary/25 bg-white text-primary shadow-md transition-colors hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              data-services-prev
+              aria-label="Servicio anterior"
+            >
+              <svg
+                class="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 18l-6-6 6-6"
+                />
+              </svg>
+            </button>
+
+            <div class="services-viewport overflow-x-hidden overflow-y-visible w-[100%] p-4">
+              <div class="services-track flex gap-8" data-services-track>
+                {services.map((service) => (
+                  <article class="service-card service-slide group relative isolate min-h-[320px] rounded-[1.6rem] border border-mid/20 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
+                    <div class="service-head absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-deepest via-primary to-deepest" />
+
+                    <div class="relative z-30 p-6 pt-20 text-center flex flex-col items-center gap-4">
+                      <div class="w-14 h-14 rounded-full border-2 border-primary/80 text-primary bg-white flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:border-deepest">
+                        {service.icon === "chart" && (
+                          <svg
+                            class="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M5 12l4-4 3 3 7-7"
+                            />
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M5 19h14"
+                            />
+                          </svg>
+                        )}
+                        {service.icon === "document" && (
+                          <svg
+                            class="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 12h6m-6 4h6M7 4h8l3 3v13H7z"
+                            />
+                          </svg>
+                        )}
+                        {service.icon === "currency" && (
+                          <svg
+                            class="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M12 3v18m4-14H9.5a2.5 2.5 0 100 5H14a2.5 2.5 0 110 5H8"
+                            />
+                          </svg>
+                        )}
+                        {service.icon === "building" && (
+                          <svg
+                            class="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M4 20h16M6 20V8l6-4 6 4v12M9 11h1M9 14h1M14 11h1M14 14h1M11 20v-3h2v3"
+                            />
+                          </svg>
+                        )}
+                        {service.icon === "users" && (
+                          <svg
+                            class="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 11a3 3 0 110-6 3 3 0 010 6zM16 12a2.5 2.5 0 110-5 2.5 2.5 0 010 5zM3.5 19a5.5 5.5 0 0111 0M13 19a4 4 0 018 0"
+                            />
+                          </svg>
+                        )}
+                      </div>
+
+                      <h3 class="font-heading font-bold text-xl text-deepest leading-tight max-w-[17ch]">
+                        {service.title}
+                      </h3>
+
+                      <p class="service-description font-heading text-sm leading-6 text-deepest/80 text-center mt-2">
+                        {service.description}
+                      </p>
+
+                      <div class="mt-4 h-1.5 w-10 rounded-full bg-primary/70 transition-all duration-300 group-hover:w-16 group-hover:bg-deepest" />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="services-side-btn services-side-btn--next inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary/25 bg-white text-primary shadow-md transition-colors hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              data-services-next
+              aria-label="Siguiente servicio"
+            >
+              <svg
+                class="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 6l6 6-6 6"
+                />
+              </svg>
+            </button>
+          </div>
+        </>
+      ) : (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-12 xl:gap-12 2xl:gap-16">
+          {services.map((service) => (
+            <article class="service-card group relative isolate min-h-[320px] min-w-[250px] rounded-[1.6rem] border border-mid/20 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
+              <div class="service-head absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-deepest via-primary to-deepest" />
+
+              <div class="relative z-30 p-6 pt-20 text-center flex flex-col items-center gap-4">
+                <div class="w-14 h-14 rounded-full border-2 border-primary/80 text-primary bg-white flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:border-deepest">
+                  {service.icon === "chart" && (
+                    <svg
+                      class="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 12l4-4 3 3 7-7"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 19h14"
+                      />
+                    </svg>
+                  )}
+                  {service.icon === "document" && (
+                    <svg
+                      class="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12h6m-6 4h6M7 4h8l3 3v13H7z"
+                      />
+                    </svg>
+                  )}
+                  {service.icon === "currency" && (
+                    <svg
+                      class="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 3v18m4-14H9.5a2.5 2.5 0 100 5H14a2.5 2.5 0 110 5H8"
+                      />
+                    </svg>
+                  )}
+                  {service.icon === "building" && (
+                    <svg
+                      class="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 20h16M6 20V8l6-4 6 4v12M9 11h1M9 14h1M14 11h1M14 14h1M11 20v-3h2v3"
+                      />
+                    </svg>
+                  )}
+                  {service.icon === "users" && (
+                    <svg
+                      class="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 11a3 3 0 110-6 3 3 0 010 6zM16 12a2.5 2.5 0 110-5 2.5 2.5 0 010 5zM3.5 19a5.5 5.5 0 0111 0M13 19a4 4 0 018 0"
+                      />
+                    </svg>
+                  )}
+                </div>
+
+                <h3 class="font-heading font-bold text-xl text-deepest leading-tight max-w-[17ch]">
+                  {service.title}
+                </h3>
+
+                <p class="service-description font-heading text-sm leading-6 text-deepest/80 text-center mt-2">
+                  {service.description}
+                </p>
+
+                <div class="mt-4 h-1.5 w-10 rounded-full bg-primary/70 transition-all duration-300 group-hover:w-16 group-hover:bg-deepest" />
+              </div>
+            </article>
+          ))}
+        </div>
+      )
+    }
+
+    <div class="mt-12 text-center">
+      <a
+        href="/servicios"
+        class="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-primary text-white font-heading font-semibold tracking-wide transition-colors duration-300 hover:bg-deepest"
+      >
+        Ver más
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const carousel = document.querySelector("[data-services-carousel]");
+
+  if (carousel instanceof HTMLElement) {
+    const viewport = carousel.querySelector(".services-viewport");
+    const track = carousel.querySelector("[data-services-track]");
+    const prev = carousel.querySelector("[data-services-prev]");
+    const next = carousel.querySelector("[data-services-next]");
+    const slides =
+      track instanceof HTMLElement
+        ? Array.from(track.querySelectorAll(".service-slide"))
+        : [];
+
+    let currentIndex = 0;
+    let maxIndex = 0;
+    let cardsPerView = 4;
+
+    const getCardsPerView = () => {
+      if (window.innerWidth >= 1024) return 4;
+      return 1;
+    };
+
+    const getStepSize = () => {
+      if (!(track instanceof HTMLElement)) return 0;
+      const firstSlide = track.querySelector(".service-slide");
+      if (!(firstSlide instanceof HTMLElement)) return 0;
+      const gap = Number.parseFloat(window.getComputedStyle(track).gap) || 0;
+      return firstSlide.getBoundingClientRect().width + gap;
+    };
+
+    const updateButtons = () => {
+      if (
+        !(prev instanceof HTMLButtonElement) ||
+        !(next instanceof HTMLButtonElement)
+      )
+        return;
+      prev.disabled = currentIndex <= 0;
+      next.disabled = currentIndex >= maxIndex;
+    };
+
+    const applyPosition = () => {
+      if (!(track instanceof HTMLElement) || !(viewport instanceof HTMLElement))
+        return;
+      const shift = currentIndex * getStepSize();
+      track.style.transform = `translateX(-${shift}px)`;
+      updateButtons();
+    };
+
+    const setupCarousel = () => {
+      if (!(track instanceof HTMLElement)) return;
+      cardsPerView = getCardsPerView();
+      maxIndex = Math.max(0, slides.length - cardsPerView);
+      currentIndex = Math.min(currentIndex, maxIndex);
+      carousel.style.setProperty("--cards-per-view", String(cardsPerView));
+      applyPosition();
+    };
+
+    if (
+      track instanceof HTMLElement &&
+      prev instanceof HTMLButtonElement &&
+      next instanceof HTMLButtonElement &&
+      viewport instanceof HTMLElement
+    ) {
+      prev.addEventListener("click", () => {
+        currentIndex = Math.max(0, currentIndex - 1);
+        applyPosition();
+      });
+
+      next.addEventListener("click", () => {
+        currentIndex = Math.min(maxIndex, currentIndex + 1);
+        applyPosition();
+      });
+
+      window.addEventListener("resize", setupCarousel);
+      setupCarousel();
+    }
+  }
+</script>
+
+<style>
+  .service-head {
+    clip-path: ellipse(90% 100% at 50% 0%);
+  }
+
+  .services-carousel {
+    --slide-gap: 2rem;
+    padding-inline: 5.75rem;
+    overflow: visible;
+  }
+
+  .services-viewport {
+    width: 100%;
+    overflow-y: visible;
+  }
+
+  .services-track {
+    transition: transform 0.45s ease;
+    will-change: transform;
+  }
+
+  .service-slide {
+    flex: 0 0
+      calc(
+        (100% - ((var(--cards-per-view) - 1) * var(--slide-gap))) /
+          var(--cards-per-view)
+      );
+    min-width: 0;
+  }
+
+  .service-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+  }
+
+  .services-side-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+  }
+
+  .services-side-btn--prev {
+    left: 0;
+  }
+
+  .services-side-btn--next {
+    right: 0;
+  }
+
+  .service-card::after {
+    content: "";
+    position: absolute;
+    inset-inline: 1.1rem;
+    inset-block-end: 1rem;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(19, 64, 116, 0.35),
+      transparent
+    );
+  }
+</style>
