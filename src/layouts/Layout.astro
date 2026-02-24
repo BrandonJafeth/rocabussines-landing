@@ -2,6 +2,7 @@
 import { ViewTransitions } from "astro:transitions";
 import "@fontsource/antic-didone";
 import "../styles/global.css";
+import Footer from "../components/layout/Footer.astro";
 
 interface Props {
   title?: string;
@@ -49,6 +50,7 @@ const {
       <div class="cursor-follower__ring"></div>
     </div>
     <slot />
+    <Footer />
 
     <script is:inline>
       (() => {
