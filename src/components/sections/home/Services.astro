@@ -1,0 +1,188 @@
+---
+const services = [
+  {
+    title: "Asesoría en Bienes y Raíces",
+    description:
+      "Acompañamiento integral en compra, venta e inversión inmobiliaria con análisis de mercado y respaldo estratégico.",
+    icon: "chart",
+  },
+  {
+    title: "Asesoría Contable",
+    description:
+      "Gestión y planificación contable especializada para proyectos inmobiliarios, cumpliendo normativa y control financiero.",
+    icon: "document",
+  },
+  {
+    title: "Asesoría Financiera",
+    description:
+      "Evaluación y estructuración financiera para inversiones y adquisición de propiedades, maximizando rentabilidad.",
+    icon: "currency",
+  },
+  {
+    title: "Asesoría y Dirección en Proyectos Constructivos",
+    description:
+      "Supervisión y dirección técnica de proyectos de construcción, desde la planificación hasta la ejecución.",
+    icon: "building",
+  },
+  {
+    title: "Asesoría en Recursos Humanos",
+    description:
+      "Desarrollo y gestión de talento humano, contratación y optimización del desempeño para equipos empresariales.",
+    icon: "users",
+  },
+];
+---
+
+<section class="py-20 bg-[#F6F8FB]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <h2
+        class="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-deepest"
+      >
+        Soluciones Inmobiliarias Integrales
+      </h2>
+      <div class="w-20 h-1 bg-primary rounded-full mx-auto mt-4 mb-6"></div>
+      <p class="text-deepest/75 font-heading text-base sm:text-lg">
+        Servicios profesionales diseñados para proteger tu inversión y acelerar
+        tus resultados con criterio estratégico.
+      </p>
+    </div>
+
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-12 xl:gap-12 2xl:gap-16"
+    >
+      {
+        services.map((service) => (
+          <article class="service-card group relative isolate min-h-[360px] min-w-[250px] rounded-[1.6rem] border border-mid/20 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
+            <div class="service-head absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-deepest via-primary to-deepest" />
+
+            <div class="relative z-30 p-6 pt-20 text-center flex flex-col items-center gap-4">
+              <div class="w-14 h-14 rounded-full border-2 border-primary/80 text-primary bg-white flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:border-deepest">
+                {service.icon === "chart" && (
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 12l4-4 3 3 7-7"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 19h14"
+                    />
+                  </svg>
+                )}
+                {service.icon === "document" && (
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6M7 4h8l3 3v13H7z"
+                    />
+                  </svg>
+                )}
+                {service.icon === "currency" && (
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 3v18m4-14H9.5a2.5 2.5 0 100 5H14a2.5 2.5 0 110 5H8"
+                    />
+                  </svg>
+                )}
+                {service.icon === "building" && (
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 20h16M6 20V8l6-4 6 4v12M9 11h1M9 14h1M14 11h1M14 14h1M11 20v-3h2v3"
+                    />
+                  </svg>
+                )}
+                {service.icon === "users" && (
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 11a3 3 0 110-6 3 3 0 010 6zM16 12a2.5 2.5 0 110-5 2.5 2.5 0 010 5zM3.5 19a5.5 5.5 0 0111 0M13 19a4 4 0 018 0"
+                    />
+                  </svg>
+                )}
+              </div>
+
+              <h3 class="font-heading font-bold text-xl text-deepest leading-tight max-w-[17ch]">
+                {service.title}
+              </h3>
+
+              <p class="font-heading text-sm leading-7 text-deepest/80 text-center mt-2">
+                {service.description}
+              </p>
+
+              <div class="mt-4 h-1.5 w-10 rounded-full bg-primary/70 transition-all duration-300 group-hover:w-16 group-hover:bg-deepest" />
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="mt-12 text-center">
+      <a
+        href="/servicios"
+        class="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-primary text-white font-heading font-semibold tracking-wide transition-colors duration-300 hover:bg-deepest"
+      >
+        Ver más
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .service-head {
+    clip-path: ellipse(90% 100% at 50% 0%);
+  }
+
+  .service-card::after {
+    content: "";
+    position: absolute;
+    inset-inline: 1.1rem;
+    inset-block-end: 1rem;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(19, 64, 116, 0.35),
+      transparent
+    );
+  }
+</style>

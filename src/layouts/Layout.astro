@@ -44,7 +44,71 @@ const {
     />
   </head>
   <body>
+    <div class="cursor-follower" aria-hidden="true">
+      <div class="cursor-follower__dot"></div>
+      <div class="cursor-follower__ring"></div>
+    </div>
     <slot />
+
+    <script is:inline>
+      (() => {
+        const mediaFinePointer = window.matchMedia("(pointer: fine)").matches;
+        const reducedMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+
+        if (!mediaFinePointer || reducedMotion) return;
+
+        const follower = document.querySelector(".cursor-follower");
+        const dot = document.querySelector(".cursor-follower__dot");
+        const ring = document.querySelector(".cursor-follower__ring");
+
+        if (!follower || !dot || !ring) return;
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let ringX = mouseX;
+        let ringY = mouseY;
+        let active = false;
+
+        const interactiveSelector =
+          'a, button, input, textarea, select, [role="button"]';
+
+        const onMove = (event) => {
+          mouseX = event.clientX;
+          mouseY = event.clientY;
+
+          if (!active) {
+            active = true;
+            follower.classList.add("is-active");
+          }
+
+          const target = event.target;
+          const isInteractive =
+            target instanceof Element && target.closest(interactiveSelector);
+          follower.classList.toggle("is-interactive", Boolean(isInteractive));
+
+          dot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+        };
+
+        const onLeave = () => {
+          active = false;
+          follower.classList.remove("is-active", "is-interactive");
+        };
+
+        const animate = () => {
+          ringX += (mouseX - ringX) * 0.15;
+          ringY += (mouseY - ringY) * 0.15;
+          ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
+          requestAnimationFrame(animate);
+        };
+
+        window.addEventListener("mousemove", onMove, { passive: true });
+        window.addEventListener("mouseout", onLeave, { passive: true });
+        window.addEventListener("blur", onLeave);
+        requestAnimationFrame(animate);
+      })();
+    </script>
   </body>
 </html>
 
@@ -126,5 +190,62 @@ const {
   a {
     text-decoration: none;
     color: inherit;
+  }
+
+  .cursor-follower {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+
+  .cursor-follower.is-active {
+    opacity: 1;
+  }
+
+  .cursor-follower__dot,
+  .cursor-follower__ring {
+    position: fixed;
+    left: 0;
+    top: 0;
+    translate: -50% -50%;
+    border-radius: 999px;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .cursor-follower__dot {
+    width: 8px;
+    height: 8px;
+    background: rgba(11, 37, 69, 0.95);
+    box-shadow: 0 0 16px rgba(11, 37, 69, 0.25);
+  }
+
+  .cursor-follower__ring {
+    width: 34px;
+    height: 34px;
+    border: 1.5px solid rgba(19, 64, 116, 0.4);
+    background: rgba(19, 64, 116, 0.08);
+    backdrop-filter: blur(1px);
+    transition:
+      width 180ms ease,
+      height 180ms ease,
+      border-color 180ms ease,
+      background-color 180ms ease;
+  }
+
+  .cursor-follower.is-interactive .cursor-follower__ring {
+    width: 54px;
+    height: 54px;
+    border-color: rgba(19, 64, 116, 0.7);
+    background: rgba(19, 64, 116, 0.14);
+  }
+
+  @media (pointer: coarse), (prefers-reduced-motion: reduce) {
+    .cursor-follower {
+      display: none;
+    }
   }
 </style>
