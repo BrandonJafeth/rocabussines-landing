@@ -26,21 +26,18 @@ export default function PropertyFilters({
     [type],
   );
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams();
 
+    // Importante: construir desde cero, no desde window.location.search
     if (location.trim()) {
       params.set("ubicacion", location.trim());
-    } else {
-      params.delete("ubicacion");
     }
 
     if (selectedType) {
       params.set("tipo", selectedType);
-    } else {
-      params.delete("tipo");
     }
 
     const queryString = params.toString();
@@ -48,8 +45,11 @@ export default function PropertyFilters({
       ? `${window.location.pathname}?${queryString}`
       : window.location.pathname;
 
-    window.location.assign(targetUrl);
+    // Esto fuerza la recarga completa para que Astro regenere con los nuevos params
+    window.location.href = targetUrl;
   };
+
+  
 
   return (
     <form
