@@ -2,6 +2,7 @@ import { supabase } from "../supabase";
 import type {
   HomeFeaturedProperty,
   Property,
+  PropertyType,
   PropertyRealEstate,
   PropertyVehicle,
 } from "../../types/property";
@@ -29,10 +30,6 @@ function getDetailsByType(property: Property): Array<{ label: string; value: str
       {
         label: "Año",
         value: vehicle?.year ? String(vehicle.year) : "—",
-      },
-      {
-        label: "Kilometraje",
-        value: vehicle?.mileage ? `${formatCompactNumber(vehicle.mileage)} km` : "—",
       },
       {
         label: "Transmisión",
@@ -101,6 +98,41 @@ export async function getFeaturedProperties(limit = 3): Promise<HomeFeaturedProp
 
   if (error) {
     console.error("Error loading featured properties:", error.message);
+    return [];
+  }
+
+  return ((data ?? []) as Property[]).map(mapPropertyToFeatured);
+}
+
+interface PropertyCatalogFilters {
+  location?: string;
+  type?: PropertyType;
+}
+
+export async function getCatalogProperties(
+  filters?: PropertyCatalogFilters,
+): Promise<HomeFeaturedProperty[]> {
+  let query = supabase
+    .from("properties")
+    .select(
+      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate(bedrooms, bathrooms, area_m2, hectares), property_vehicles(year, mileage, transmission)"
+    )
+    .eq("status", "activo")
+    .order("display_order", { ascending: true })
+    .order("created_at", { ascending: false });
+
+  if (filters?.type) {
+    query = query.eq("type", filters.type);
+  }
+
+  if (filters?.location) {
+    query = query.ilike("location", `%${filters.location}%`);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("Error loading catalog properties:", error.message);
     return [];
   }
 

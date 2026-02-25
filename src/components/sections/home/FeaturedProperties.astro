@@ -40,56 +40,10 @@ function getSpecIcon(label: string): string {
   return "";
 }
 
-const fallbackProperties = [
-  {
-    id: "fallback-property-1",
-    type: "casa",
-    title: "Residencia Moderna Guanacaste",
-    location: "Liberia, Guanacaste",
-    price: 325000,
-    currency: "USD" as const,
-    status: "activo" as const,
-    image:
-      "https://res.cloudinary.com/dnziwpiec/image/upload/v1771916830/roca-business/propiedades/pexels-efrem-efre-2786187-17327951_nsvz3c.jpg",
-    details: [
-      { label: "Hab", value: "4" },
-      { label: "Baños", value: "3" },
-      { label: "Área", value: "320 m²" },
-    ],
-  },
-  {
-    id: "fallback-property-2",
-    type: "casa",
-    title: "Apartamento Vista Panorámica",
-    location: "Santa Cruz, Guanacaste",
-    price: 185000,
-    currency: "USD" as const,
-    status: "activo" as const,
-    image:
-      "https://res.cloudinary.com/dnziwpiec/image/upload/v1771916858/roca-business/propiedades/pexels-kelly-2510067_uhcnix.jpg",
-    details: [
-      { label: "Hab", value: "2" },
-      { label: "Baños", value: "2" },
-      { label: "Área", value: "110 m²" },
-    ],
-  },
-  {
-    id: "fallback-property-3",
-    type: "finca",
-    title: "Terreno Comercial 07 Ha Liberia",
-    location: "Liberia Centro",
-    price: 45000000,
-    currency: "CRC" as const,
-    status: "activo" as const,
-    image:
-      "https://res.cloudinary.com/dnziwpiec/image/upload/v1771916979/roca-business/propiedades/pexels-olgalioncat-7244362_smy4n6.jpg",
-    details: [{ label: "Área", value: "1,200 m²" }],
-  },
-] satisfies HomeFeaturedProperty[];
 
 const propertiesFromDb = await getFeaturedProperties(3);
 const properties =
-  propertiesFromDb.length > 0 ? propertiesFromDb : fallbackProperties;
+  propertiesFromDb.length > 0 ? propertiesFromDb : [];
 ---
 
 <section id="propiedades" class="py-20 bg-white scroll-mt-28">
