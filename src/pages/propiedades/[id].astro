@@ -1,0 +1,586 @@
+---
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import Navbar from "../../components/layout/Navbar.astro";
+import ContactForm from "../../components/react/ContactForm";
+import { getPropertyById, getCatalogProperties } from "../../lib/queries/properties";
+import { formatPrice } from "../../utils/formatPrice";
+import type { PropertyRealEstate, PropertyVehicle } from "../../types/property";
+
+export async function getStaticPaths() {
+  const properties = await getCatalogProperties();
+  
+  return properties.map((property) => ({
+    params: { id: property.id },
+  }));
+}
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/propiedades");
+}
+
+const property = await getPropertyById(id);
+
+if (!property) {
+  return Astro.redirect("/propiedades");
+}
+
+const realEstate = Array.isArray(property.property_real_estate)
+  ? property.property_real_estate[0]
+  : property.property_real_estate;
+
+const vehicle = Array.isArray(property.property_vehicles)
+  ? property.property_vehicles[0]
+  : property.property_vehicles;
+
+const images = property.images && property.images.length > 0
+  ? property.images
+  : ["https://res.cloudinary.com/dnziwpiec/image/upload/v1771916220/roca-business/propiedades/pexels-scottwebb-1029599_dywxnv.jpg"];
+
+function getTypeLabel(type: string): string {
+  const labels: Record<string, string> = {
+    casa: "Casa",
+    finca: "Finca",
+    lote: "Lote",
+    carro: "Vehículo",
+    construccion_en_lote: "Construcción en Lote",
+  };
+  return labels[type] || type;
+}
+
+function getStatusLabel(status: string): string {
+  if (status === "vendido") return "Vendida";
+  if (status === "pendiente_revision") return "Pendiente";
+  if (status === "inactivo") return "Inactiva";
+  return "Activa";
+}
+
+function getStatusClass(status: string): string {
+  if (status === "vendido") return "bg-[#E3B83A] text-deepest";
+  if (status === "pendiente_revision") return "bg-mid/40 text-deepest";
+  if (status === "inactivo") return "bg-deepest/70 text-white";
+  return "bg-[#2D9E6B] text-white";
+}
+
+function formatNumber(value: number | null | undefined): string {
+  if (!value) return "—";
+  return new Intl.NumberFormat("es-CR").format(value);
+}
+---
+
+<Layout
+  title={`${property.title} | Roca Business`}
+  description={property.description ||
+    `${getTypeLabel(property.type)} en ${property.location || "Costa Rica"}. Precio: ${property.price && property.currency ? formatPrice(property.price, property.currency) : "Consultar"}`}
+>
+  <Navbar />
+
+  <!-- Barra de Navegación Secundaria -->
+  <div class="sticky top-20 z-40 border-b border-mid/20 bg-white shadow-sm">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      <a
+        href="/propiedades"
+        class="flex items-center gap-2 font-heading text-sm text-deepest/70 transition-colors hover:text-primary"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>Volver Atrás</span>
+      </a>
+      <button
+        type="button"
+        onclick="navigator.share ? navigator.share({title: document.title, url: window.location.href}) : navigator.clipboard.writeText(window.location.href).then(() => alert('Enlace copiado al portapapeles'))"
+        class="flex items-center gap-2 rounded-lg border border-mid/30 bg-surface px-4 py-2 font-heading text-sm text-deepest transition-all hover:border-primary hover:bg-primary/5"
+        aria-label="Compartir propiedad"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="18" cy="5" r="3" />
+          <circle cx="6" cy="12" r="3" />
+          <circle cx="18" cy="19" r="3" />
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+        </svg>
+        <span class="hidden sm:inline">Compartir</span>
+      </button>
+    </div>
+  </div>
+
+  <main class="bg-[#F5F7FA] pb-16 pt-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <!-- Header con Título y Precio -->
+      <div class="mb-6 flex flex-row gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div class="flex-1">
+            
+              <h1 class="font-heading text-lg pt-6 font-extrabold text-deepest sm:text-3xl lg:text-4xl">
+                {property.title}
+              </h1>
+              {property.location && (
+                <div class="mt-2 flex items-center gap-2 text-sm font-heading text-deepest/60">
+                  <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 21s-7-4.35-7-11a7 7 0 1114 0c0 6.65-7 11-7 11z"
+                    />
+                    <circle cx="12" cy="10" r="2.5" stroke-width="2" />
+                  </svg>
+                  <span>{property.location}</span>
+                </div>
+              )}
+            </div>
+            <div class="text-right">
+              <div class="flex items-center justify-end gap-2 mb-1">
+                <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="font-heading text-xs text-primary/70 uppercase">Precio</span>
+              </div>
+              <p class="font-heading text-lg font-extrabold text-primary sm:text-4xl">
+                {property.price && property.currency ? formatPrice(property.price, property.currency) : "Consultar"}
+              </p>
+            </div>
+      </div>
+
+      <!-- Galería de Imágenes -->
+      <div class="mb-8 overflow-hidden rounded-2xl bg-white shadow-md">
+            <div class="relative aspect-[2/1] bg-mid/10">
+              <img
+                id="mainImage"
+                src={images[0]}
+                alt={`Imagen principal de ${property.title}`}
+                width="1400"
+                height="700"
+                class="h-full w-full object-cover rounded-lg transition-opacity duration-300"
+              />
+            </div>
+
+            {images.length > 0 && (
+              <div class="grid grid-cols-6 gap-2 p-3">
+                {images.slice(0, 6).map((img, idx) => (
+                  <button
+                    type="button"
+                    data-image={img}
+                    class="gallery-thumbnail group relative aspect-square overflow-hidden rounded-lg border-2 transition-all"
+                    class:list={[
+                      idx === 0 ? "border-primary" : "border-mid/20 hover:border-primary"
+                    ]}
+                    aria-label={`Ver imagen ${idx + 1}`}
+                  >
+                    <img
+                      src={img}
+                      alt={`Vista ${idx + 1} de ${property.title}`}
+                      width="150"
+                      height="150"
+                      class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const mainImage = document.getElementById('mainImage') as HTMLImageElement;
+          const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+
+          thumbnails.forEach((thumbnail) => {
+            thumbnail.addEventListener('click', () => {
+              const newImageSrc = thumbnail.getAttribute('data-image');
+              
+              if (mainImage && newImageSrc) {
+                // Fade out
+                mainImage.style.opacity = '0';
+                
+                setTimeout(() => {
+                  mainImage.src = newImageSrc;
+                  // Fade in
+                  mainImage.style.opacity = '1';
+                }, 150);
+
+                // Update active thumbnail border
+                thumbnails.forEach(t => {
+                  t.classList.remove('border-primary');
+                  t.classList.add('border-mid/20');
+                });
+                thumbnail.classList.remove('border-mid/20');
+                thumbnail.classList.add('border-primary');
+              }
+            });
+          });
+        });
+      </script>
+
+      <!-- Grid de 2 Columnas: Contenido Principal + Contacto -->
+      <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_400px]">
+        <!-- Columna Izquierda: Contenido Principal -->
+        <div>
+          <!-- Descripción -->
+          {property.description && (
+            <section class="mb-6 rounded-2xl bg-white p-6 shadow-md">
+              <h2 class="mb-4 font-heading text-xl font-bold text-deepest">Descripción</h2>
+              <p class="whitespace-pre-line font-heading text-sm text-deepest/80 leading-relaxed">
+                {property.description}
+              </p>
+            </section>
+          )}
+
+          <!-- Características - Inmuebles -->
+          {property.type !== "carro" && realEstate && (
+            <section class="mb-6 rounded-2xl bg-white p-6 shadow-md">
+              <h2 class="mb-6 font-heading text-xl font-bold text-deepest">Características</h2>
+
+              <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                {realEstate.bedrooms !== null && realEstate.bedrooms > 0 && (
+                  <div class="flex items-center gap-3">
+                    <div class="rounded-lg bg-primary/10 p-2.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9v11c0 .552.448 1 1 1h1c.552 0 1-.448 1-1v-2h12v2c0 .552.448 1 1 1h1c.552 0 1-.448 1-1V9" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 9l9-6 9 6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 9v3H3V9" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-lg font-bold text-deepest">{realEstate.bedrooms}</p>
+                      <p class="font-heading text-xs text-deepest/60">Habitaciones</p>
+                    </div>
+                  </div>
+                )}
+
+                {realEstate.bathrooms !== null && realEstate.bathrooms > 0 && (
+                  <div class="flex items-center gap-3">
+                    <div class="rounded-lg bg-primary/10 p-2.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 6v1.5M9 22v-1m0-3v-1m0-3v-1m6-7.5V4a2 2 0 00-2-2h-2a2 2 0 00-2 2v2.5M3 12a9 9 0 0018 0" stroke-linecap="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-lg font-bold text-deepest">{realEstate.bathrooms}</p>
+                      <p class="font-heading text-xs text-deepest/60">Baños</p>
+                    </div>
+                  </div>
+                )}
+
+                {realEstate.area_m2 !== null && realEstate.area_m2 > 0 && (
+                  <div class="flex items-center gap-3">
+                    <div class="rounded-lg bg-primary/10 p-2.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-lg font-bold text-deepest">{formatNumber(realEstate.area_m2)}</p>
+                      <p class="font-heading text-xs text-deepest/60">m² área</p>
+                    </div>
+                  </div>
+                )}
+
+                {realEstate.parking_spots !== null && realEstate.parking_spots > 0 && (
+                  <div class="flex items-center gap-3">
+                    <div class="rounded-lg bg-primary/10 p-2.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 17H3a2 2 0 01-2-2v-2a2 2 0 011-1.732l3.055-1.828A2 2 0 016 9.614V7a3 3 0 013-3h6a3 3 0 013 3v2.614a2 2 0 01.945.826L22 13.268A2 2 0 0123 15v2a2 2 0 01-2 2h-2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M5 17a2 2 0 002 2h10a2 2 0 002-2M5 17v-2M19 17v-2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-lg font-bold text-deepest">{realEstate.parking_spots}</p>
+                      <p class="font-heading text-xs text-deepest/60">Parqueos</p>
+                    </div>
+                  </div>
+                )}
+
+                {realEstate.hectares !== null && realEstate.hectares > 0 && (
+                  <div class="flex items-center gap-3">
+                    <div class="rounded-lg bg-surface p-2.5">
+                      <svg class="h-5 w-5 text-deepest" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-lg font-bold text-deepest">{realEstate.hectares}</p>
+                      <p class="font-heading text-xs text-deepest/60">Hectáreas</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <!-- Amenidades -->
+              {(realEstate.has_kitchen || realEstate.has_living_room || realEstate.cochera || realEstate.has_water || realEstate.has_electricity || realEstate.has_construction) && (
+                <div class="mt-6">
+                  <h3 class="mb-4 font-heading text-lg font-bold text-deepest">Amenidades</h3>
+                  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    {realEstate.has_kitchen && (
+                      <div class="flex items-center gap-2 font-heading text-sm text-deepest">
+                        <svg class="h-5 w-5 text-[#2D9E6B]" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                        <span>Cocina</span>
+                      </div>
+                    )}
+
+                    {realEstate.has_living_room && (
+                      <div class="flex items-center gap-2 font-heading text-sm text-deepest">
+                        <svg class="h-5 w-5 text-[#2D9E6B]" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                        <span>Sala</span>
+                      </div>
+                    )}
+
+                    {realEstate.cochera && (
+                      <div class="flex items-center gap-2 font-heading text-sm text-deepest">
+                        <svg class="h-5 w-5 text-[#2D9E6B]" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                        <span>Cochera</span>
+                      </div>
+                    )}
+
+                    {realEstate.has_water && (
+                      <div class="flex items-center gap-2 font-heading text-sm text-deepest">
+                        <svg class="h-5 w-5 text-[#2D9E6B]" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                        <span>Agua disponible</span>
+                      </div>
+                    )}
+
+                    {realEstate.has_electricity && (
+                      <div class="flex items-center gap-2 font-heading text-sm text-deepest">
+                        <svg class="h-5 w-5 text-[#2D9E6B]" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                        <span>Electricidad</span>
+                      </div>
+                    )}
+
+                    {realEstate.has_construction && realEstate.construction_type && (
+                      <div class="flex items-center gap-2 font-heading text-sm text-deepest">
+                        <svg class="h-5 w-5 text-[#2D9E6B]" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                        <span>Construcción en {realEstate.construction_type}</span>
+                      </div>
+                    )}
+
+                    {realEstate.vereda && (
+                      <div class="flex items-center gap-2 font-heading text-sm text-deepest">
+                        <svg class="h-5 w-5 text-[#2D9E6B]" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                        <span>Vereda: {realEstate.vereda}</span>
+                      </div>
+                    )}
+
+                    {realEstate.zoning && (
+                      <div class="flex items-center gap-2 font-heading text-sm text-deepest">
+                        <svg class="h-5 w-5 text-[#2D9E6B]" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg>
+                        <span>Zonificación: {realEstate.zoning}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          <!-- Características - Vehículos -->
+          {property.type === "carro" && vehicle && (
+            <section class="mb-6 rounded-2xl bg-white p-6 shadow-md">
+              <h2 class="mb-6 font-heading text-xl font-bold text-deepest">Especificaciones del Vehículo</h2>
+
+              <div class="grid grid-cols-2 gap-4">
+                {vehicle.make && (
+                  <div class="flex items-start gap-3 rounded-xl bg-surface p-4">
+                    <div class="rounded-lg bg-primary/10 p-2 mt-0.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 17H3a2 2 0 01-2-2v-2a2 2 0 011-1.732l3.055-1.828A2 2 0 016 9.614V7a3 3 0 013-3h6a3 3 0 013 3v2.614a2 2 0 01.945.826L22 13.268A2 2 0 0123 15v2a2 2 0 01-2 2h-2M5 17a2 2 0 002 2h10a2 2 0 002-2M5 17v-2M19 17v-2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-xs text-deepest/60 mb-1">Marca</p>
+                      <p class="font-heading text-lg font-bold text-deepest">{vehicle.make}</p>
+                    </div>
+                  </div>
+                )}
+
+                {vehicle.model && (
+                  <div class="flex items-start gap-3 rounded-xl bg-surface p-4">
+                    <div class="rounded-lg bg-primary/10 p-2 mt-0.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-xs text-deepest/60 mb-1">Modelo</p>
+                      <p class="font-heading text-lg font-bold text-deepest">{vehicle.model}</p>
+                    </div>
+                  </div>
+                )}
+
+                {vehicle.year && (
+                  <div class="flex items-start gap-3 rounded-xl bg-surface p-4">
+                    <div class="rounded-lg bg-primary/10 p-2 mt-0.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 2v4M8 2v4M3 10h18" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-xs text-deepest/60 mb-1">Año</p>
+                      <p class="font-heading text-lg font-bold text-deepest">{vehicle.year}</p>
+                    </div>
+                  </div>
+                )}
+
+                {vehicle.mileage !== null && (
+                  <div class="flex items-start gap-3 rounded-xl bg-surface p-4">
+                    <div class="rounded-lg bg-primary/10 p-2 mt-0.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-xs text-deepest/60 mb-1">Kilometraje</p>
+                      <p class="font-heading text-lg font-bold text-deepest">{formatNumber(vehicle.mileage)} km</p>
+                    </div>
+                  </div>
+                )}
+
+                {vehicle.transmission && (
+                  <div class="flex items-start gap-3 rounded-xl bg-surface p-4">
+                    <div class="rounded-lg bg-primary/10 p-2 mt-0.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="6" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-xs text-deepest/60 mb-1">Transmisión</p>
+                      <p class="font-heading text-lg font-bold text-deepest">{vehicle.transmission}</p>
+                    </div>
+                  </div>
+                )}
+
+                {vehicle.fuel_type && (
+                  <div class="flex items-start gap-3 rounded-xl bg-surface p-4">
+                    <div class="rounded-lg bg-primary/10 p-2 mt-0.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 22v-15c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2v15" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M15 5h2c.6 0 1 .4 1 1v3l3 3v6c0 .6-.4 1-1 1h-1" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M6 9h6v6H6z" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-xs text-deepest/60 mb-1">Combustible</p>
+                      <p class="font-heading text-lg font-bold text-deepest">{vehicle.fuel_type}</p>
+                    </div>
+                  </div>
+                )}
+
+                {vehicle.engine_cc && (
+                  <div class="flex items-start gap-3 rounded-xl bg-surface p-4">
+                    <div class="rounded-lg bg-primary/10 p-2 mt-0.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="6" width="20" height="12" rx="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M7 10v4M12 10v4M17 10v4M2 12h20" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-heading text-xs text-deepest/60 mb-1">Cilindraje</p>
+                      <p class="font-heading text-lg font-bold text-deepest">{formatNumber(vehicle.engine_cc)} cc</p>
+                    </div>
+                  </div>
+                )}
+
+                {vehicle.color && (
+                  <div class="flex items-start gap-3 rounded-xl bg-surface p-4">
+                    <div class="rounded-lg bg-primary/10 p-2 mt-0.5">
+                      <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <p class="font-heading text-xs text-deepest/60 mb-2">Color</p>
+                      <div class="flex items-center gap-3">
+                        <div
+                          class="h-6 w-6 rounded-lg border-2 border-mid/30 shadow-sm"
+                          style={`background-color: ${vehicle.color};`}
+                          title={vehicle.color}
+                        ></div>
+
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
+          <!-- Ubicación -->
+          {property.maps_url && (
+            <section class="rounded-2xl bg-white p-6 shadow-md">
+              <div class="mb-4 flex items-center gap-2">
+                <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-4.35-7-11a7 7 0 1114 0c0 6.65-7 11-7 11z" />
+                  <circle cx="12" cy="10" r="2.5" stroke-width="2" />
+                </svg>
+                <h2 class="font-heading text-xl font-bold text-deepest">Ubicación</h2>
+              </div>
+              <p class="mb-3 font-heading text-sm text-deepest/70">
+                {property.location || "Costa Rica"}
+              </p>
+              <div class="overflow-hidden rounded-xl">
+                <iframe
+                  src={property.maps_url}
+                  width="100%"
+                  height="400"
+                  style="border:0;"
+                  allowfullscreen=""
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  title={`Mapa de ubicación de ${property.title}`}
+                ></iframe>
+              </div>
+              <a
+                href={property.maps_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-4 flex items-center justify-center gap-2 rounded-xl border-2 border-primary/20 bg-primary/5 py-3 font-heading text-sm font-bold text-primary transition-all hover:border-primary hover:bg-primary hover:text-white"
+              >
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-4.35-7-11a7 7 0 1114 0c0 6.65-7 11-7 11z" />
+                  <circle cx="12" cy="10" r="2.5" stroke-width="2" />
+                </svg>
+                <span>Ver en Google Maps</span>
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </a>
+            </section>
+          )}
+        </div>
+
+        <!-- Columna Derecha: Formulario de Contacto -->
+        <div>
+          <section class="sticky top-48 rounded-2xl bg-white p-6 shadow-lg border border-mid/10">
+            <ContactForm 
+              client:visible
+              propertyId={property.id}
+              propertyTitle={property.title}
+            />
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
