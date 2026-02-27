@@ -53,25 +53,27 @@ const {
     <Footer />
 
     <script is:inline>
-      (() => {
+      // Función para inicializar el cursor
+      function initCursor() {
         const mediaFinePointer = window.matchMedia("(pointer: fine)").matches;
         const reducedMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches;
 
-        if (!mediaFinePointer || reducedMotion) return;
+        if (!mediaFinePointer || reducedMotion) return null;
 
         const follower = document.querySelector(".cursor-follower");
         const dot = document.querySelector(".cursor-follower__dot");
         const ring = document.querySelector(".cursor-follower__ring");
 
-        if (!follower || !dot || !ring) return;
+        if (!follower || !dot || !ring) return null;
 
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
         let ringX = mouseX;
         let ringY = mouseY;
         let active = false;
+        let animationId = null;
 
         const interactiveSelector =
           'a, button, input, textarea, select, [role="button"]';
@@ -102,14 +104,41 @@ const {
           ringX += (mouseX - ringX) * 0.15;
           ringY += (mouseY - ringY) * 0.15;
           ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
-          requestAnimationFrame(animate);
+          animationId = requestAnimationFrame(animate);
         };
 
         window.addEventListener("mousemove", onMove, { passive: true });
         window.addEventListener("mouseout", onLeave, { passive: true });
         window.addEventListener("blur", onLeave);
-        requestAnimationFrame(animate);
-      })();
+        animationId = requestAnimationFrame(animate);
+
+        // Retornar función de limpieza
+        return () => {
+          window.removeEventListener("mousemove", onMove);
+          window.removeEventListener("mouseout", onLeave);
+          window.removeEventListener("blur", onLeave);
+          if (animationId) cancelAnimationFrame(animationId);
+          follower.classList.remove("is-active", "is-interactive");
+        };
+      }
+
+      // Variable global para almacenar la función de limpieza
+      let cleanupCursor = null;
+
+      // Inicializar en carga inicial
+      document.addEventListener("DOMContentLoaded", () => {
+        cleanupCursor = initCursor();
+      });
+
+      // Reinicializar después de cada navegación con ViewTransitions
+      document.addEventListener("astro:after-swap", () => {
+        // Limpiar cursor anterior si existe
+        if (cleanupCursor) {
+          cleanupCursor();
+        }
+        // Inicializar nuevo cursor
+        cleanupCursor = initCursor();
+      });
     </script>
   </body>
 </html>

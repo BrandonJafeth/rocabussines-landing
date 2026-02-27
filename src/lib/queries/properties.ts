@@ -35,6 +35,10 @@ function getDetailsByType(property: Property): Array<{ label: string; value: str
         label: "Transmisión",
         value: vehicle?.transmission ?? "—",
       },
+      {
+        label: "Kilometraje",
+        value: vehicle?.mileage ? `${formatCompactNumber(vehicle.mileage)} km` : "—",
+      },
     ];
   }
 
@@ -55,7 +59,7 @@ function getDetailsByType(property: Property): Array<{ label: string; value: str
 
   return [
     {
-      label: "Hab",
+      label: "Habitaciones",
       value: realEstate?.bedrooms ? String(realEstate.bedrooms) : "—",
     },
     {

@@ -37,20 +37,19 @@ function getSpecIcon(label: string): string {
   if (normalizedLabel === "area") return "area";
   if (normalizedLabel === "ano") return "calendar";
   if (normalizedLabel === "transmision") return "gear";
+  if (normalizedLabel === "kilometraje") return "road";
   return "";
 }
 
-
 const propertiesFromDb = await getFeaturedProperties(3);
-const properties =
-  propertiesFromDb.length > 0 ? propertiesFromDb : [];
+const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
 ---
 
 <section id="propiedades" class="py-20 bg-white scroll-mt-28">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center max-w-3xl mx-auto mb-12">
       <h2
-        class="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-deepest"
+        class="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-deepest"
       >
         Propiedades Destacadas
       </h2>
@@ -175,8 +174,8 @@ const properties =
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M10 3L8 21M16 3l-2 18M3 8h6M15 16h6"
+                          stroke-width="1.5"
+                          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"
                         />
                       </svg>
                     )}
