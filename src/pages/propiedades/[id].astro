@@ -110,10 +110,10 @@ function formatNumber(value: number | null | undefined): string {
   <main class="bg-[#F5F7FA] pb-16 pt-24">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Header con Título y Precio -->
-      <div class="mb-6 flex flex-row gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div class="mb-6 pt-4 flex flex-row gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div class="flex-1">
             
-              <h1 class="font-heading text-lg pt-6 font-extrabold text-deepest sm:text-3xl lg:text-4xl">
+              <h1 class="font-heading text-lg font-extrabold text-deepest sm:text-3xl lg:text-4xl">
                 {property.title}
               </h1>
               {property.location && (
@@ -144,51 +144,69 @@ function formatNumber(value: number | null | undefined): string {
       </div>
 
       <!-- Galería de Imágenes -->
-      <div class="mb-8 overflow-hidden rounded-2xl bg-white shadow-md">
-            <div class="relative aspect-[2/1] bg-mid/10">
-              <img
-                id="mainImage"
-                src={images[0]}
-                alt={`Imagen principal de ${property.title}`}
-                width="1400"
-                height="700"
-                class="h-full w-full object-cover rounded-lg transition-opacity duration-300"
-              />
-            </div>
+      <!-- Imagen Principal -->
+      <div class="mb-4 overflow-hidden rounded-2xl bg-white shadow-md">
+        <div class="relative aspect-[2/1] bg-mid/10">
+          <img
+            id="mainImage"
+            src={images[0]}
+            alt={`Imagen principal de ${property.title}`}
+            width="1400"
+            height="700"
+            class="h-full w-full object-cover transition-opacity duration-300"
+          />
+        </div>
+      </div>
 
-            {images.length > 0 && (
-              <div class="grid grid-cols-6 gap-2 p-3">
-                {images.slice(0, 6).map((img, idx) => (
-                  <button
-                    type="button"
-                    data-image={img}
-                    class="gallery-thumbnail group relative aspect-square overflow-hidden rounded-lg border-2 transition-all"
-                    class:list={[
-                      idx === 0 ? "border-primary" : "border-mid/20 hover:border-primary"
-                    ]}
-                    aria-label={`Ver imagen ${idx + 1}`}
-                  >
-                    <img
-                      src={img}
-                      alt={`Vista ${idx + 1} de ${property.title}`}
-                      width="150"
-                      height="150"
-                      class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+      <!-- Miniaturas con Scroll Horizontal -->
+      {images.length > 1 && (
+        <div class="mb-8 rounded-2xl bg-white p-4 shadow-md">
+          <div class="relative">
+            <div
+              id="thumbnailScroll"
+              class="flex gap-3 overflow-x-auto scroll-smooth pb-2 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent hover:scrollbar-thumb-primary/50"
+              style="scrollbar-width: thin; scrollbar-color: rgba(19, 64, 116, 0.3) transparent;"
+            >
+              {images.map((img, idx) => (
+                <button
+                  type="button"
+                  data-image={img}
+                  data-index={idx}
+                  class="gallery-thumbnail group relative flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all w-24 h-24 sm:w-28 sm:h-28"
+                  class:list={[
+                    idx === 0 ? "border-primary ring-2 ring-primary/20" : "border-mid/20 hover:border-primary"
+                  ]}
+                  aria-label={`Ver imagen ${idx + 1}`}
+                >
+                  <img
+                    src={img}
+                    alt={`Vista ${idx + 1} de ${property.title}`}
+                    width="150"
+                    height="150"
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
+                </button>
+              ))}
+            </div>
           </div>
+        </div>
+      )}
 
       <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        function initGallery() {
           const mainImage = document.getElementById('mainImage') as HTMLImageElement;
           const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+          const thumbnailScroll = document.getElementById('thumbnailScroll');
+          const scrollLeftBtn = document.getElementById('scrollLeft');
+          const scrollRightBtn = document.getElementById('scrollRight');
 
+          if (!mainImage || thumbnails.length === 0) return;
+
+          // Cambiar imagen principal al hacer clic en miniatura
           thumbnails.forEach((thumbnail) => {
             thumbnail.addEventListener('click', () => {
               const newImageSrc = thumbnail.getAttribute('data-image');
+              const index = parseInt(thumbnail.getAttribute('data-index') || '0');
               
               if (mainImage && newImageSrc) {
                 // Fade out
@@ -202,16 +220,89 @@ function formatNumber(value: number | null | undefined): string {
 
                 // Update active thumbnail border
                 thumbnails.forEach(t => {
-                  t.classList.remove('border-primary');
+                  t.classList.remove('border-primary', 'ring-2', 'ring-primary/20');
                   t.classList.add('border-mid/20');
                 });
                 thumbnail.classList.remove('border-mid/20');
-                thumbnail.classList.add('border-primary');
+                thumbnail.classList.add('border-primary', 'ring-2', 'ring-primary/20');
+
+                // Scroll automático para centrar la miniatura seleccionada
+                if (thumbnailScroll) {
+                  const thumbElement = thumbnail as HTMLElement;
+                  const scrollLeft = thumbElement.offsetLeft - (thumbnailScroll.clientWidth / 2) + (thumbElement.clientWidth / 2);
+                  thumbnailScroll.scrollTo({
+                    left: scrollLeft,
+                    behavior: 'smooth'
+                  });
+                }
               }
             });
           });
-        });
+
+          // Botones de navegación para desktop
+          if (scrollLeftBtn && scrollRightBtn && thumbnailScroll) {
+            const updateScrollButtons = () => {
+              const isAtStart = thumbnailScroll.scrollLeft <= 10;
+              const isAtEnd = thumbnailScroll.scrollLeft >= (thumbnailScroll.scrollWidth - thumbnailScroll.clientWidth - 10);
+              
+              if (isAtStart) {
+                scrollLeftBtn.classList.add('opacity-0', 'pointer-events-none');
+              } else {
+                scrollLeftBtn.classList.remove('opacity-0', 'pointer-events-none');
+              }
+              
+              if (isAtEnd) {
+                scrollRightBtn.classList.add('opacity-0', 'pointer-events-none');
+              } else {
+                scrollRightBtn.classList.remove('opacity-0', 'pointer-events-none');
+              }
+            };
+
+            scrollLeftBtn.addEventListener('click', () => {
+              thumbnailScroll.scrollBy({
+                left: -200,
+                behavior: 'smooth'
+              });
+            });
+
+            scrollRightBtn.addEventListener('click', () => {
+              thumbnailScroll.scrollBy({
+                left: 200,
+                behavior: 'smooth'
+              });
+            });
+
+            thumbnailScroll.addEventListener('scroll', updateScrollButtons);
+            updateScrollButtons();
+          }
+        }
+
+        // Inicializar en carga inicial
+        document.addEventListener('DOMContentLoaded', initGallery);
+        
+        // Reinicializar después de cada navegación con ViewTransitions
+        document.addEventListener('astro:page-load', initGallery);
       </script>
+
+      <style>
+        /* Custom scrollbar para navegadores webkit */
+        #thumbnailScroll::-webkit-scrollbar {
+          height: 6px;
+        }
+        
+        #thumbnailScroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        
+        #thumbnailScroll::-webkit-scrollbar-thumb {
+          background: rgba(19, 64, 116, 0.3);
+          border-radius: 3px;
+        }
+        
+        #thumbnailScroll::-webkit-scrollbar-thumb:hover {
+          background: rgba(19, 64, 116, 0.5);
+        }
+      </style>
 
       <!-- Grid de 2 Columnas: Contenido Principal + Contacto -->
       <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_400px]">

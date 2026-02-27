@@ -47,8 +47,23 @@ function getStatusClass(status: string): string {
   return "bg-[#2D9E6B] text-white";
 }
 
-console.log("🔍 Query Params:", { typeParam, locationParam });
-console.log("📦 Properties found:", properties.length);
+function getSpecIcon(label: string) {
+  const normalizedLabel = label
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+  if (normalizedLabel === "hab" || normalizedLabel === "habitaciones")
+    return "bed";
+  if (normalizedLabel === "banos" || normalizedLabel === "baños") return "bath";
+  if (normalizedLabel === "area" || normalizedLabel === "m2") return "area";
+  if (normalizedLabel === "ano" || normalizedLabel === "año") return "calendar";
+  if (normalizedLabel === "transmision" || normalizedLabel === "transmisión")
+    return "gear";
+  if (normalizedLabel === "kilometraje" || normalizedLabel === "km")
+    return "speedometer";
+  return "default";
+}
 ---
 
 <Layout
@@ -69,7 +84,7 @@ console.log("📦 Properties found:", properties.length);
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="mx-auto max-w-3xl text-center">
           <h1
-            class="font-heading text-4xl font-extrabold text-white sm:text-5xl lg:text-6xl"
+            class="font-heading text-4xl font-bold text-white sm:text-5xl lg:text-6xl"
           >
             Propiedades Disponibles
           </h1>
@@ -152,14 +167,121 @@ console.log("📦 Properties found:", properties.length);
                         <span>{property.location}</span>
                       </div>
 
-                      <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-heading text-deepest/80">
+                      <div class="mt-5 grid grid-cols-3 gap-2">
                         {property.details.map(
                           (detail: { label: string; value: string }) => (
-                            <div class="inline-flex items-center gap-2">
-                              <span class="font-bold text-deepest">
-                                {detail.label}:
-                              </span>
-                              <span>{detail.value}</span>
+                            <div class="flex flex-col items-center justify-center rounded-lg bg-primary/10 border border-primary/20 p-3 text-center shadow-sm">
+                              {getSpecIcon(detail.label) === "bed" && (
+                                <svg
+                                  class="h-6 w-6 text-primary"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M3 7v10M3 13h18M7 13v-3h4v3M13 13V9h4a3 3 0 013 3v1"
+                                  />
+                                </svg>
+                              )}
+                              {getSpecIcon(detail.label) === "bath" && (
+                                <svg
+                                  class="h-6 w-6 text-primary"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 13h16M7 13V9a2 2 0 114 0v4M4 13v2a4 4 0 004 4h8a4 4 0 004-4v-2"
+                                  />
+                                </svg>
+                              )}
+                              {getSpecIcon(detail.label) === "area" && (
+                                <svg
+                                  class="h-6 w-6 text-primary"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
+                                  />
+                                </svg>
+                              )}
+                              {getSpecIcon(detail.label) === "calendar" && (
+                                <svg
+                                  class="h-6 w-6 text-primary"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M8 2v4M16 2v4M3 10h18M5 6h14a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"
+                                  />
+                                </svg>
+                              )}
+                              {getSpecIcon(detail.label) === "speedometer" && (
+                                <svg
+                                  class="h-6 w-6 text-primary"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.5"
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+                                  />
+                                </svg>
+                              )}
+                              {getSpecIcon(detail.label) === "gear" && (
+                                <svg
+                                  class="h-6 w-6 text-primary"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 9a3 3 0 100 6 3 3 0 000-6zm7.4 3a7.4 7.4 0 01-.1 1l2.1 1.6-2 3.5-2.5-1a7.7 7.7 0 01-1.7 1l-.4 2.7h-4l-.4-2.7a7.7 7.7 0 01-1.7-1l-2.5 1-2-3.5 2.1-1.6a7.4 7.4 0 010-2L2.6 9.4l2-3.5 2.5 1a7.7 7.7 0 011.7-1l.4-2.7h4l.4 2.7a7.7 7.7 0 011.7 1l2.5-1 2 3.5-2.1 1.6a7.4 7.4 0 01.1 1z"
+                                  />
+                                </svg>
+                              )}
+                              {getSpecIcon(detail.label) === "default" && (
+                                <svg
+                                  class="h-6 w-6 text-primary"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                              )}
+                              <p class="mt-2 font-heading text-sm font-bold text-deepest">
+                                {detail.value}
+                              </p>
+                              <p class="mt-0.5 text-xs font-heading text-deepest/50">
+                                {detail.label}
+                              </p>
                             </div>
                           ),
                         )}
