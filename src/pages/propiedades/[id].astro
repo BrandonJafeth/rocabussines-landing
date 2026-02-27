@@ -4,6 +4,7 @@ import Layout from "../../layouts/Layout.astro";
 import Navbar from "../../components/layout/Navbar.astro";
 import ContactForm from "../../components/react/ContactForm";
 import { getPropertyById, getCatalogProperties } from "../../lib/queries/properties";
+import { getAllActiveServices } from "../../lib/queries/services";
 import { formatPrice } from "../../utils/formatPrice";
 import type { PropertyRealEstate, PropertyVehicle } from "../../types/property";
 
@@ -26,6 +27,8 @@ const property = await getPropertyById(id);
 if (!property) {
   return Astro.redirect("/propiedades");
 }
+
+const services = await getAllActiveServices();
 
 const realEstate = Array.isArray(property.property_real_estate)
   ? property.property_real_estate[0]
@@ -668,6 +671,7 @@ function formatNumber(value: number | null | undefined): string {
               client:visible
               propertyId={property.id}
               propertyTitle={property.title}
+              services={services}
             />
           </section>
         </div>
