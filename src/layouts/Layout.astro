@@ -3,6 +3,7 @@ import { ViewTransitions } from "astro:transitions";
 import "@fontsource/antic-didone";
 import "../styles/global.css";
 import Footer from "../components/layout/Footer.astro";
+import FloatingButtons from "../components/react/FloatingButtons";
 
 interface Props {
   title?: string;
@@ -45,6 +46,9 @@ const {
     />
   </head>
   <body>
+    <!-- Floating Buttons (WhatsApp y Scroll to Top) -->
+    <FloatingButtons client:load />
+
     <div class="cursor-follower" aria-hidden="true">
       <div class="cursor-follower__dot"></div>
       <div class="cursor-follower__ring"></div>

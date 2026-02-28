@@ -1,4 +1,7 @@
 ---
+// Marcar como server-rendered para leer query params dinámicamente
+export const prerender = false;
+
 import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import Navbar from "../../components/layout/Navbar.astro";
@@ -107,7 +110,7 @@ function getSpecIcon(label: string) {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {
           properties.length === 0 ? (
-            <div class="rounded-2xl border border-mid/25 bg-white px-6 py-16 text-center shadow-sm">
+            <div class="rounded-2xl border mt-28 border-mid/25 bg-white px-6 py-16 text-center shadow-sm">
               <h2 class="font-heading text-2xl font-bold text-deepest">
                 No encontramos propiedades con esos filtros
               </h2>
