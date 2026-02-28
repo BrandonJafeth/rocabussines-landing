@@ -2,15 +2,12 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel/serverless';
 
 // https://astro.build/config
-// ...existing code...
 export default defineConfig({
-  output: 'server', // En Astro actual: 'static' o 'server'
-  adapter: node({
-    mode: 'standalone'
-  }),
+  output: 'static', // Páginas estáticas por defecto + endpoints dinámicos con prerender: false
+  adapter: vercel({}),
   image: {
     remotePatterns: [
       {
@@ -24,4 +21,3 @@ export default defineConfig({
     tailwind(),
   ],
 });
-// ...existing code...
