@@ -489,7 +489,7 @@ function formatNumber(value: number | null | undefined): string {
             <section class="mb-6 rounded-2xl bg-white p-6 shadow-md">
               <h2 class="mb-6 font-heading text-xl font-bold text-deepest">Especificaciones del Vehículo</h2>
 
-              <div class="grid grid-cols-2 gap-4">
+              <div class="grid grid-cols-2 gap-6">
                 {vehicle.make && (
                   <div class="flex items-start gap-3 rounded-xl bg-surface p-4">
                     <div class="rounded-lg bg-primary/10 p-2 mt-0.5">
@@ -499,7 +499,7 @@ function formatNumber(value: number | null | undefined): string {
                     </div>
                     <div>
                       <p class="font-heading text-xs text-deepest/60 mb-1">Marca</p>
-                      <p class="font-heading text-lg font-bold text-deepest">{vehicle.make}</p>
+                      <p class="font-heading text-sm font-bold text-deepest">{vehicle.make}</p>
                     </div>
                   </div>
                 )}
@@ -514,7 +514,7 @@ function formatNumber(value: number | null | undefined): string {
                     </div>
                     <div>
                       <p class="font-heading text-xs text-deepest/60 mb-1">Modelo</p>
-                      <p class="font-heading text-lg font-bold text-deepest">{vehicle.model}</p>
+                      <p class="font-heading text-sm font-bold text-deepest">{vehicle.model}</p>
                     </div>
                   </div>
                 )}
@@ -529,7 +529,7 @@ function formatNumber(value: number | null | undefined): string {
                     </div>
                     <div>
                       <p class="font-heading text-xs text-deepest/60 mb-1">Año</p>
-                      <p class="font-heading text-lg font-bold text-deepest">{vehicle.year}</p>
+                      <p class="font-heading text-sm font-bold text-deepest">{vehicle.year}</p>
                     </div>
                   </div>
                 )}
@@ -544,7 +544,7 @@ function formatNumber(value: number | null | undefined): string {
                     </div>
                     <div>
                       <p class="font-heading text-xs text-deepest/60 mb-1">Kilometraje</p>
-                      <p class="font-heading text-lg font-bold text-deepest">{formatNumber(vehicle.mileage)} km</p>
+                      <p class="font-heading text-sm font-bold text-deepest">{formatNumber(vehicle.mileage)} km</p>
                     </div>
                   </div>
                 )}
@@ -560,7 +560,7 @@ function formatNumber(value: number | null | undefined): string {
                     </div>
                     <div>
                       <p class="font-heading text-xs text-deepest/60 mb-1">Transmisión</p>
-                      <p class="font-heading text-lg font-bold text-deepest">{vehicle.transmission}</p>
+                      <p class="font-heading text-sm font-bold text-deepest">{vehicle.transmission}</p>
                     </div>
                   </div>
                 )}
@@ -576,7 +576,7 @@ function formatNumber(value: number | null | undefined): string {
                     </div>
                     <div>
                       <p class="font-heading text-xs text-deepest/60 mb-1">Combustible</p>
-                      <p class="font-heading text-lg font-bold text-deepest">{vehicle.fuel_type}</p>
+                      <p class="font-heading text-sm font-bold text-deepest">{vehicle.fuel_type}</p>
                     </div>
                   </div>
                 )}
@@ -591,7 +591,7 @@ function formatNumber(value: number | null | undefined): string {
                     </div>
                     <div>
                       <p class="font-heading text-xs text-deepest/60 mb-1">Cilindraje</p>
-                      <p class="font-heading text-lg font-bold text-deepest">{formatNumber(vehicle.engine_cc)} cc</p>
+                      <p class="font-heading text-sm font-bold text-deepest">{formatNumber(vehicle.engine_cc)} cc</p>
                     </div>
                   </div>
                 )}
