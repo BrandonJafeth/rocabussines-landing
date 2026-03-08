@@ -112,7 +112,7 @@ function mapPropertyToFeatured(property: Property): HomeFeaturedProperty {
   };
 }
 
-export async function getFeaturedProperties(limit = 3): Promise<HomeFeaturedProperty[]> {
+export async function getFeaturedProperties(limit = 5): Promise<HomeFeaturedProperty[]> {
   const { data, error } = await supabase
     .from("properties")
     .select(
@@ -133,17 +133,24 @@ export async function getFeaturedProperties(limit = 3): Promise<HomeFeaturedProp
 
 interface PropertyCatalogFilters {
   location?: string;
+  provincia?: string;
+  canton?: string;
+  distrito?: string;
   type?: PropertyType;
 }
 
 export async function getCatalogProperties(filters?: {
   location?: string;
+  provincia?: string;
+  canton?: string;
+  distrito?: string;
   type?: PropertyType;
 }): Promise<HomeFeaturedProperty[]> {
+  // Query base
   let query = supabase
     .from("properties")
     .select(
-      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito), property_vehicles(year, mileage, transmission)"
+      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate!inner(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito), property_vehicles(year, mileage, transmission)"
     )
     .eq("status", "activo")
     .order("display_order", { ascending: true });
@@ -153,8 +160,19 @@ export async function getCatalogProperties(filters?: {
     query = query.eq("type", filters.type);
   }
 
-  // Filtro por ubicación (búsqueda parcial, case-insensitive)
-  if (filters?.location) {
+  // Filtros por ubicación desde property_real_estate
+  if (filters?.provincia) {
+    query = query.eq("property_real_estate.provincia", filters.provincia);
+  }
+  if (filters?.canton) {
+    query = query.eq("property_real_estate.canton", filters.canton);
+  }
+  if (filters?.distrito) {
+    query = query.eq("property_real_estate.distrito", filters.distrito);
+  }
+
+  // Filtro por ubicación general (búsqueda parcial, case-insensitive) - backward compatibility
+  if (filters?.location && !filters?.provincia && !filters?.canton && !filters?.distrito) {
     query = query.ilike("location", `%${filters.location}%`);
   }
 

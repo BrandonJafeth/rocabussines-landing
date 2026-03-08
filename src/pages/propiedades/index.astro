@@ -11,7 +11,9 @@ import { formatPrice } from "../../utils/formatPrice";
 import type { PropertyType, HomeFeaturedProperty } from "../../types/property";
 
 const typeParam = Astro.url.searchParams.get("tipo");
-const locationParam = Astro.url.searchParams.get("ubicacion") ?? "";
+const provinciaParam = Astro.url.searchParams.get("provincia") ?? "";
+const cantonParam = Astro.url.searchParams.get("canton") ?? "";
+const distritoParam = Astro.url.searchParams.get("distrito") ?? "";
 
 const validTypes: PropertyType[] = [
   "casa",
@@ -27,7 +29,9 @@ const selectedType =
     : undefined;
 
 const properties = await getCatalogProperties({
-  location: locationParam || undefined,
+  provincia: provinciaParam || undefined,
+  canton: cantonParam || undefined,
+  distrito: distritoParam || undefined,
   type: selectedType,
 });
 
@@ -77,11 +81,15 @@ function getSpecIcon(label: string) {
 
   <main class="bg-[#F5F7FA]">
     <section
-      class="relative isolate overflow-hidden bg-gradient-to-br from-deepest via-primary to-dark pb-24 pt-32 sm:pt-36 lg:pt-40"
+      class="relative isolate overflow-hidden bg-gradient-to-br from-deepest via-primary to-dark pb-28 pt-28  sm:pt-32 lg:pt-36"
     >
       <div
-        class="pointer-events-none absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_12%_30%,rgba(255,255,255,0.3),transparent_35%),radial-gradient(circle_at_88%_78%,rgba(255,255,255,0.22),transparent_30%)]"
+        class="pointer-events-none absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_12%_30%,rgba(255,255,255,0.4),transparent_40%),radial-gradient(circle_at_88%_78%,rgba(255,255,255,0.35),transparent_35%)]"
       >
+      </div>
+      
+      <!-- Capa adicional de degradado para más profundidad -->
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-deepest/50 via-transparent to-transparent">
       </div>
 
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -99,14 +107,16 @@ function getSpecIcon(label: string) {
         <div class="mx-auto mt-10 max-w-5xl">
           <PropertyFilters
             client:load
-            initialLocation={locationParam}
+            initialProvincia={provinciaParam}
+            initialCanton={cantonParam}
+            initialDistrito={distritoParam}
             initialType={selectedType ?? ""}
           />
         </div>
       </div>
     </section>
 
-    <section class="-mt-10 pb-20">
+    <section class="py-12">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {
           properties.length === 0 ? (
