@@ -4,6 +4,7 @@ import "@fontsource/antic-didone";
 import "../styles/global.css";
 import Footer from "../components/layout/Footer.astro";
 import FloatingButtons from "../components/react/FloatingButtons";
+import Navbar from "../components/layout/Navbar.astro";
 
 interface Props {
   title?: string;
@@ -46,6 +47,7 @@ const {
     />
   </head>
   <body>
+    <Navbar />
     <!-- Floating Buttons (WhatsApp y Scroll to Top) -->
     <FloatingButtons client:load />
 

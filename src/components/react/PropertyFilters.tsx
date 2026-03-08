@@ -81,7 +81,7 @@ export default function PropertyFilters({
               type="text"
               value={location}
               onChange={(event) => setLocation(event.target.value)}
-              placeholder="Buscar por ciudad, zona o colonia..."
+              placeholder="Buscar por provincia, canton o distrito..."
               className="h-12 w-full rounded-xl border border-mid/30 bg-white pl-11 pr-4 text-sm font-heading text-deepest outline-none transition-colors placeholder:text-mid/70 focus:border-primary"
             />
           </div>

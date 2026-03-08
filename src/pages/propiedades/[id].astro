@@ -308,7 +308,10 @@ function formatNumber(value: number | null | undefined): string {
       </style>
 
       <!-- Grid de 2 Columnas: Contenido Principal + Contacto -->
-      <div class="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_400px]">
+      <div class:list={[
+        "grid grid-cols-1 gap-8",
+        property.status !== 'vendido' ? "lg:grid-cols-[1fr_400px]" : "lg:grid-cols-1 max-w-4xl mx-auto"
+      ]}>
         <!-- Columna Izquierda: Contenido Principal -->
         <div>
           <!-- Descripción -->
@@ -620,61 +623,22 @@ function formatNumber(value: number | null | undefined): string {
             </section>
           )}
 
-          <!-- Ubicación -->
-          {property.maps_url && (
-            <section class="rounded-2xl bg-white p-6 shadow-md">
-              <div class="mb-4 flex items-center gap-2">
-                <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-4.35-7-11a7 7 0 1114 0c0 6.65-7 11-7 11z" />
-                  <circle cx="12" cy="10" r="2.5" stroke-width="2" />
-                </svg>
-                <h2 class="font-heading text-xl font-bold text-deepest">Ubicación</h2>
-              </div>
-              <p class="mb-3 font-heading text-sm text-deepest/70">
-                {property.location || "Costa Rica"}
-              </p>
-              <div class="overflow-hidden rounded-xl">
-                <iframe
-                  src={property.maps_url}
-                  width="100%"
-                  height="400"
-                  style="border:0;"
-                  allowfullscreen=""
-                  loading="lazy"
-                  referrerpolicy="no-referrer-when-downgrade"
-                  title={`Mapa de ubicación de ${property.title}`}
-                ></iframe>
-              </div>
-              <a
-                href={property.maps_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="mt-4 flex items-center justify-center gap-2 rounded-xl border-2 border-primary/20 bg-primary/5 py-3 font-heading text-sm font-bold text-primary transition-all hover:border-primary hover:bg-primary hover:text-white"
-              >
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-4.35-7-11a7 7 0 1114 0c0 6.65-7 11-7 11z" />
-                  <circle cx="12" cy="10" r="2.5" stroke-width="2" />
-                </svg>
-                <span>Ver en Google Maps</span>
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </a>
-            </section>
-          )}
+
         </div>
 
         <!-- Columna Derecha: Formulario de Contacto -->
-        <div>
-          <section class="sticky top-48 rounded-2xl bg-white p-6 shadow-lg border border-mid/10">
-            <ContactForm 
-              client:visible
-              propertyId={property.id}
-              propertyTitle={property.title}
-              services={services}
-            />
-          </section>
-        </div>
+        {property.status !== 'vendido' && (
+          <div>
+            <section class="sticky top-48 rounded-2xl bg-white p-6 shadow-lg border border-mid/10">
+              <ContactForm 
+                client:visible
+                propertyId={property.id}
+                propertyTitle={property.title}
+                services={services}
+              />
+            </section>
+          </div>
+        )}
       </div>
     </div>
   </main>
