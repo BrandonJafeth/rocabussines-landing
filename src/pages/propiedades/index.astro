@@ -80,7 +80,7 @@ function getSpecIcon(label: string) {
       class="relative isolate overflow-hidden bg-gradient-to-br from-deepest via-primary to-dark pb-24 pt-32 sm:pt-36 lg:pt-40"
     >
       <div
-        class="pointer-events-none absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_30%,rgba(255,255,255,0.3),transparent_35%),radial-gradient(circle_at_80%_80%,rgba(255,255,255,0.24),transparent_30%)]"
+        class="pointer-events-none absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_12%_30%,rgba(255,255,255,0.3),transparent_35%),radial-gradient(circle_at_88%_78%,rgba(255,255,255,0.22),transparent_30%)]"
       >
       </div>
 
@@ -122,167 +122,183 @@ function getSpecIcon(label: string) {
           ) : (
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {properties.map((property: HomeFeaturedProperty) => (
-                <article class="group overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                <article class="group relative bg-white rounded-2xl shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
                   <a href={`/propiedades/${property.id}`} class="block">
+
                     <div class="relative overflow-hidden rounded-t-2xl">
                       <Image
                         src={property.image}
                         alt={`Propiedad: ${property.title}`}
                         width={760}
                         height={560}
-                        class="h-56 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        class="h-56 w-full object-cover transition-all duration-500 group-hover:scale-110"
                         loading="lazy"
                       />
+                      
+                      <!-- Overlay con gradiente diagonal -->
+                      <div class="absolute inset-0 bg-gradient-to-br from-deepest/70 via-transparent to-transparent opacity-40 group-hover:opacity-60 transition-opacity"></div>
 
-                      <span class="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-sm font-heading font-bold text-deepest shadow-sm">
-                        {getTypeLabel(property.type)}
-                      </span>
-
-                      <span
-                        class={`absolute right-4 top-4 rounded-full px-3 py-1 text-sm font-heading font-bold shadow-sm ${getStatusClass(
-                          property.status,
-                        )}`}
-                      >
-                        {getStatusLabel(property.status)}
-                      </span>
+                      <!-- Badge de tipo en esquina inferior izquierda -->
+                      <div class="absolute bottom-4 left-4">
+                        <span class="inline-block bg-white/95 backdrop-blur-sm px-3 py-1.5 text-xs font-heading font-bold text-deepest shadow-lg rounded-full">
+                          {getTypeLabel(property.type)}
+                        </span>
+                      </div>
                     </div>
 
                     <div class="p-5">
-                      <h2 class="line-clamp-2 font-heading text-xl sm:text-2xl font-bold text-deepest">
+                      <!-- Precio destacado arriba -->
+                      <div class="flex items-baseline justify-between gap-2 mb-3">
+                        <div>
+                        <span class="font-heading text-3xl font-extrabold text-primary leading-none">
+                          {formatPrice(property.price, property.currency)}
+                        </span>
+                        <span class="text-xs font-heading text-deepest/50 uppercase tracking-wide">Desde</span>
+                        </div>
+                          <span class={`inline-block px-3 py-1.5 text-xs font-heading font-bold shadow-lg rounded-full ${getStatusClass(property.status)}`}>
+                        {getStatusLabel(property.status)}
+                      </span>
+                      </div>
+
+                      <h2 class="line-clamp-2 min-h-[3rem] font-heading text-lg font-bold text-deepest leading-snug mb-2">
                         {property.title}
                       </h2>
 
-                      <div class="mt-3 flex items-center gap-2 text-sm font-heading text-deepest/55">
+                      <!-- Ubicación completa -->
+                      <div class="flex items-start gap-1.5 text-xs font-heading text-deepest/60 mb-4">
                         <svg
-                          class="h-4 w-4"
+                          class="h-3.5 w-3.5 flex-shrink-0 mt-0.5 text-primary"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
+                          stroke-width="2"
                         >
                           <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            stroke-width="2"
                             d="M12 21s-7-4.35-7-11a7 7 0 1114 0c0 6.65-7 11-7 11z"
                           />
                           <circle cx="12" cy="10" r="2.5" stroke-width="2" />
                         </svg>
-                        <span>{property.location}</span>
+                        <span class="line-clamp-2 leading-tight">{property.location}</span>
                       </div>
 
-                      <div class="mt-5 grid grid-cols-3 gap-2">
-                        {property.details.map(
+                      <!-- Características en grid -->
+                      <div class="flex items-center gap-3 pb-4 border-b border-mid/20">
+                        {property.details.slice(0, 3).map(
                           (detail: { label: string; value: string }) => (
-                            <div class="flex flex-col items-center justify-center rounded-lg bg-primary/10 border border-primary/20 p-3 text-center shadow-sm">
-                              {getSpecIcon(detail.label) === "bed" && (
-                                <svg
-                                  class="h-6 w-6 text-primary"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                            <div class="flex flex-col items-center flex-1 min-w-0">
+                              <div class="mb-1">
+                                {getSpecIcon(detail.label) === "bed" && (
+                                  <svg
+                                    class="h-5 w-5 text-primary"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
                                     stroke-width="2"
-                                    d="M3 7v10M3 13h18M7 13v-3h4v3M13 13V9h4a3 3 0 013 3v1"
-                                  />
-                                </svg>
-                              )}
-                              {getSpecIcon(detail.label) === "bath" && (
-                                <svg
-                                  class="h-6 w-6 text-primary"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M3 9v6h18V9M3 15v3M21 15v3M7 9V6a2 2 0 012-2h6a2 2 0 012 2v3"
+                                    />
+                                  </svg>
+                                )}
+                                {getSpecIcon(detail.label) === "bath" && (
+                                  <svg
+                                    class="h-5 w-5 text-primary"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
                                     stroke-width="2"
-                                    d="M4 13h16M7 13V9a2 2 0 114 0v4M4 13v2a4 4 0 004 4h8a4 4 0 004-4v-2"
-                                  />
-                                </svg>
-                              )}
-                              {getSpecIcon(detail.label) === "area" && (
-                                <svg
-                                  class="h-6 w-6 text-primary"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M4 13h16M7 13V9a2 2 0 114 0v4M4 13v2a4 4 0 004 4h8a4 4 0 004-4v-2"
+                                    />
+                                  </svg>
+                                )}
+                                {getSpecIcon(detail.label) === "area" && (
+                                  <svg
+                                    class="h-5 w-5 text-primary"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
                                     stroke-width="2"
-                                    d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
-                                  />
-                                </svg>
-                              )}
-                              {getSpecIcon(detail.label) === "calendar" && (
-                                <svg
-                                  class="h-6 w-6 text-primary"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
+                                    />
+                                  </svg>
+                                )}
+                                {getSpecIcon(detail.label) === "calendar" && (
+                                  <svg
+                                    class="h-5 w-5 text-primary"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
                                     stroke-width="2"
-                                    d="M8 2v4M16 2v4M3 10h18M5 6h14a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"
-                                  />
-                                </svg>
-                              )}
-                              {getSpecIcon(detail.label) === "speedometer" && (
-                                <svg
-                                  class="h-6 w-6 text-primary"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="1.5"
-                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"
-                                  />
-                                </svg>
-                              )}
-                              {getSpecIcon(detail.label) === "gear" && (
-                                <svg
-                                  class="h-6 w-6 text-primary"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M8 2v4M16 2v4M3 10h18M5 6h14a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"
+                                    />
+                                  </svg>
+                                )}
+                                {getSpecIcon(detail.label) === "speedometer" && (
+                                  <svg
+                                    class="h-5 w-5 text-primary"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
                                     stroke-width="2"
-                                    d="M12 9a3 3 0 100 6 3 3 0 000-6zm7.4 3a7.4 7.4 0 01-.1 1l2.1 1.6-2 3.5-2.5-1a7.7 7.7 0 01-1.7 1l-.4 2.7h-4l-.4-2.7a7.7 7.7 0 01-1.7-1l-2.5 1-2-3.5 2.1-1.6a7.4 7.4 0 010-2L2.6 9.4l2-3.5 2.5 1a7.7 7.7 0 011.7-1l.4-2.7h4l.4 2.7a7.7 7.7 0 011.7 1l2.5-1 2 3.5-2.1 1.6a7.4 7.4 0 01.1 1z"
-                                  />
-                                </svg>
-                              )}
-                              {getSpecIcon(detail.label) === "default" && (
-                                <svg
-                                  class="h-6 w-6 text-primary"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"
+                                    />
+                                  </svg>
+                                )}
+                                {getSpecIcon(detail.label) === "gear" && (
+                                  <svg
+                                    class="h-5 w-5 text-primary"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
                                     stroke-width="2"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                  />
-                                </svg>
-                              )}
-                              <p class="mt-2 font-heading text-sm font-bold text-deepest">
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M12 9a3 3 0 100 6 3 3 0 000-6zm7.4 3a7.4 7.4 0 01-.1 1l2.1 1.6-2 3.5-2.5-1a7.7 7.7 0 01-1.7 1l-.4 2.7h-4l-.4-2.7a7.7 7.7 0 01-1.7-1l-2.5 1-2-3.5 2.1-1.6a7.4 7.4 0 010-2L2.6 9.4l2-3.5 2.5 1a7.7 7.7 0 011.7-1l.4-2.7h4l.4 2.7a7.7 7.7 0 011.7 1l2.5-1 2 3.5-2.1 1.6a7.4 7.4 0 01.1 1z"
+                                    />
+                                  </svg>
+                                )}
+                                {getSpecIcon(detail.label) === "default" && (
+                                  <svg
+                                    class="h-5 w-5 text-primary"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                  </svg>
+                                )}
+                              </div>
+                              <p class="font-heading text-sm font-bold text-deepest truncate w-full text-center">
                                 {detail.value}
                               </p>
-                              <p class="mt-0.5 text-xs font-heading text-deepest/50">
+                              <p class="text-[10px] font-heading text-deepest/50 truncate w-full text-center uppercase tracking-wide">
                                 {detail.label}
                               </p>
                             </div>
@@ -290,30 +306,23 @@ function getSpecIcon(label: string) {
                         )}
                       </div>
 
-                      <div class="mt-5 h-px w-full bg-mid/30" />
-
-                      <div class="mt-4 flex items-end justify-between">
-                        <div>
-                          <p class="font-heading text-sm text-deepest/45">
-                            Precio
-                          </p>
-                          <p class="font-heading text-2xl sm:text-3xl font-extrabold text-deepest">
-                            {formatPrice(property.price, property.currency)}
-                          </p>
-                        </div>
-
-                        <div class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white transition-all duration-300 group-hover:bg-deepest">
+                      <!-- CTA con flecha -->
+                      <div class="mt-4 flex items-center justify-between group/cta">
+                        <span class="font-heading text-sm text-deepest font-semibold group-hover:text-primary transition-colors">
+                          Ver detalles
+                        </span>
+                        <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white transition-all duration-300 group-hover:bg-deepest group-hover:scale-110 group-hover:rotate-45">
                           <svg
                             class="h-5 w-5"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
+                            stroke-width="2.5"
                           >
                             <path
                               stroke-linecap="round"
                               stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M5 12h14m-6-6l6 6-6 6"
+                              d="M7 17L17 7M17 7H7M17 7v10"
                             />
                           </svg>
                         </div>

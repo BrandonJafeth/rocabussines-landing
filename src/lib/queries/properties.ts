@@ -73,14 +73,37 @@ function getDetailsByType(property: Property): Array<{ label: string; value: str
   ];
 }
 
+function formatLocation(property: Property): { full: string; provincia: string; canton: string; distrito: string } {
+  const realEstate = getFirstRelation<PropertyRealEstate>(property.property_real_estate);
+  
+  const provincia = realEstate?.provincia || "";
+  const canton = realEstate?.canton || "";
+  const distrito = realEstate?.distrito || "";
+  
+  // Construir ubicación completa
+  const parts = [distrito, canton, provincia].filter(Boolean);
+  const fullLocation = parts.length > 0 ? parts.join(", ") : (property.location || "Costa Rica");
+  
+  return {
+    full: fullLocation,
+    provincia: provincia || "Costa Rica",
+    canton: canton || "",
+    distrito: distrito || ""
+  };
+}
+
 function mapPropertyToFeatured(property: Property): HomeFeaturedProperty {
   const image = property.images?.[0] ?? FALLBACK_IMAGE;
+  const locationInfo = formatLocation(property);
 
   return {
     id: property.id,
     type: property.type,
     title: property.title,
-    location: property.location ?? "Costa Rica",
+    location: locationInfo.full,
+    provincia: locationInfo.provincia,
+    canton: locationInfo.canton,
+    distrito: locationInfo.distrito,
     price: property.price ? Number(property.price) : 0,
     currency: property.currency ?? "USD",
     status: property.status,
@@ -93,7 +116,7 @@ export async function getFeaturedProperties(limit = 3): Promise<HomeFeaturedProp
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate(bedrooms, bathrooms, area_m2, hectares), property_vehicles(year, mileage, transmission)"
+      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito), property_vehicles(year, mileage, transmission)"
     )
     .eq("status", "activo")
     .eq("is_featured", true)
@@ -120,7 +143,7 @@ export async function getCatalogProperties(filters?: {
   let query = supabase
     .from("properties")
     .select(
-      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate(bedrooms, bathrooms, area_m2, hectares), property_vehicles(year, mileage, transmission)"
+      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito), property_vehicles(year, mileage, transmission)"
     )
     .eq("status", "activo")
     .order("display_order", { ascending: true });

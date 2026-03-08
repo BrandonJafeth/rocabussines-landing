@@ -1,4 +1,7 @@
 ---
+// Desactivar prerendering para que siempre traiga datos frescos de Supabase
+export const prerender = false;
+
 import Layout from "../layouts/Layout.astro";
 import Navbar from "../components/layout/Navbar.astro";
 import Hero from "../components/sections/home/Hero.astro";
@@ -12,8 +15,6 @@ import FeaturedProperties from "../components/sections/home/FeaturedProperties.a
   title="Propiedades en Guanacaste | Roca Business"
   description="Casas, fincas y lotes en Costa Rica. Amplio catálogo disponible. Contáctanos hoy."
 >
-
-
   <Navbar />
   <main>
     <Hero />

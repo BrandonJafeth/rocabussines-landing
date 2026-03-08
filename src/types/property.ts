@@ -71,6 +71,9 @@ export interface HomeFeaturedProperty {
   type: PropertyType;
   title: string;
   location: string;
+  provincia: string;
+  canton: string;
+  distrito: string;
   price: number;
   currency: Currency;
   status: PropertyStatus;
