@@ -42,19 +42,42 @@ function getDetailsByType(property: Property): Array<{ label: string; value: str
     ];
   }
 
-  if (type === "lote" || type === "construccion_en_lote") {
-    const area = realEstate?.area_m2
-      ? `${formatCompactNumber(realEstate.area_m2)} m²`
-      : realEstate?.hectares
-        ? `${realEstate.hectares} ha`
-        : "—";
-
-    return [
-      {
+  if (type === "lote" || type === "finca" || type === "construccion_en_lote") {
+    const detailsList = [];
+    
+    // Área en m²
+    if (realEstate?.area_m2) {
+      detailsList.push({
         label: "Área",
-        value: area,
-      },
-    ];
+        value: `${formatCompactNumber(realEstate.area_m2)} m²`,
+      });
+    }
+    
+    // Hectáreas
+    if (realEstate?.hectares) {
+      detailsList.push({
+        label: "Hectáreas",
+        value: `${realEstate.hectares} ha`,
+      });
+    }
+    
+    // Zonificación si está disponible
+    if (realEstate?.zoning) {
+      detailsList.push({
+        label: "Zonificación",
+        value: realEstate.zoning,
+      });
+    }
+    
+    // Si solo hay 1 o 2 datos, agregar distrito como ubicación específica
+    if (detailsList.length < 3 && realEstate?.distrito) {
+      detailsList.push({
+        label: "Distrito",
+        value: realEstate.distrito,
+      });
+    }
+
+    return detailsList;
   }
 
   return [
@@ -86,15 +109,28 @@ function formatLocation(property: Property): { full: string; provincia: string; 
   
   return {
     full: fullLocation,
-    provincia: provincia || "Costa Rica",
-    canton: canton || "",
-    distrito: distrito || ""
+    provincia: provincia, // No usar fallback aquí, dejar vacío si no existe
+    canton: canton,
+    distrito: distrito
   };
 }
 
 function mapPropertyToFeatured(property: Property): HomeFeaturedProperty {
   const image = property.images?.[0] ?? FALLBACK_IMAGE;
   const locationInfo = formatLocation(property);
+  
+  // Debug: ver qué datos de ubicación tiene la propiedad
+  const realEstate = getFirstRelation<PropertyRealEstate>(property.property_real_estate);
+  console.log(`📍 Propiedad "${property.title}":`, {
+    type: property.type,
+    hasRealEstate: !!realEstate,
+    provincia: realEstate?.provincia,
+    canton: realEstate?.canton,
+    distrito: realEstate?.distrito,
+    mappedProvincia: locationInfo.provincia,
+    mappedCanton: locationInfo.canton,
+    mappedDistrito: locationInfo.distrito,
+  });
 
   return {
     id: property.id,
@@ -116,9 +152,9 @@ export async function getFeaturedProperties(limit = 5): Promise<HomeFeaturedProp
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito), property_vehicles(year, mileage, transmission)"
+      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito, zoning), property_vehicles(year, mileage, transmission)"
     )
-    .eq("status", "activo")
+    .in("status", ["activo", "vendido"])
     .eq("is_featured", true)
     .order("display_order", { ascending: true })
     .limit(limit);
@@ -146,44 +182,53 @@ export async function getCatalogProperties(filters?: {
   distrito?: string;
   type?: PropertyType;
 }): Promise<HomeFeaturedProperty[]> {
-  // Query base
-  let query = supabase
+  // Determinar si hay filtros de ubicación activos
+  const hasLocationFilters = !!(filters?.provincia || filters?.canton || filters?.distrito);
+  // Query base con propiedades activas y vendidas
+  const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate!inner(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito), property_vehicles(year, mileage, transmission)"
+      `id, type, title, location, price, currency, status, images, is_featured, display_order, 
+       property_real_estate(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito, zoning), 
+       property_vehicles(year, mileage, transmission)`
     )
-    .eq("status", "activo")
+    .in("status", ["activo", "vendido"])
     .order("display_order", { ascending: true });
-
-  // Filtro por tipo de propiedad
-  if (filters?.type) {
-    query = query.eq("type", filters.type);
-  }
-
-  // Filtros por ubicación desde property_real_estate
-  if (filters?.provincia) {
-    query = query.eq("property_real_estate.provincia", filters.provincia);
-  }
-  if (filters?.canton) {
-    query = query.eq("property_real_estate.canton", filters.canton);
-  }
-  if (filters?.distrito) {
-    query = query.eq("property_real_estate.distrito", filters.distrito);
-  }
-
-  // Filtro por ubicación general (búsqueda parcial, case-insensitive) - backward compatibility
-  if (filters?.location && !filters?.provincia && !filters?.canton && !filters?.distrito) {
-    query = query.ilike("location", `%${filters.location}%`);
-  }
-
-  const { data, error } = await query;
 
   if (error) {
     console.error("Error loading catalog properties:", error.message);
     return [];
   }
 
-  return ((data ?? []) as Property[]).map(mapPropertyToFeatured);
+  let properties = ((data ?? []) as Property[]).map(mapPropertyToFeatured);
+
+  // Aplicar filtros en JavaScript
+  if (filters?.type) {
+    properties = properties.filter(p => p.type === filters.type);
+    console.log(`  ✓ Filtrado por tipo "${filters.type}": ${properties.length} propiedades`);
+  }
+
+  if (filters?.provincia) {
+    properties = properties.filter(p => p.provincia && p.provincia === filters.provincia);
+  }
+
+  if (filters?.canton) {
+    // Filtrar solo propiedades que tengan cantón y coincida con el filtro
+    properties = properties.filter(p => p.canton && p.canton === filters.canton);
+  }
+
+  if (filters?.distrito) {
+    // Filtrar solo propiedades que tengan distrito y coincida con el filtro
+    properties = properties.filter(p => p.distrito && p.distrito === filters.distrito);
+  }
+
+  if (filters?.location && !hasLocationFilters) {
+    const searchTerm = filters.location.toLowerCase();
+    properties = properties.filter(p => 
+      p.location?.toLowerCase().includes(searchTerm)
+    );
+  }
+  return properties;
 }
 
 /**
@@ -201,7 +246,7 @@ export async function getPropertyById(id: string): Promise<Property | null> {
       `
     )
     .eq("id", id)
-    .eq("status", "activo")
+    .in("status", ["activo", "vendido"])
     .single();
 
   if (error) {
