@@ -43,12 +43,13 @@ function getSpecIcon(label: string): string {
   return "default";
 }
 
-const propertiesFromDb = await getFeaturedProperties(3);
+// Ya no limitamos a 3, traemos todas las destacadas
+const propertiesFromDb = await getFeaturedProperties(12); // Fetches up to 12 featured properties, but you can remove the limit if you want *all*
 const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
 ---
 
-<section id="propiedades" class="py-20 bg-white scroll-mt-28">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section id="propiedades" class="py-20 bg-white scroll-mt-28 relative">
+  <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center max-w-3xl mx-auto mb-12">
       <h2
         class="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-deepest"
@@ -62,11 +63,37 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
       </p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
-      {
-        properties.map((property) => (
-          <article class="group relative bg-white rounded-2xl shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
-                  <a href={`/propiedades/${property.id}`} class="block">
+    <!-- Contenedor del Carrusel -->
+    <div class="relative px-0 sm:px-12 lg:px-16"> 
+      
+      <!-- Botón Anterior (Solo Desktop) -->
+      <button 
+        id="prevBtn" 
+        class="hidden sm:flex absolute left-0 top-[40%] -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 bg-white border border-primary/10 rounded-full shadow-[0_4px_15px_-4px_rgba(0,0,0,0.15)] items-center justify-center text-primary hover:bg-primary hover:text-white hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-primary disabled:hover:scale-100"
+        aria-label="Anterior propiedad"
+      >
+        <svg class="w-5 h-5 lg:w-6 lg:h-6 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+      </button>
+
+      <!-- Botón Siguiente (Solo Desktop) -->
+      <button 
+        id="nextBtn" 
+        class="hidden sm:flex absolute right-0 top-[40%] -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 bg-white border border-primary/10 rounded-full shadow-[0_4px_15px_-4px_rgba(0,0,0,0.15)] items-center justify-center text-primary hover:bg-primary hover:text-white hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-primary disabled:hover:scale-100"
+        aria-label="Siguiente propiedad"
+      >
+        <svg class="w-5 h-5 lg:w-6 lg:h-6 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+      </button>
+
+      <!-- Lista deslizable (Snap scrolling en móvil, normal / js scroll en desktop) -->
+      <div 
+        id="slider" 
+        class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 pt-4 px-4 sm:px-0 -mx-4 sm:mx-0 scrollbar-hide scroll-smooth"
+      >
+        {
+          properties.map((property) => (
+            <!-- Ajuste del ancho de la card para que funcione bien en el scroll layout -->
+            <article class="snap-start snap-always flex-none w-[85vw] sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)] group relative bg-white rounded-2xl shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)] transition-all duration-300 hover:shadow-[0_15px_30px_-10px_rgba(19,64,116,0.3)] overflow-hidden">
+                    <a href={`/propiedades/${property.id}`} class="flex h-full flex-col">
 
                     <div class="relative overflow-hidden rounded-t-2xl">
                       <Image
@@ -310,15 +337,60 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                 </article>
         ))
       }
-    </div>
+      </div>
+    </div> <!-- End Carousel Container -->
 
-    <div class="mt-10 text-center">
+    <div class="mt-4 text-center">
       <a
         href="/propiedades"
-        class="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-primary text-white font-heading font-semibold tracking-wide transition-colors duration-300 hover:bg-deepest"
+        class="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-primary text-white font-heading font-semibold tracking-wide transition-all duration-300 hover:bg-deepest hover:shadow-lg hover:-translate-y-0.5"
       >
-        Ver más Propiedades
+        Ver el Catálogo Completo
       </a>
     </div>
   </div>
 </section>
+
+<style>
+  /* Ocultar scrollbar por defecto pero mantener funcionalidad de scroll */
+  .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+  }
+  .scrollbar-hide {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+  }
+</style>
+
+<script>
+  // Script rápido para botones del carrusel (Client-side)
+  document.addEventListener('astro:page-load', () => {
+    const slider = document.getElementById('slider');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    if (!slider || !prevBtn || !nextBtn) return;
+
+    // Calcular cuánto deslizar (el ancho de una card + gap)
+    const scrollAmount = () => slider.querySelector('article')?.clientWidth || 0;
+
+    prevBtn.addEventListener('click', () => {
+      slider.scrollBy({ left: -scrollAmount() - 24, behavior: 'smooth' }); // 24 = aprox gap
+    });
+
+    nextBtn.addEventListener('click', () => {
+      slider.scrollBy({ left: scrollAmount() + 24, behavior: 'smooth' });
+    });
+
+    // Deshabilitar botones en los extremos
+    const updateButtons = () => {
+      (prevBtn as HTMLButtonElement).disabled = slider.scrollLeft <= 0;
+      (nextBtn as HTMLButtonElement).disabled = Math.ceil(slider.scrollLeft + slider.clientWidth) >= slider.scrollWidth;
+    };
+
+    slider.addEventListener('scroll', updateButtons, { passive: true });
+    
+    // Check inicial
+    updateButtons();
+  });
+</script>
