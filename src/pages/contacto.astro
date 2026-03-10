@@ -1,4 +1,7 @@
 ---
+// Esta página se renderiza en el servidor (SSR) para obtener datos frescos
+export const prerender = false;
+
 import Layout from "../layouts/Layout.astro";
 import Navbar from "../components/layout/Navbar.astro";
 import ContactForm from "../components/react/ContactForm";
@@ -11,7 +14,6 @@ const services = await getAllActiveServices();
   title="Contacto | Agenda tu Consulta | Roca Business"
   description="Agenda una consulta profesional con nuestro equipo. Contáctanos para resolver tus dudas y recibir asesoría personalizada."
 >
-
   <main class="bg-white">
     <!-- Hero Section -->
     <section
