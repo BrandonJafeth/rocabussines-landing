@@ -1176,6 +1176,10 @@ function formatNumber(value: number | null | undefined): string {
                   client:visible
                   propertyId={property.id}
                   propertyTitle={property.title}
+                  propertyPrice={property.price != null && property.currency ? formatPrice(property.price, property.currency) : ''}
+                  propertyLocation={property.location || ''}
+                  propertyType={getTypeLabel(property.type)}
+                  propertyImage={images[0] || ''}
                   services={services}
                 />
               </section>

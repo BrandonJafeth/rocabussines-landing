@@ -5,12 +5,16 @@ import type { HomeService } from '../../types/service';
 interface ContactFormProps {
   propertyId?: string;
   propertyTitle?: string;
+  propertyPrice?: string;
+  propertyLocation?: string;
+  propertyType?: string;
+  propertyImage?: string;
   services?: HomeService[];
 }
 
 type ConsultType = 'propiedad' | 'servicio' | 'informacion' | 'otro';
 
-export default function ContactForm({ propertyId, propertyTitle, services = [] }: ContactFormProps) {
+export default function ContactForm({ propertyId, propertyTitle, propertyPrice, propertyLocation, propertyType, propertyImage, services = [] }: ContactFormProps) {
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -121,6 +125,11 @@ export default function ContactForm({ propertyId, propertyTitle, services = [] }
             clientEmail: formData.email,
             consultType: consultTypeLabel,
             propertyTitle: propertyId ? propertyTitle : undefined,
+            propertyPrice: propertyId ? propertyPrice : undefined,
+            propertyLocation: propertyId ? propertyLocation : undefined,
+            propertyType: propertyId ? propertyType : undefined,
+            propertyImage: propertyId ? propertyImage : undefined,
+            propertyId: propertyId || undefined,
             serviceTitle: isServiceId ? consultTypeLabel : undefined,
             message: formData.message,
           }),

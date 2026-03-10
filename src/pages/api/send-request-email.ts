@@ -54,7 +54,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const body = JSON.parse(bodyText);
-    const { clientName, clientEmail, consultType, propertyTitle, serviceTitle, message } = body;
+    const { clientName, clientEmail, consultType, propertyTitle, serviceTitle, message, propertyPrice, propertyLocation, propertyType, propertyImage, propertyId } = body;
 
     if (!clientName || !clientEmail) {
       return new Response(JSON.stringify({ error: 'Datos incompletos' }), { status: 400 });
@@ -62,81 +62,231 @@ export const POST: APIRoute = async ({ request }) => {
 
     const isProperty = !!propertyTitle;
     const consultTitle = propertyTitle || serviceTitle || consultType;
+    const origin = new URL(request.url).origin;
+    const appUrl = import.meta.env.PUBLIC_APP_URL || origin;
 
-    // Email para el cliente
+    // ── Bloque de resumen de propiedad (reutilizable) ──
+    const propertyBlock = isProperty ? `
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin: 28px 0; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 0;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafb; border: 1px solid #e8edf2; border-radius: 12px; overflow: hidden;">
+              ${propertyImage ? `
+              <tr>
+                <td style="padding: 0;">
+                  <img src="${propertyImage}" alt="${propertyTitle}" width="600" style="width: 100%; height: 200px; object-fit: cover; display: block; border-radius: 12px 12px 0 0;" />
+                </td>
+              </tr>` : ''}
+              <tr>
+                <td style="padding: 24px 28px;">
+                  ${propertyType ? `<p style="margin: 0 0 6px 0; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #8DA9C4; font-weight: 600;">${propertyType}</p>` : ''}
+                  <p style="margin: 0 0 12px 0; font-size: 18px; font-weight: 700; color: #0B2545; line-height: 1.3;">${propertyTitle}</p>
+                  <table cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                    ${propertyPrice ? `
+                    <tr>
+                      <td style="padding: 4px 0; font-size: 14px; color: #8DA9C4; width: 90px; vertical-align: top;">Precio</td>
+                      <td style="padding: 4px 0; font-size: 14px; font-weight: 700; color: #134074;">${propertyPrice}</td>
+                    </tr>` : ''}
+                    ${propertyLocation ? `
+                    <tr>
+                      <td style="padding: 4px 0; font-size: 14px; color: #8DA9C4; width: 90px; vertical-align: top;">Ubicación</td>
+                      <td style="padding: 4px 0; font-size: 14px; color: #0B2545;">${propertyLocation}</td>
+                    </tr>` : ''}
+                  </table>
+                  ${propertyId ? `
+                  <table cellpadding="0" cellspacing="0" style="margin-top: 16px;">
+                    <tr>
+                      <td>
+                        <a href="${appUrl}/propiedades/${propertyId}" style="display: inline-block; padding: 10px 20px; background-color: #134074; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600; letter-spacing: 0.3px;">Ver propiedad</a>
+                      </td>
+                    </tr>
+                  </table>` : ''}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    ` : '';
+
+    // ── Email para el cliente ──
     const clientEmailHtml = `
-      <div style="font-family: 'Inter', Helvetica, Arial, sans-serif; background-color: #f4f6f9; padding: 40px 20px; color: #333;">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e1e7ed;">
-          <div style="background-color: #0B2545; padding: 30px; text-align: center;">
-            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;">ROCA BUSINESS</h1>
-          </div>
-          <div style="padding: 40px 30px;">
-            <h2 style="color: #1a1a1a; font-size: 20px; font-weight: 600; margin-top: 0;">¡Gracias por tu Solicitud!</h2>
-            <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">Hola <strong>${clientName}</strong>,</p>
-            <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">Hemos recibido tu solicitud de ${isProperty ? 'información sobre la propiedad' : 'consulta sobre el servicio'}:</p>
-            
-            <div style="background-color: #f8fafc; border-left: 4px solid #134074; padding: 20px; margin: 25px 0; border-radius: 0 8px 8px 0;">
-              <p style="margin: 0 0 10px 0; font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Detalles de tu Solicitud</p>
-              <p style="margin: 0 0 8px 0; font-size: 15px;"><strong>${isProperty ? 'Propiedad' : 'Servicio'}:</strong> ${consultTitle}</p>
-              ${message ? `<p style="margin: 0; font-size: 15px;"><strong>Tu mensaje:</strong> ${message}</p>` : ''}
-            </div>
+      <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f0f2f5; padding: 48px 16px;">
+        <div style="max-width: 560px; margin: 0 auto;">
+          
+          <!-- Header -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 2px;">
+            <tr>
+              <td style="background-color: #0B2545; padding: 36px 32px; border-radius: 16px 16px 0 0; text-align: center;">
+                <p style="margin: 0; font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: #8DA9C4; font-weight: 600;">Roca Business</p>
+                <p style="margin: 12px 0 0 0; font-size: 22px; font-weight: 700; color: #ffffff; line-height: 1.3;">Hemos recibido tu solicitud</p>
+              </td>
+            </tr>
+          </table>
 
-            <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">Uno de nuestros asesores se pondrá en contacto contigo pronto para brindarte más información y resolver todas tus dudas.</p>
-            
-            <div style="background-color: #EEF4ED; padding: 20px; border-radius: 8px; margin: 25px 0;">
-              <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #0B2545;">
-                <strong>📞 ¿Necesitas atención inmediata?</strong><br/>
-                Puedes contactarnos directamente:<br/>
-                Teléfono: +506 8888-8888<br/>
-                WhatsApp: wa.me/50688888888
-              </p>
-            </div>
+          <!-- Body -->
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="background-color: #ffffff; padding: 36px 32px; border-radius: 0 0 16px 16px;">
+                
+                <p style="margin: 0 0 20px 0; font-size: 15px; line-height: 1.7; color: #4a5568;">
+                  Hola <strong style="color: #0B2545;">${clientName}</strong>, gracias por contactarnos. 
+                  Tu ${isProperty ? 'consulta sobre esta propiedad' : 'solicitud'} ya está siendo revisada por nuestro equipo.
+                </p>
 
-            <div style="text-align: center; margin: 40px 0 20px 0;">
-              <a href="${import.meta.env.PUBLIC_APP_URL || 'https://rocabusiness.com'}/propiedades" style="background-color: #134074; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; font-size: 16px;">Ver Más Propiedades</a>
-            </div>
-          </div>
-          <div style="background-color: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e1e7ed;">
-            <p style="margin: 0; color: #94a3b8; font-size: 13px;">Este mensaje es generado automáticamente. Por favor no respondas a este correo.</p>
-            <p style="margin: 8px 0 0 0; color: #94a3b8; font-size: 13px;">&copy; ${new Date().getFullYear()} Roca Business. Todos los derechos reservados.</p>
-          </div>
+                ${propertyBlock}
+
+                ${message ? `
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin: 24px 0;">
+                  <tr>
+                    <td style="border-left: 3px solid #8DA9C4; padding: 12px 20px;">
+                      <p style="margin: 0 0 4px 0; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #8DA9C4; font-weight: 600;">Tu mensaje</p>
+                      <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4a5568; font-style: italic;">"${message}"</p>
+                    </td>
+                  </tr>
+                </table>` : ''}
+
+                ${!isProperty && consultTitle ? `
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin: 24px 0;">
+                  <tr>
+                    <td style="border-left: 3px solid #134074; padding: 12px 20px;">
+                      <p style="margin: 0 0 4px 0; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #8DA9C4; font-weight: 600;">Servicio consultado</p>
+                      <p style="margin: 0; font-size: 15px; color: #0B2545; font-weight: 600;">${consultTitle}</p>
+                    </td>
+                  </tr>
+                </table>` : ''}
+
+                <hr style="border: none; border-top: 1px solid #e8edf2; margin: 28px 0;" />
+
+                <p style="margin: 0 0 6px 0; font-size: 14px; color: #4a5568; line-height: 1.6;">
+                  Un asesor te contactará pronto. Si necesitás atención inmediata:
+                </p>
+                <p style="margin: 0 0 24px 0; font-size: 14px; color: #0B2545; font-weight: 600;">
+                  +506 8888-8888
+                </p>
+
+                <table cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+                  <tr>
+                    <td style="text-align: center;">
+                      <a href="${appUrl}/propiedades" style="display: inline-block; padding: 14px 32px; background-color: #0B2545; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: 0.3px;">Explorar más propiedades</a>
+                    </td>
+                  </tr>
+                </table>
+
+              </td>
+            </tr>
+          </table>
+
+          <!-- Footer -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 24px;">
+            <tr>
+              <td style="text-align: center; padding: 0 16px;">
+                <p style="margin: 0 0 4px 0; font-size: 12px; color: #94a3b8;">Este mensaje fue generado automáticamente.</p>
+                <p style="margin: 0; font-size: 12px; color: #94a3b8;">&copy; ${new Date().getFullYear()} Roca Business</p>
+              </td>
+            </tr>
+          </table>
+
         </div>
       </div>
     `;
 
-    // Email para administradores
+    // ── Email para administradores ──
     const adminEmailHtml = `
-      <div style="font-family: 'Inter', Helvetica, Arial, sans-serif; background-color: #f4f6f9; padding: 40px 20px; color: #333;">
-        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e1e7ed;">
-          <div style="background-color: #0B2545; padding: 30px; text-align: center;">
-            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 1px;">ROCA BUSINESS</h1>
-            <p style="color: #8DA9C4; margin: 10px 0 0 0; font-size: 14px;">Panel de Administración</p>
-          </div>
-          <div style="padding: 40px 30px;">
-            <h2 style="color: #1a1a1a; font-size: 20px; font-weight: 600; margin-top: 0;">🔔 Nueva Solicitud Recibida</h2>
-            <p style="font-size: 16px; line-height: 1.6; color: #4a5568;">Se ha registrado una nueva solicitud desde la landing page.</p>
-            
-            <div style="background-color: #f8fafc; border-left: 4px solid #2D9E6B; padding: 20px; margin: 25px 0; border-radius: 0 8px 8px 0;">
-              <p style="margin: 0 0 10px 0; font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Información del Cliente</p>
-              <p style="margin: 0 0 8px 0; font-size: 15px;"><strong>Nombre:</strong> ${clientName}</p>
-              <p style="margin: 0 0 8px 0; font-size: 15px;"><strong>Email:</strong> ${clientEmail}</p>
-              <p style="margin: 0 0 8px 0; font-size: 15px;"><strong>Tipo:</strong> ${isProperty ? 'Propiedad' : 'Servicio'}</p>
-              <p style="margin: 0 0 8px 0; font-size: 15px;"><strong>${isProperty ? 'Propiedad' : 'Servicio'}:</strong> ${consultTitle}</p>
-              ${message ? `<p style="margin: 0; font-size: 15px;"><strong>Mensaje:</strong> ${message}</p>` : ''}
-            </div>
+      <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f0f2f5; padding: 48px 16px;">
+        <div style="max-width: 560px; margin: 0 auto;">
+          
+          <!-- Header -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 2px;">
+            <tr>
+              <td style="background-color: #0B2545; padding: 36px 32px; border-radius: 16px 16px 0 0;">
+                <p style="margin: 0; font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: #8DA9C4; font-weight: 600;">Roca Business</p>
+                <p style="margin: 12px 0 0 0; font-size: 22px; font-weight: 700; color: #ffffff; line-height: 1.3;">Nueva solicitud recibida</p>
+              </td>
+            </tr>
+          </table>
 
-            <p style="font-size: 14px; line-height: 1.5; color: #dc2626; background-color: #fef2f2; padding: 12px 16px; border-radius: 6px; border: 1px solid #fecaca;">
-              <strong>⏰ Acción Requerida:</strong> Por favor, contacta al cliente lo antes posible para darle seguimiento a su solicitud.
-            </p>
-            
-            <div style="text-align: center; margin: 40px 0 20px 0;">
-              <a href="${import.meta.env.PUBLIC_APP_URL || 'https://rocabusiness.com'}/admin" style="background-color: #134074; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; display: inline-block; font-size: 16px;">Ver en el Dashboard</a>
-            </div>
-          </div>
-          <div style="background-color: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e1e7ed;">
-            <p style="margin: 0; color: #94a3b8; font-size: 13px;">Este mensaje es generado automáticamente. Por favor no respondas a este correo.</p>
-            <p style="margin: 8px 0 0 0; color: #94a3b8; font-size: 13px;">&copy; ${new Date().getFullYear()} Roca Business. Todos los derechos reservados.</p>
-          </div>
+          <!-- Body -->
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="background-color: #ffffff; padding: 36px 32px; border-radius: 0 0 16px 16px;">
+                
+                <!-- Datos del cliente -->
+                <p style="margin: 0 0 16px 0; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #8DA9C4; font-weight: 600;">Datos del cliente</p>
+                
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 24px 0; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #f0f2f5; font-size: 13px; color: #8DA9C4; width: 100px;">Nombre</td>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #f0f2f5; font-size: 14px; color: #0B2545; font-weight: 600;">${clientName}</td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #f0f2f5; font-size: 13px; color: #8DA9C4; width: 100px;">Email</td>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #f0f2f5; font-size: 14px; color: #0B2545;">
+                      <a href="mailto:${clientEmail}" style="color: #134074; text-decoration: none;">${clientEmail}</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #f0f2f5; font-size: 13px; color: #8DA9C4; width: 100px;">Tipo</td>
+                    <td style="padding: 10px 0; border-bottom: 1px solid #f0f2f5; font-size: 14px; color: #0B2545;">${isProperty ? 'Propiedad' : 'Servicio'}</td>
+                  </tr>
+                </table>
+
+                ${propertyBlock}
+
+                ${!isProperty && consultTitle ? `
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 24px 0;">
+                  <tr>
+                    <td style="border-left: 3px solid #134074; padding: 12px 20px;">
+                      <p style="margin: 0 0 4px 0; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #8DA9C4; font-weight: 600;">Servicio</p>
+                      <p style="margin: 0; font-size: 15px; color: #0B2545; font-weight: 600;">${consultTitle}</p>
+                    </td>
+                  </tr>
+                </table>` : ''}
+
+                ${message ? `
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 24px 0;">
+                  <tr>
+                    <td style="border-left: 3px solid #8DA9C4; padding: 12px 20px;">
+                      <p style="margin: 0 0 4px 0; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #8DA9C4; font-weight: 600;">Mensaje del cliente</p>
+                      <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #4a5568;">${message}</p>
+                    </td>
+                  </tr>
+                </table>` : ''}
+
+                <hr style="border: none; border-top: 1px solid #e8edf2; margin: 28px 0;" />
+
+                <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fef8f0; border: 1px solid #fde5c5; border-radius: 8px;">
+                  <tr>
+                    <td style="padding: 16px 20px;">
+                      <p style="margin: 0; font-size: 13px; color: #92400e; line-height: 1.5;">
+                        <strong>Acción requerida</strong> — Contactar al cliente lo antes posible para dar seguimiento.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <table cellpadding="0" cellspacing="0" style="margin: 28px auto 0 auto;">
+                  <tr>
+                    <td style="text-align: center;">
+                      <a href="${appUrl}/admin" style="display: inline-block; padding: 14px 32px; background-color: #0B2545; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; letter-spacing: 0.3px;">Abrir Dashboard</a>
+                    </td>
+                  </tr>
+                </table>
+
+              </td>
+            </tr>
+          </table>
+
+          <!-- Footer -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 24px;">
+            <tr>
+              <td style="text-align: center; padding: 0 16px;">
+                <p style="margin: 0 0 4px 0; font-size: 12px; color: #94a3b8;">Notificación automática del sistema.</p>
+                <p style="margin: 0; font-size: 12px; color: #94a3b8;">&copy; ${new Date().getFullYear()} Roca Business</p>
+              </td>
+            </tr>
+          </table>
+
         </div>
       </div>
     `;
@@ -198,7 +348,7 @@ export const POST: APIRoute = async ({ request }) => {
     const adminEmailResult = await resend.emails.send({
       from: `Roca Business <no-reply@${import.meta.env.RESEND_DOMAIN || 'rocabusiness.com'}>`,
       to: adminEmails,
-      subject: `🔔 Nueva Solicitud: ${clientName} - ${consultTitle}`,
+      subject: `Nueva Solicitud: ${clientName} — ${consultTitle}`,
       html: adminEmailHtml,
     });
 
