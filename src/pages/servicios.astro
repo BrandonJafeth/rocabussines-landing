@@ -1,4 +1,7 @@
 ---
+// Esta página se renderiza en el servidor (SSR) para obtener datos frescos de Supabase
+export const prerender = false;
+
 import Layout from "../layouts/Layout.astro";
 import Navbar from "../components/layout/Navbar.astro";
 import { getAllActiveServices } from "../lib/queries/services";
@@ -53,7 +56,6 @@ function getGridClass(index: number, total: number): string {
   title="Servicios Profesionales | Roca Business"
   description="Descubre nuestro portafolio completo de servicios especializados diseñados para impulsar tu crecimiento y maximizar tus resultados."
 >
-
   <main class="bg-white">
     <!-- Hero Section -->
     <section

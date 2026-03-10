@@ -1,4 +1,7 @@
 ---
+// Esta página se renderiza en el servidor (SSR) para mostrar propiedades dinámicamente
+export const prerender = false;
+
 import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import Navbar from "../../components/layout/Navbar.astro";
@@ -11,14 +14,7 @@ import { getAllActiveServices } from "../../lib/queries/services";
 import { formatPrice } from "../../utils/formatPrice";
 import type { PropertyRealEstate, PropertyVehicle } from "../../types/property";
 
-export async function getStaticPaths() {
-  const properties = await getCatalogProperties();
-
-  return properties.map((property) => ({
-    params: { id: property.id },
-  }));
-}
-
+// Obtener el ID de la propiedad de los parámetros de la URL
 const { id } = Astro.params;
 
 if (!id) {
@@ -1176,10 +1172,14 @@ function formatNumber(value: number | null | undefined): string {
                   client:visible
                   propertyId={property.id}
                   propertyTitle={property.title}
-                  propertyPrice={property.price != null && property.currency ? formatPrice(property.price, property.currency) : ''}
-                  propertyLocation={property.location || ''}
+                  propertyPrice={
+                    property.price != null && property.currency
+                      ? formatPrice(property.price, property.currency)
+                      : ""
+                  }
+                  propertyLocation={property.location || ""}
                   propertyType={getTypeLabel(property.type)}
-                  propertyImage={images[0] || ''}
+                  propertyImage={images[0] || ""}
                   services={services}
                 />
               </section>

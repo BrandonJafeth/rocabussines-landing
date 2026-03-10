@@ -6,7 +6,7 @@ import vercel from '@astrojs/vercel/serverless';
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'static', // Páginas estáticas por defecto + endpoints dinámicos con prerender: false
+  output: 'server', // Server-Side Rendering para datos dinámicos de Supabase
   adapter: vercel({}),
   image: {
     remotePatterns: [
