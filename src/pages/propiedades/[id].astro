@@ -421,7 +421,7 @@ function formatNumber(value: number | null | undefined): string {
                   Características
                 </h2>
 
-                <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {realEstate.bedrooms !== null && realEstate.bedrooms > 0 && (
                     <div class="flex items-center gap-3">
                       <div class="rounded-lg bg-primary/10 p-2.5">
@@ -561,16 +561,16 @@ function formatNumber(value: number | null | undefined): string {
 
                   {realEstate.hectares !== null && realEstate.hectares > 0 && (
                     <div class="flex items-center gap-3">
-                      <div class="rounded-lg bg-surface p-2.5">
+                      <div class="rounded-lg bg-primary/10 p-2.5">
                         <svg
-                          class="h-5 w-5 text-deepest"
+                          class="h-5 w-5 text-primary"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
+                          stroke-width="2"
                         >
                           <path
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                            stroke-width="2"
+                            d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"
                             stroke-linecap="round"
                             stroke-linejoin="round"
                           />
@@ -586,6 +586,108 @@ function formatNumber(value: number | null | undefined): string {
                       </div>
                     </div>
                   )}
+
+                  {realEstate.zoning && (
+                    <div class="flex items-center gap-3">
+                      <div class="rounded-lg bg-primary/10 p-2.5">
+                        <svg
+                          class="h-5 w-5 text-primary"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-heading text-lg font-bold text-deepest truncate">
+                          {realEstate.zoning}
+                        </p>
+                        <p class="font-heading text-xs text-deepest/60">
+                          Zonificación
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {(property.type === "lote" ||
+                    property.type === "finca" ||
+                    property.type === "construccion_en_lote") &&
+                    realEstate.provincia && (
+                      <div class="flex items-center gap-3">
+                        <div class="rounded-lg bg-primary/10 p-2.5">
+                          <svg
+                            class="h-5 w-5 text-primary"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                            <path
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="font-heading text-lg font-bold text-deepest truncate">
+                            {realEstate.distrito ||
+                              realEstate.canton ||
+                              realEstate.provincia}
+                          </p>
+                          <p class="font-heading text-xs text-deepest/60">
+                            Ubicación
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                  {(property.type === "lote" ||
+                    property.type === "finca" ||
+                    property.type === "construccion_en_lote") &&
+                    realEstate.vereda && (
+                      <div class="flex items-center gap-3">
+                        <div class="rounded-lg bg-primary/10 p-2.5">
+                          <svg
+                            class="h-5 w-5 text-primary"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path
+                              d="M3 9l9-6 9 6v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                            <path
+                              d="M9 22V12h6v10"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p class="font-heading text-lg font-bold text-deepest truncate">
+                            {realEstate.vereda}
+                          </p>
+                          <p class="font-heading text-xs text-deepest/60">
+                            Vereda
+                          </p>
+                        </div>
+                      </div>
+                    )}
                 </div>
               </section>
             )

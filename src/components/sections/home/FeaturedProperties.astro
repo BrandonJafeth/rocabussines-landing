@@ -34,9 +34,12 @@ function getSpecIcon(label: string): string {
   if (normalizedLabel === "hab" || normalizedLabel === "habitaciones") return "bed";
   if (normalizedLabel === "banos" || normalizedLabel === "baños") return "bath";
   if (normalizedLabel === "area" || normalizedLabel === "m2") return "area";
+  if (normalizedLabel === "hectareas") return "area"; // Usar mismo icono que área
   if (normalizedLabel === "ano" || normalizedLabel === "año") return "calendar";
   if (normalizedLabel === "transmision" || normalizedLabel === "transmisión") return "gear";
   if (normalizedLabel === "kilometraje" || normalizedLabel === "km") return "speedometer";
+  if (normalizedLabel === "zonificacion") return "map";
+  if (normalizedLabel === "distrito") return "location";
   return "default";
 }
 
@@ -123,9 +126,9 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                         <span class="line-clamp-2 leading-tight">{property.location}</span>
                       </div>
 
-                      <!-- Características en grid -->
-                      <div class="flex items-center gap-3 pb-4 border-b border-mid/20">
-                        {property.details.slice(0, 3).map(
+                      <!-- Características en grid flexible -->
+                      <div class="flex items-center justify-center flex-wrap gap-3 pb-4 border-b border-mid/20">
+                        {property.details.map(
                           (detail: { label: string; value: string }) => (
                             <div class="flex flex-col items-center flex-1 min-w-0">
                               <div class="mb-1">
@@ -216,6 +219,41 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                                       stroke-linecap="round"
                                       stroke-linejoin="round"
                                       d="M12 9a3 3 0 100 6 3 3 0 000-6zm7.4 3a7.4 7.4 0 01-.1 1l2.1 1.6-2 3.5-2.5-1a7.7 7.7 0 01-1.7 1l-.4 2.7h-4l-.4-2.7a7.7 7.7 0 01-1.7-1l-2.5 1-2-3.5 2.1-1.6a7.4 7.4 0 010-2L2.6 9.4l2-3.5 2.5 1a7.7 7.7 0 011.7-1l.4-2.7h4l.4 2.7a7.7 7.7 0 011.7 1l2.5-1 2 3.5-2.1 1.6a7.4 7.4 0 01.1 1z"
+                                    />
+                                  </svg>
+                                )}
+                                {getSpecIcon(detail.label) === "map" && (
+                                  <svg
+                                    class="h-5 w-5 text-primary"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                                    />
+                                  </svg>
+                                )}
+                                {getSpecIcon(detail.label) === "location" && (
+                                  <svg
+                                    class="h-5 w-5 text-primary"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                    />
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                                     />
                                   </svg>
                                 )}
