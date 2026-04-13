@@ -338,7 +338,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Enviar email al cliente
     const clientEmailResult = await resend.emails.send({
-      from: `Roca Business <no-reply@${import.meta.env.RESEND_DOMAIN || 'rocabusiness.com'}>`,
+      from: `Roca Business <no-reply@${import.meta.env.RESEND_DOMAIN || 'rocabusiness.net'}>`,
       to: [clientEmail],
       subject: `Tu solicitud ha sido recibida - Roca Business`,
       html: clientEmailHtml,
@@ -346,7 +346,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Enviar email a administradores
     const adminEmailResult = await resend.emails.send({
-      from: `Roca Business <no-reply@${import.meta.env.RESEND_DOMAIN || 'rocabusiness.com'}>`,
+      from: `Roca Business <no-reply@${import.meta.env.RESEND_DOMAIN || 'rocabusiness.net'}>`,
       to: adminEmails,
       subject: `Nueva Solicitud: ${clientName} — ${consultTitle}`,
       html: adminEmailHtml,

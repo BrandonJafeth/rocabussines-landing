@@ -12,8 +12,8 @@ interface Props {
 }
 
 const {
-  title = "Propiedades en Guanacaste | Roca Business",
-  description = "Casas, fincas y lotes en Costa Rica. Amplio catálogo disponible. Contáctanos hoy.",
+  title = "Bienes Raíces en Guanacaste y todo Costa Rica | Roca Business",
+  description = "Especialistas en Real Estate en Guanacaste y Costa Rica. Encuentra las mejores casas, fincas, lotes y oportunidades de inversión inmobiliaria. Contáctanos.",
 } = Astro.props;
 ---
 
@@ -23,6 +23,13 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    <meta name="keywords" content="Real Estate Guanacaste, Propiedades en Guanacaste, Bienes Raíces Costa Rica, Venta de casas en Liberia, Fincas en Costa Rica, Lotes en venta, Asesoría Inmobiliaria, Roca Business" />
+    <!-- Open Graph / Redes Sociales -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.rocabusiness.net/" />
+    <meta property="og:site_name" content="Roca Business" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
@@ -42,7 +49,7 @@ const {
           addressRegion: "Guanacaste",
           addressCountry: "CR",
         },
-        url: "https://rocabusiness.com",
+        url: "https://www.rocabusiness.net/",
       })}
     />
   </head>
