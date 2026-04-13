@@ -15,23 +15,51 @@ const {
   title = "Bienes Raíces en Guanacaste y todo Costa Rica | Roca Business",
   description = "Especialistas en Real Estate en Guanacaste y Costa Rica. Encuentra las mejores casas, fincas, lotes y oportunidades de inversión inmobiliaria. Contáctanos.",
 } = Astro.props;
+
+// Construimos la URL canónica
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://www.rocabusiness.net/");
+const shareImage = "https://res.cloudinary.com/dxrzwnjee/image/upload/v1771881666/jhznh9nfygztx5q8ry4m.png";
 ---
 
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <meta name="keywords" content="Real Estate Guanacaste, Propiedades en Guanacaste, Bienes Raíces Costa Rica, Venta de casas en Liberia, Fincas en Costa Rica, Lotes en venta, Asesoría Inmobiliaria, Roca Business" />
-    <!-- Open Graph / Redes Sociales -->
+    <meta name="keywords" content="Real Estate Guanacaste, Propiedades en Guanacaste, Bienes Raíces Costa Rica, Venta de casas Liberia, Fincas en Costa Rica, Lotes en venta Guanacaste, Asesoría Inmobiliaria Costa Rica, Compra venta alquiler, Administración de propiedades, Valuación inmobiliaria, Roca Business" />
+    <meta name="author" content="Roca Business" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    
+    <!-- Geo Tags (Local SEO) -->
+    <meta name="geo.region" content="CR-G" />
+    <meta name="geo.placename" content="Liberia" />
+    <meta name="geo.position" content="10.6333;-85.4333" />
+    <meta name="ICBM" content="10.6333, -85.4333" />
+    
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Redes Sociales Facebook & LinkedIn -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.rocabusiness.net/" />
+    <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content="Roca Business" />
+    <meta property="og:image" content={shareImage} />
+    <meta property="og:image:alt" content="Roca Business Logo" />
+    <meta property="og:locale" content="es_CR" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={shareImage} />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    <!-- Theme Color para móviles -->
+    <meta name="theme-color" content="#0B2545" />
+    
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <ViewTransitions />
@@ -42,14 +70,40 @@ const {
       set:html={JSON.stringify({
         "@context": "https://schema.org",
         "@type": "RealEstateAgent",
-        name: "Roca Business",
-        address: {
+        "name": "Roca Business",
+        "image": shareImage,
+        "@id": "https://www.rocabusiness.net/",
+        "url": "https://www.rocabusiness.net/",
+        "telephone": "+50688348619",
+        "email": "asesorias@rocabusiness.net",
+        "address": {
           "@type": "PostalAddress",
-          addressLocality: "Liberia",
-          addressRegion: "Guanacaste",
-          addressCountry: "CR",
+          "addressLocality": "Liberia",
+          "addressRegion": "Guanacaste",
+          "addressCountry": "CR"
         },
-        url: "https://www.rocabusiness.net/",
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 10.6333,
+          "longitude": -85.4333
+        },
+        "openingHoursSpecification": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday"
+          ],
+          "opens": "08:00",
+          "closes": "17:00"
+        },
+        "sameAs": [
+          "https://www.facebook.com/",
+          "https://www.instagram.com/"
+        ],
+        "priceRange": "$$$"
       })}
     />
   </head>
