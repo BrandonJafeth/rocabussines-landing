@@ -7,7 +7,7 @@ type LoaderSplitTextProps = {
 };
 
 export default function LoaderSplitText({
-  text = 'Roca Bussines',
+  text = 'Roca Business',
   subtitle = 'Asesoría y acompañamiento en bienes raíces',
   className = '',
 }: LoaderSplitTextProps) {
