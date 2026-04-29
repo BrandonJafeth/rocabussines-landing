@@ -13,7 +13,8 @@ import LoaderSplitText from "../../react/LoaderSplitText";
 </div>
 
 <section
-  class="relative min-h-screen flex items-center justify-center overflow-hidden bg-white"
+  id="hero"
+  class="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-white"
 >
   <!-- Background Image with Overlay -->
   <div class="absolute inset-0 z-0">
@@ -32,7 +33,7 @@ import LoaderSplitText from "../../react/LoaderSplitText";
 
   <!-- Content Container -->
   <div
-    class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center"
+    class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center"
   >
     <!-- Main Content with animations -->
     <div class="hero-content space-y-8">
@@ -52,15 +53,50 @@ import LoaderSplitText from "../../react/LoaderSplitText";
         inmobiliarios.
       </p>
 
-      <!-- CTA Button -->
+      <!-- CTA Button (Scroll to next section) -->
       <div class="hero-cta pt-4">
-        <a
-          href="/propiedades"
-          class="inline-block px-8 py-4 bg-transparent border-2 border-light text-light font-heading text-lg rounded-lg transition-all duration-300 hover:bg-light hover:text-deepest hover:shadow-2xl hover:scale-105 hover:border-light"
+        <button
+          id="hero-scroll-btn"
+          type="button"
+          class="inline-flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-light text-light font-heading text-lg rounded-lg transition-all duration-300 hover:bg-light hover:text-deepest hover:shadow-2xl hover:scale-105 hover:border-light"
+          aria-label="Explorar secciones"
         >
-          Ver Propiedades
-        </a>
+          <span>Explorar</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            class="btn-arrow w-5 h-5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
       </div>
+
+      <script>
+        (function () {
+          const btn = document.getElementById("hero-scroll-btn");
+          if (!btn) return;
+          btn.addEventListener("click", function () {
+            const hero = document.getElementById("hero");
+            const target = hero && hero.nextElementSibling;
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+            } else {
+              window.scrollBy({
+                top: window.innerHeight * 0.9,
+                left: 0,
+                behavior: "smooth",
+              });
+            }
+          });
+        })();
+      </script>
     </div>
   </div>
   <!-- Decorative wave separator -->
@@ -195,5 +231,28 @@ import LoaderSplitText from "../../react/LoaderSplitText";
   .hero-cta a:hover::before {
     width: 300px;
     height: 300px;
+  }
+
+  /* Arrow bounce animation for CTA */
+  @keyframes bounceArrow {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-6px);
+    }
+    60% {
+      transform: translateY(-3px);
+    }
+  }
+
+  .btn-arrow {
+    display: inline-block;
+    animation: bounceArrow 1.8s infinite;
+    will-change: transform;
   }
 </style>
