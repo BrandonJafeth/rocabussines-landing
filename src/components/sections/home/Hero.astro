@@ -1,6 +1,7 @@
 ---
 // Hero component for the landing page
 import LoaderSplitText from "../../react/LoaderSplitText";
+import heroVideo from "../../../assets/WhatsApp Video 2026-05-05 at 10.58.13 AM.mp4";
 ---
 
 <!-- Page loader overlay -->
@@ -16,19 +17,25 @@ import LoaderSplitText from "../../react/LoaderSplitText";
   id="hero"
   class="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-white"
 >
-  <!-- Background Image with Overlay -->
+  <!-- Background Video with Overlay -->
   <div class="absolute inset-0 z-0">
-    <!-- Gradient overlay for better text readability -->
+    <video
+      class="absolute inset-0 h-full w-full object-cover"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster="https://res.cloudinary.com/dxrzwnjee/image/upload/v1771868014/29255bea-5f11-45ff-8049-72048d96a3a4.png"
+      aria-hidden="true"
+    >
+      <source src={heroVideo} type="video/mp4" />
+    </video>
+
     <div
-      class="absolute inset-0 bg-gradient-to-b from-deepest/45 via-deepest/40 to-deepest/55 z-10"
+      class="absolute inset-0 bg-gradient-to-b from-deepest/25 via-deepest/30 to-deepest/55 z-10"
     >
     </div>
-    <!-- Background image from Cloudinary -->
-    <img
-      src="https://res.cloudinary.com/dxrzwnjee/image/upload/v1771868014/29255bea-5f11-45ff-8049-72048d96a3a4.png"
-      alt="Background"
-      class="absolute inset-0 w-full h-full object-cover"
-    />
   </div>
 
   <!-- Content Container -->
