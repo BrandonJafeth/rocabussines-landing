@@ -68,3 +68,18 @@ export async function getAllActiveServices(): Promise<HomeService[]> {
 
   return ((data ?? []) as Service[]).map(mapServiceToHomeService);
 }
+
+export async function getAllActiveServicesRaw(): Promise<Service[]> {
+  const { data, error } = await supabase
+    .from("services")
+    .select("id, name, description, icon, is_active, created_at, updated_at")
+    .eq("is_active", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error loading all raw services:", error.message);
+    return [];
+  }
+
+  return (data ?? []) as Service[];
+}
