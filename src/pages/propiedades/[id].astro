@@ -73,6 +73,68 @@ function formatNumber(value: number | null | undefined): string {
   if (!value) return "—";
   return new Intl.NumberFormat("es-CR").format(value);
 }
+
+const propertyUrl = `https://www.rocabusiness.net/propiedades/${property.id}`;
+
+const propertySchema = property.type === "carro" ? {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "@id": propertyUrl,
+  "name": property.title,
+  "description": property.description ?? "Vehículo en venta en Costa Rica",
+  "url": propertyUrl,
+  "image": images,
+  ...(vehicle?.make ? { "brand": { "@type": "Brand", "name": vehicle.make } } : {}),
+  ...(property.price && property.currency ? {
+    "offers": {
+      "@type": "Offer",
+      "price": property.price,
+      "priceCurrency": property.currency === "CRC" ? "CRC" : "USD",
+      "availability": property.status === "activo" ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+      "seller": { "@id": "https://www.rocabusiness.net/#organization" }
+    }
+  } : {}),
+  ...(vehicle?.year ? { "vehicleModelDate": String(vehicle.year) } : {}),
+  ...(vehicle?.mileage != null ? { "mileageFromOdometer": { "@type": "QuantitativeValue", "value": vehicle.mileage, "unitCode": "KMT" } } : {}),
+  ...(vehicle?.transmission ? { "vehicleTransmission": vehicle.transmission } : {}),
+  ...(vehicle?.fuel_type ? { "fuelType": vehicle.fuel_type } : {})
+} : {
+  "@context": "https://schema.org",
+  "@type": "RealEstateListing",
+  "@id": propertyUrl,
+  "name": property.title,
+  "description": property.description ?? `${getTypeLabel(property.type)} en ${realEstate?.canton ?? realEstate?.provincia ?? property.location ?? "Costa Rica"}`,
+  "url": propertyUrl,
+  "image": images,
+  ...(property.price && property.currency ? {
+    "offers": {
+      "@type": "Offer",
+      "price": property.price,
+      "priceCurrency": property.currency === "CRC" ? "CRC" : "USD",
+      "availability": property.status === "activo" ? "https://schema.org/InStock" : "https://schema.org/SoldOut"
+    }
+  } : {}),
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": realEstate?.canton ?? realEstate?.distrito ?? property.location ?? "Costa Rica",
+    "addressRegion": realEstate?.provincia ?? "Guanacaste",
+    "addressCountry": "CR"
+  },
+  ...(realEstate?.bedrooms ? { "numberOfRooms": realEstate.bedrooms } : {}),
+  ...(realEstate?.bathrooms ? { "numberOfBathroomsTotal": realEstate.bathrooms } : {}),
+  ...(realEstate?.area_m2 ? { "floorSize": { "@type": "QuantitativeValue", "value": realEstate.area_m2, "unitCode": "MTK" } } : {}),
+  "broker": { "@id": "https://www.rocabusiness.net/#organization" }
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.rocabusiness.net/" },
+    { "@type": "ListItem", "position": 2, "name": "Propiedades", "item": "https://www.rocabusiness.net/propiedades" },
+    { "@type": "ListItem", "position": 3, "name": property.title, "item": propertyUrl }
+  ]
+};
 ---
 
 <Layout
@@ -1189,4 +1251,6 @@ function formatNumber(value: number | null | undefined): string {
       </div>
     </div>
   </main>
+  <script type="application/ld+json" set:html={JSON.stringify(propertySchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
 </Layout>
