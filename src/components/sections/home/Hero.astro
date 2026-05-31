@@ -16,19 +16,34 @@ import LoaderSplitText from "../../react/LoaderSplitText";
   id="hero"
   class="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-white"
 >
-  <!-- Background Image with Overlay -->
+  <!-- Background Video with Overlay -->
   <div class="absolute inset-0 z-0">
     <!-- Gradient overlay for better text readability -->
     <div
       class="absolute inset-0 bg-gradient-to-b from-deepest/45 via-deepest/40 to-deepest/55 z-10"
     >
     </div>
-    <!-- Background image from Cloudinary -->
-    <img
-      src="https://res.cloudinary.com/dxrzwnjee/image/upload/v1771868014/29255bea-5f11-45ff-8049-72048d96a3a4.png"
-      alt="Background"
+    <!-- Background video from Cloudinary - Optimized for performance -->
+    <video
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster="https://res.cloudinary.com/dkwvaxxdw/image/upload/f_auto,w_1280,q_80/v1780205049/Proyecto_de_v%C3%ADdeo_fycgpf.jpg"
       class="absolute inset-0 w-full h-full object-cover"
-    />
+    >
+      <source
+        src="https://res.cloudinary.com/dkwvaxxdw/video/upload/v1780206252/Proyecto_de_v%C3%ADdeo_fymv6i.mp4"
+        type="video/mp4"
+      />
+      <!-- Fallback image for browsers that don't support video -->
+      <img
+        src="https://res.cloudinary.com/dkwvaxxdw/image/upload/f_auto,w_1280,q_80/v1780205049/Proyecto_de_v%C3%ADdeo_fycgpf.jpg"
+        alt="Hero background"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </video>
   </div>
 
   <!-- Content Container -->
