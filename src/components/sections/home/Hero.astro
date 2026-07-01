@@ -25,6 +25,7 @@ import LoaderSplitText from "../../react/LoaderSplitText";
     </div>
     <!-- Optimized background video -->
     <video
+      id="hero-video"
       autoplay
       muted
       loop
@@ -45,6 +46,16 @@ import LoaderSplitText from "../../react/LoaderSplitText";
       />
     </video>
   </div>
+
+  <script>
+    (function () {
+      const video = document.getElementById(
+        "hero-video"
+      ) as HTMLVideoElement | null;
+      if (!video) return;
+      video.playbackRate = 0.5;
+    })();
+  </script>
 
   <!-- Content Container -->
   <div
