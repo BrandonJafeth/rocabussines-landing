@@ -1,20 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import type { PropertyType } from "../../types/property";
+import { es } from "../../i18n/dictionaries/es";
+import { en } from "../../i18n/dictionaries/en";
+import type { Lang } from "../../i18n/config";
 
 interface PropertyFiltersProps {
   initialProvincia?: string;
   initialCanton?: string;
   initialDistrito?: string;
   initialType?: string;
+  lang?: Lang;
 }
-
-const propertyTypeOptions: Array<{ value: PropertyType; label: string }> = [
-  { value: "casa", label: "Casa" },
-  { value: "finca", label: "Finca" },
-  { value: "lote", label: "Lote" },
-  { value: "carro", label: "Carro" },
-  { value: "construccion_en_lote", label: "Construcción en Lote" },
-];
 
 interface LocationData {
   [key: string]: string;
@@ -27,7 +23,16 @@ export default function PropertyFilters({
   initialCanton = "",
   initialDistrito = "",
   initialType = "",
+  lang = "es",
 }: PropertyFiltersProps) {
+  const dict = lang === "en" ? en : es;
+  const propertyTypeOptions: Array<{ value: PropertyType; label: string }> = [
+    { value: "casa", label: dict.propertyFilters.typeOptions.casa },
+    { value: "finca", label: dict.propertyFilters.typeOptions.finca },
+    { value: "lote", label: dict.propertyFilters.typeOptions.lote },
+    { value: "carro", label: dict.propertyFilters.typeOptions.carro },
+    { value: "construccion_en_lote", label: dict.propertyFilters.typeOptions.construccion_en_lote },
+  ];
   const [type, setType] = useState(initialType);
   
   // Estados para las ubicaciones
@@ -205,13 +210,13 @@ export default function PropertyFilters({
     <form
       onSubmit={handleSubmit}
       className="rounded-2xl bg-white p-5 shadow-[0_16px_38px_rgba(11,37,69,0.12)] md:p-6"
-      aria-label="Filtros de propiedades"
+      aria-label={dict.propertyFilters.ariaLabel}
     >
       <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_1fr_1fr_1fr_auto] md:items-end">
         {/* Provincia */}
         <label className="block">
           <span className="mb-2 block text-sm font-heading font-bold text-deepest">
-            Provincia
+            {dict.propertyFilters.provincia}
           </span>
           <div className="relative">
             <select
@@ -219,7 +224,7 @@ export default function PropertyFilters({
               onChange={(event) => setProvincia(event.target.value)}
               className="h-12 w-full appearance-none rounded-xl border border-mid/30 bg-white px-4 text-sm font-heading text-deepest outline-none transition-colors focus:border-primary"
             >
-              <option value="">Todas</option>
+              <option value="">{dict.propertyFilters.all}</option>
               {Object.entries(provincias).map(([id, nombre]) => (
                 <option key={id} value={id}>
                   {nombre}
@@ -245,7 +250,7 @@ export default function PropertyFilters({
         {/* Cantón */}
         <label className="block">
           <span className="mb-2 block text-sm font-heading font-bold text-deepest">
-            Cantón
+            {dict.propertyFilters.canton}
           </span>
           <div className="relative">
             <select
@@ -255,7 +260,7 @@ export default function PropertyFilters({
               className="h-12 w-full appearance-none rounded-xl border border-mid/30 bg-white px-4 text-sm font-heading text-deepest outline-none transition-colors focus:border-primary disabled:bg-mid/5 disabled:cursor-not-allowed disabled:text-mid"
             >
               <option value="">
-                {loadingCantones ? "Cargando..." : provincia ? "Todos" : "Seleccione provincia"}
+                {loadingCantones ? dict.propertyFilters.loading : provincia ? dict.propertyFilters.allMasc : dict.propertyFilters.selectProvincia}
               </option>
               {Object.entries(cantones).map(([id, nombre]) => (
                 <option key={id} value={id}>
@@ -282,7 +287,7 @@ export default function PropertyFilters({
         {/* Distrito */}
         <label className="block">
           <span className="mb-2 block text-sm font-heading font-bold text-deepest">
-            Distrito
+            {dict.propertyFilters.distrito}
           </span>
           <div className="relative">
             <select
@@ -292,7 +297,7 @@ export default function PropertyFilters({
               className="h-12 w-full appearance-none rounded-xl border border-mid/30 bg-white px-4 text-sm font-heading text-deepest outline-none transition-colors focus:border-primary disabled:bg-mid/5 disabled:cursor-not-allowed disabled:text-mid"
             >
               <option value="">
-                {loadingDistritos ? "Cargando..." : canton ? "Todos" : "Seleccione cantón"}
+                {loadingDistritos ? dict.propertyFilters.loading : canton ? dict.propertyFilters.allMasc : dict.propertyFilters.selectCanton}
               </option>
               {Object.entries(distritos).map(([id, nombre]) => (
                 <option key={id} value={id}>
@@ -319,7 +324,7 @@ export default function PropertyFilters({
         {/* Tipo de Propiedad */}
         <label className="block">
           <span className="mb-2 block text-sm font-heading font-bold text-deepest">
-            Tipo
+            {dict.propertyFilters.tipo}
           </span>
           <div className="relative">
             <select
@@ -327,7 +332,7 @@ export default function PropertyFilters({
               onChange={(event) => setType(event.target.value)}
               className="h-12 w-full appearance-none rounded-xl border border-mid/30 bg-white px-4 text-sm font-heading text-deepest outline-none transition-colors focus:border-primary"
             >
-              <option value="">Todos</option>
+              <option value="">{dict.propertyFilters.allMasc}</option>
               {propertyTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
@@ -354,7 +359,7 @@ export default function PropertyFilters({
           type="submit"
           className="inline-flex h-12 items-center justify-center rounded-xl bg-primary px-6 font-heading font-bold text-white transition-all duration-300 hover:bg-deepest"
         >
-          Buscar
+          {dict.propertyFilters.search}
         </button>
       </div>
     </form>

@@ -7,7 +7,9 @@ import Navbar from "../components/layout/Navbar.astro";
 import { getAllActiveServices } from "../lib/queries/services";
 import type { HomeService } from "../types/service";
 
-const services = await getAllActiveServices();
+const dict = Astro.locals.dict;
+const lang = Astro.locals.lang ?? "es";
+const services = await getAllActiveServices(lang);
 
 function getIconSvg(icon: HomeService["icon"]) {
   const icons = {
@@ -53,8 +55,8 @@ function getGridClass(index: number, total: number): string {
 ---
 
 <Layout
-  title="Servicios Inmobiliarios en Guanacaste y Costa Rica | Roca Business"
-  description="Asesoría en bienes raíces, valuaciones, asesoría contable y financiera en Liberia, Guanacaste. Servicios profesionales para compra, venta e inversión inmobiliaria en Costa Rica."
+  title={dict.seo.services.title}
+  description={dict.seo.services.description}
 >
   <main class="bg-white">
     <!-- Hero Section -->
@@ -69,13 +71,12 @@ function getGridClass(index: number, total: number): string {
           <h1
             class="font-heading text-4xl font-bold text-light sm:text-5xl lg:text-6xl"
           >
-            Soluciones Integrales
-            <span class="block mt-2 text-light">para tu Éxito</span>
+            {dict.servicesPage.heroTitle}
+            <span class="block mt-2 text-light">{dict.servicesPage.heroTitleSpan}</span>
           </h1>
           <div class="mx-auto mt-6 h-1 w-20 rounded-full bg-dark"></div>
           <p class="mt-6 font-heading text-lg text-light sm:text-xl">
-            Ofrecemos un portafolio completo de servicios especializados
-            diseñados para impulsar tu crecimiento y maximizar tus resultados
+            {dict.servicesPage.heroSubtitle}
           </p>
         </div>
       </div>
@@ -88,10 +89,10 @@ function getGridClass(index: number, total: number): string {
           services.length === 0 ? (
             <div class="rounded-2xl border border-mid/25 bg-white px-6 py-16 text-center shadow-sm">
               <h2 class="font-heading text-2xl font-bold text-deepest">
-                Próximamente
+                {dict.servicesPage.comingSoonTitle}
               </h2>
               <p class="mt-3 font-heading text-deepest/70">
-                Estamos preparando nuestro catálogo de servicios.
+                {dict.servicesPage.comingSoonText}
               </p>
             </div>
           ) : (
@@ -128,10 +129,10 @@ function getGridClass(index: number, total: number): string {
         class="relative mx-auto max-w-4xl mt-16 px-4 text-center sm:px-6 lg:px-8"
       >
         <h2 class="font-heading text-3xl font-bold text-deepest sm:text-4xl">
-          ¿Necesitas asesoría personalizada?
+          {dict.servicesPage.ctaHeading}
         </h2>
         <p class="mt-4 font-heading text-lg text-deepest/90">
-          Contáctanos y descubre cómo podemos ayudarte a alcanzar tus objetivos
+          {dict.servicesPage.ctaText}
         </p>
         <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
           <a
@@ -151,7 +152,7 @@ function getGridClass(index: number, total: number): string {
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
               ></path>
             </svg>
-            <span>Contáctanos</span>
+            <span>{dict.servicesPage.ctaButton}</span>
           </a>
         </div>
       </div>

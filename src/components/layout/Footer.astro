@@ -1,18 +1,14 @@
 ---
+const dict = Astro.locals.dict;
+
 const quickLinks = [
-  { label: "Inicio", href: "/" },
-  { label: "Servicios", href: "/servicios" },
-  { label: "Propiedades", href: "/propiedades" },
-  { label: "Contacto", href: "/contacto" },
+  { label: dict.nav.home, href: "/" },
+  { label: dict.nav.services, href: "/servicios" },
+  { label: dict.nav.properties, href: "/propiedades" },
+  { label: dict.nav.contact, href: "/contacto" },
 ];
 
-const serviceItems = [
-  "Venta de Propiedades",
-  "Venta de Terrenos",
-  "Asesoría Inmobiliaria",
-  "Administración",
-  "Valuación",
-];
+const serviceItems = dict.footer.serviceItems;
 
 const socialLinks = [
   { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61576995422413" },
@@ -46,14 +42,13 @@ const socialLinks = [
             <p
               class="font-heading text-xs uppercase tracking-[0.18em] text-mid"
             >
-              Bienes y raíces
+              {dict.footer.tagline}
             </p>
           </div>
         </a>
 
         <p class="mt-5 max-w-xs text-sm leading-7 text-light/75 font-heading">
-          Tu socio de confianza en bienes raíces. Construyendo relaciones
-          sólidas y patrimonio con visión estratégica.
+          {dict.footer.blurb}
         </p>
 
         <div class="mt-6 flex items-center gap-2">
@@ -91,7 +86,7 @@ const socialLinks = [
       </div>
 
       <div>
-        <h3 class="font-heading text-2xl font-bold">Enlaces Rápidos</h3>
+        <h3 class="font-heading text-2xl font-bold">{dict.footer.quickLinksTitle}</h3>
         <ul class="mt-6 space-y-3">
           {
             quickLinks.map((link) => (
@@ -109,7 +104,7 @@ const socialLinks = [
       </div>
 
       <div>
-        <h3 class="font-heading text-2xl font-bold">Servicios</h3>
+        <h3 class="font-heading text-2xl font-bold">{dict.footer.servicesTitle}</h3>
         <ul class="mt-6 space-y-3">
           {
             serviceItems.map((service) => (
@@ -120,7 +115,7 @@ const socialLinks = [
       </div>
 
       <div>
-        <h3 class="font-heading text-2xl font-bold">Contacto</h3>
+        <h3 class="font-heading text-2xl font-bold">{dict.footer.contactTitle}</h3>
         <ul class="mt-6 space-y-4 text-light/80 font-heading">
           <li class="flex items-start gap-3">
             <svg
@@ -136,7 +131,7 @@ const socialLinks = [
                 d="M12 21s-7-4.35-7-11a7 7 0 1114 0c0 6.65-7 11-7 11z"></path>
               <circle cx="12" cy="10" r="2.5" stroke-width="2"></circle>
             </svg>
-            <span>Liberia, Guanacaste, Costa Rica</span>
+            <span>{dict.footer.address}</span>
           </li>
           <li class="flex items-start gap-3">
             <svg
@@ -182,7 +177,7 @@ const socialLinks = [
       class="mt-12 pt-6 border-t border-light/15 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
     >
       <p class="text-sm font-heading text-light/65">
-        © {new Date().getFullYear()} Roca Business. Todos los derechos reservados.
+        © {new Date().getFullYear()} Roca Business. {dict.footer.rights}
       </p>
 
       <a
@@ -195,7 +190,7 @@ const socialLinks = [
           alt=""
         />
 
-        Desarrollado por One Out
+        {dict.footer.developedBy}
       </a>
     </div>
   </div>

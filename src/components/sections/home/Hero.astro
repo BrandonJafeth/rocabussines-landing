@@ -1,6 +1,8 @@
 ---
 // Hero component for the landing page
 import LoaderSplitText from "../../react/LoaderSplitText";
+
+const dict = Astro.locals.dict;
 ---
 
 <!-- Page loader overlay -->
@@ -8,7 +10,7 @@ import LoaderSplitText from "../../react/LoaderSplitText";
   class="page-loader fixed inset-0 z-[9999] bg-gradient-to-br from-deepest via-deepest to-dark flex items-center justify-center"
 >
   <div class="loader-content text-center">
-    <LoaderSplitText client:load className="-mt-2" />
+    <LoaderSplitText client:load className="-mt-2" subtitle={dict.hero.loaderSubtitle} />
   </div>
 </div>
 
@@ -57,16 +59,15 @@ import LoaderSplitText from "../../react/LoaderSplitText";
       <h1
         class="hero-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold tracking-tight leading-tight"
       >
-        <span class="block text-white">Bienes Raíces en Guanacaste,</span>
-        <span class="block text-mid mt-2">creamos tu futuro</span>
+        <span class="block text-white">{dict.hero.titleLine1}</span>
+        <span class="block text-mid mt-2">{dict.hero.titleLine2}</span>
       </h1>
 
       <!-- Subtitle -->
       <p
         class="hero-subtitle text-lg sm:text-xl md:text-2xl text-light/90 max-w-3xl mx-auto font-heading"
       >
-        Construimos confianza — asesoría experta en compra, venta e inversión
-        de propiedades en Liberia, Guanacaste y toda Costa Rica.
+        {dict.hero.subtitle}
       </p>
 
       <!-- CTA Button (Scroll to next section) -->
@@ -75,9 +76,9 @@ import LoaderSplitText from "../../react/LoaderSplitText";
           id="hero-scroll-btn"
           type="button"
           class="inline-flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-light text-light font-heading text-lg rounded-lg transition-all duration-300 hover:bg-light hover:text-deepest hover:shadow-2xl hover:scale-105 hover:border-light"
-          aria-label="Explorar secciones"
+          aria-label={dict.hero.exploreAria}
         >
-          <span>Explorar</span>
+          <span>{dict.hero.exploreBtn}</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

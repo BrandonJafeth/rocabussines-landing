@@ -1,5 +1,5 @@
 ---
-
+const dict = Astro.locals.dict;
 ---
 
 <section id="nosotros" class="py-20 bg-white scroll-mt-28">
@@ -11,8 +11,8 @@
         <h2
           class="text-3xl text-center sm:text-start sm:text-4xl lg:text-5xl font-heading font-bold tracking-tight text-deepest leading-tight"
         >
-          Expertos en Bienes Raíces
-          <span class="text-primary">en Guanacaste y Costa Rica</span>
+          {dict.about.heading}
+          <span class="text-primary">{dict.about.headingHighlight}</span>
         </h2>
 
         <div
@@ -30,23 +30,11 @@
 
       <div class="lg:col-span-6">
         <div class="space-y-4 text-deepest/80 font-heading">
-          <p class="text-lg leading-relaxed">
-            <strong class="text-deepest">Roca Business</strong> es una firma especializada
-            en bienes raíces y asesoría integral con sede en Liberia, Guanacaste, enfocada
-            en generar decisiones seguras para quienes compran, venden o invierten en Costa Rica.
-          </p>
-
+          <p class="text-lg leading-relaxed" set:html={dict.about.p1} />
           <p class="text-base sm:text-lg leading-relaxed">
-            Combinamos experiencia técnica, criterio financiero y una atención
-            personalizada para desarrollar soluciones concretas en cada etapa
-            del proceso inmobiliario.
+            {dict.about.p2}
           </p>
-
-          <p class="text-base sm:text-lg leading-relaxed">
-            Nuestra base de trabajo es clara: <strong class="text-deepest"
-              >confianza, transparencia, innovación y compromiso</strong
-            > para construir relaciones sólidas y resultados consistentes.
-          </p>
+          <p class="text-base sm:text-lg leading-relaxed" set:html={dict.about.p3} />
         </div>
       </div>
     </div>

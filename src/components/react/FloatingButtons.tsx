@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import { animate } from "motion";
+import { es } from "../../i18n/dictionaries/es";
+import { en } from "../../i18n/dictionaries/en";
+import type { Lang } from "../../i18n/config";
 
-export default function FloatingButtons() {
+interface FloatingButtonsProps {
+  lang?: Lang;
+}
+
+export default function FloatingButtons({ lang = "es" }: FloatingButtonsProps) {
+  const dict = lang === "en" ? en : es;
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -24,9 +32,7 @@ export default function FloatingButtons() {
     // Número de WhatsApp de Roca Business
     // Formato: código país + número sin signos (+506 XXXX-XXXX → 506XXXXXXXX)
     const phoneNumber = "50670442878";
-    const message = encodeURIComponent(
-      "Hola, me gustaría obtener más información sobre sus propiedades y servicios."
-    );
+    const message = encodeURIComponent(dict.floatingButtons.whatsappMessage);
     window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
   };
 
@@ -36,7 +42,7 @@ export default function FloatingButtons() {
       <button
         onClick={handleWhatsApp}
         className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
-        aria-label="Contactar por WhatsApp"
+        aria-label={dict.floatingButtons.whatsappAria}
       >
         {/* Onda de pulso */}
         <span className="absolute inset-0 rounded-full bg-[#25D366] opacity-75"></span>
@@ -52,7 +58,7 @@ export default function FloatingButtons() {
 
         {/* Tooltip */}
         <span className="absolute right-full mr-3 whitespace-nowrap rounded-lg bg-deepest px-3 py-2 font-heading text-sm text-light opacity-0 shadow-lg transition-opacity duration-300 group-hover:opacity-100">
-          Contactar por WhatsApp
+          {dict.floatingButtons.whatsappAria}
         </span>
       </button>
 
@@ -61,7 +67,7 @@ export default function FloatingButtons() {
         <button
           onClick={scrollToTop}
           className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-light shadow-lg transition-all duration-300 hover:scale-110 hover:bg-light/80 hover:shadow-xl animate-fade-in"
-          aria-label="Volver arriba"
+          aria-label={dict.floatingButtons.scrollTopAria}
         >
           {/* Ícono de flecha hacia arriba */}
           <svg

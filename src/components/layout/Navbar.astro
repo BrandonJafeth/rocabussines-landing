@@ -1,13 +1,16 @@
 ---
 import NavbarMobile from '../react/NavbarMobile';
+import LanguageSwitch from './LanguageSwitch.astro';
 
 const currentPath = Astro.url.pathname;
+const lang = Astro.locals.lang ?? 'es';
+const dict = Astro.locals.dict;
 
 const navLinks = [
-  { name: 'Inicio', href: '/' },
-  { name: 'Servicios', href: '/servicios' },
-  { name: 'Propiedades', href: '/propiedades' },
-  { name: 'Contacto', href: '/contacto' },
+  { name: dict.nav.home, href: '/' },
+  { name: dict.nav.services, href: '/servicios' },
+  { name: dict.nav.properties, href: '/propiedades' },
+  { name: dict.nav.contact, href: '/contacto' },
 ];
 
 const isActive = (href: string) => {
@@ -52,16 +55,21 @@ const isActive = (href: string) => {
         ))}
       </div>
 
+      <!-- Language Switch (Desktop) -->
+      <div class="hidden md:block mr-4">
+        <LanguageSwitch />
+      </div>
+
       <!-- CTA Button -->
       <a
         href="/contacto"
         class="hidden md:block px-6 py-2.5 bg-primary text-white font-heading rounded-lg transition-all duration-300 hover:bg-deepest hover:shadow-lg hover:scale-105"
       >
-        Contáctanos
+        {dict.nav.cta}
       </a>
 
       <!-- Mobile Menu Button wrapped in React Component -->
-      <NavbarMobile client:visible navLinks={navLinks} currentPath={currentPath} />
+      <NavbarMobile client:visible navLinks={navLinks} currentPath={currentPath} lang={lang} />
     </div>
   </div>
 </nav>

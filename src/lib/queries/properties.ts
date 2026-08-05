@@ -6,6 +6,7 @@ import type {
   PropertyRealEstate,
   PropertyVehicle,
 } from "../../types/property";
+import type { Lang } from "../../i18n/config";
 
 const FALLBACK_IMAGE =
   "https://res.cloudinary.com/dnziwpiec/image/upload/v1771916220/roca-business/propiedades/pexels-scottwebb-1029599_dywxnv.jpg";
@@ -20,7 +21,7 @@ function formatCompactNumber(value: number): string {
   return new Intl.NumberFormat("es-CR").format(value);
 }
 
-function getDetailsByType(property: Property): Array<{ label: string; value: string }> {
+function getDetailsByType(property: Property): Array<{ key: string; value: string }> {
   const type = property.type;
   const realEstate = getFirstRelation<PropertyRealEstate>(property.property_real_estate);
   const vehicle = getFirstRelation<PropertyVehicle>(property.property_vehicles);
@@ -28,15 +29,15 @@ function getDetailsByType(property: Property): Array<{ label: string; value: str
   if (type === "carro") {
     return [
       {
-        label: "Año",
+        key: "year",
         value: vehicle?.year ? String(vehicle.year) : "—",
       },
       {
-        label: "Transmisión",
+        key: "transmission",
         value: vehicle?.transmission ?? "—",
       },
       {
-        label: "Kilometraje",
+        key: "mileage",
         value: vehicle?.mileage ? `${formatCompactNumber(vehicle.mileage)} km` : "—",
       },
     ];
@@ -44,35 +45,35 @@ function getDetailsByType(property: Property): Array<{ label: string; value: str
 
   if (type === "lote" || type === "finca" || type === "construccion_en_lote") {
     const detailsList = [];
-    
+
     // Área en m²
     if (realEstate?.area_m2) {
       detailsList.push({
-        label: "Área",
+        key: "area",
         value: `${formatCompactNumber(realEstate.area_m2)} m²`,
       });
     }
-    
+
     // Hectáreas
     if (realEstate?.hectares) {
       detailsList.push({
-        label: "Hectáreas",
+        key: "hectares",
         value: `${realEstate.hectares} ha`,
       });
     }
-    
+
     // Zonificación si está disponible
     if (realEstate?.zoning) {
       detailsList.push({
-        label: "Zonificación",
+        key: "zoning",
         value: realEstate.zoning,
       });
     }
-    
+
     // Si solo hay 1 o 2 datos, agregar distrito como ubicación específica
     if (detailsList.length < 3 && realEstate?.distrito) {
       detailsList.push({
-        label: "Distrito",
+        key: "district",
         value: realEstate.distrito,
       });
     }
@@ -82,15 +83,15 @@ function getDetailsByType(property: Property): Array<{ label: string; value: str
 
   return [
     {
-      label: "Habitaciones",
+      key: "bedrooms",
       value: realEstate?.bedrooms ? String(realEstate.bedrooms) : "—",
     },
     {
-      label: "Baños",
+      key: "bathrooms",
       value: realEstate?.bathrooms ? String(realEstate.bathrooms) : "—",
     },
     {
-      label: "Área",
+      key: "area",
       value: realEstate?.area_m2 ? `${formatCompactNumber(realEstate.area_m2)} m²` : "—",
     },
   ];
@@ -115,27 +116,20 @@ function formatLocation(property: Property): { full: string; provincia: string; 
   };
 }
 
-function mapPropertyToFeatured(property: Property): HomeFeaturedProperty {
+function localizedTitle(property: Property, lang: Lang): string {
+  if (lang === "en" && property.title_en?.trim()) return property.title_en;
+  return property.title;
+}
+
+function mapPropertyToFeatured(property: Property, lang: Lang = "es"): HomeFeaturedProperty {
   const image = property.images?.[0] ?? FALLBACK_IMAGE;
   const locationInfo = formatLocation(property);
-  
-  // Debug: ver qué datos de ubicación tiene la propiedad
   const realEstate = getFirstRelation<PropertyRealEstate>(property.property_real_estate);
-  console.log(`📍 Propiedad "${property.title}":`, {
-    type: property.type,
-    hasRealEstate: !!realEstate,
-    provincia: realEstate?.provincia,
-    canton: realEstate?.canton,
-    distrito: realEstate?.distrito,
-    mappedProvincia: locationInfo.provincia,
-    mappedCanton: locationInfo.canton,
-    mappedDistrito: locationInfo.distrito,
-  });
 
   return {
     id: property.id,
     type: property.type,
-    title: property.title,
+    title: localizedTitle(property, lang),
     location: locationInfo.full,
     provincia: locationInfo.provincia,
     canton: locationInfo.canton,
@@ -148,11 +142,11 @@ function mapPropertyToFeatured(property: Property): HomeFeaturedProperty {
   };
 }
 
-export async function getFeaturedProperties(limit = 5): Promise<HomeFeaturedProperty[]> {
+export async function getFeaturedProperties(limit = 5, lang: Lang = "es"): Promise<HomeFeaturedProperty[]> {
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, type, title, location, price, currency, status, images, is_featured, display_order, property_real_estate(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito, zoning), property_vehicles(year, mileage, transmission)"
+      "id, type, title, title_en, location, price, currency, status, images, is_featured, display_order, property_real_estate(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito, zoning), property_vehicles(year, mileage, transmission)"
     )
     .in("status", ["activo", "vendido"])
     .eq("is_featured", true)
@@ -164,7 +158,7 @@ export async function getFeaturedProperties(limit = 5): Promise<HomeFeaturedProp
     return [];
   }
 
-  return ((data ?? []) as Property[]).map(mapPropertyToFeatured);
+  return ((data ?? []) as Property[]).map((property) => mapPropertyToFeatured(property, lang));
 }
 
 interface PropertyCatalogFilters {
@@ -175,21 +169,24 @@ interface PropertyCatalogFilters {
   type?: PropertyType;
 }
 
-export async function getCatalogProperties(filters?: {
-  location?: string;
-  provincia?: string;
-  canton?: string;
-  distrito?: string;
-  type?: PropertyType;
-}): Promise<HomeFeaturedProperty[]> {
+export async function getCatalogProperties(
+  filters?: {
+    location?: string;
+    provincia?: string;
+    canton?: string;
+    distrito?: string;
+    type?: PropertyType;
+  },
+  lang: Lang = "es"
+): Promise<HomeFeaturedProperty[]> {
   // Determinar si hay filtros de ubicación activos
   const hasLocationFilters = !!(filters?.provincia || filters?.canton || filters?.distrito);
   // Query base con propiedades activas y vendidas
   const { data, error } = await supabase
     .from("properties")
     .select(
-      `id, type, title, location, price, currency, status, images, is_featured, display_order, 
-       property_real_estate(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito, zoning), 
+      `id, type, title, title_en, location, price, currency, status, images, is_featured, display_order,
+       property_real_estate(bedrooms, bathrooms, area_m2, hectares, provincia, canton, distrito, zoning),
        property_vehicles(year, mileage, transmission)`
     )
     .in("status", ["activo", "vendido"])
@@ -200,7 +197,7 @@ export async function getCatalogProperties(filters?: {
     return [];
   }
 
-  let properties = ((data ?? []) as Property[]).map(mapPropertyToFeatured);
+  let properties = ((data ?? []) as Property[]).map((property) => mapPropertyToFeatured(property, lang));
 
   // Aplicar filtros en JavaScript
   if (filters?.type) {
@@ -235,7 +232,7 @@ export async function getCatalogProperties(filters?: {
  * Obtiene una propiedad individual por ID con todos sus detalles
  * incluyendo información completa de real estate o vehículo según tipo
  */
-export async function getPropertyById(id: string): Promise<Property | null> {
+export async function getPropertyById(id: string, lang: Lang = "es"): Promise<Property | null> {
   const { data, error } = await supabase
     .from("properties")
     .select(
@@ -254,5 +251,15 @@ export async function getPropertyById(id: string): Promise<Property | null> {
     return null;
   }
 
-  return data as Property;
+  const property = data as Property;
+
+  if (lang === "en") {
+    return {
+      ...property,
+      title: property.title_en?.trim() ? property.title_en : property.title,
+      description: property.description_en?.trim() ? property.description_en : property.description,
+    };
+  }
+
+  return property;
 }

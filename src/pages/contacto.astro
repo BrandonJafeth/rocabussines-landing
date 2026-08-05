@@ -7,12 +7,14 @@ import Navbar from "../components/layout/Navbar.astro";
 import ContactForm from "../components/react/ContactForm";
 import { getAllActiveServices } from "../lib/queries/services";
 
-const services = await getAllActiveServices();
+const dict = Astro.locals.dict;
+const lang = Astro.locals.lang ?? "es";
+const services = await getAllActiveServices(lang);
 ---
 
 <Layout
-  title="Contacto | Agenda tu Consulta | Roca Business"
-  description="Contacta a Roca Business en Liberia, Guanacaste. Consulta gratuita sobre compra, venta o inversión en bienes raíces en Costa Rica. Tel: +506 7044-2878."
+  title={dict.seo.contact.title}
+  description={dict.seo.contact.description}
 >
   <main class="bg-white">
     <!-- Hero Section -->
@@ -29,13 +31,12 @@ const services = await getAllActiveServices();
           <h1
             class="font-heading text-4xl font-bold text-light sm:text-5xl lg:text-6xl"
           >
-            Solicita una
-            <span class="block mt-2 text-light">Consulta Profesional</span>
+            {dict.contactPage.heroTitle}
+            <span class="block mt-2 text-light">{dict.contactPage.heroTitleSpan}</span>
           </h1>
           <div class="mx-auto mt-6 h-1 w-20 rounded-full bg-dark"></div>
           <p class="mt-6 font-heading text-lg text-light sm:text-xl">
-            Nuestro equipo está para ti. Comparte tus datos a continuación y un
-            asesor en bienes raíces se pondrá en contacto contigo.
+            {dict.contactPage.heroSubtitle}
           </p>
         </div>
       </div>
@@ -50,13 +51,13 @@ const services = await getAllActiveServices();
             class="rounded-2xl bg-white p-6 sm:p-8 shadow-2xl border border-mid/10"
           >
             <h2 class="font-heading text-2xl font-bold text-deepest mb-2">
-              Completa tus Datos
+              {dict.contactPage.formHeading}
             </h2>
             <p class="font-heading text-sm text-deepest/60 mb-6">
-              Llena el formulario y un asesor te contactará
+              {dict.contactPage.formSubheading}
             </p>
 
-            <ContactForm client:visible services={services} />
+            <ContactForm client:visible services={services} lang={lang} />
           </div>
 
           <!-- Columna Derecha: Información de Contacto -->
@@ -64,7 +65,7 @@ const services = await getAllActiveServices();
             <!-- Contacto Directo -->
             <div class="rounded-2xl bg-white p-6 shadow-lg">
               <h3 class="font-heading text-xl font-bold text-deepest mb-4">
-                Contacto Directo
+                {dict.contactPage.contactDirectTitle}
               </h3>
 
               <div class="space-y-4">
@@ -90,7 +91,7 @@ const services = await getAllActiveServices();
                     </svg>
                   </div>
                   <div>
-                    <p class="font-heading text-xs text-deepest/60">Teléfono</p>
+                    <p class="font-heading text-xs text-deepest/60">{dict.contactPage.phoneLabel}</p>
                     <p
                       class="font-heading text-base font-bold text-deepest group-hover:text-primary transition-colors"
                     >
@@ -121,7 +122,7 @@ const services = await getAllActiveServices();
                     </svg>
                   </div>
                   <div>
-                    <p class="font-heading text-xs text-deepest/60">Email</p>
+                    <p class="font-heading text-xs text-deepest/60">{dict.contactPage.emailLabel}</p>
                     <p
                       class="font-heading text-base font-bold text-deepest group-hover:text-primary transition-colors break-all"
                     >
@@ -148,16 +149,16 @@ const services = await getAllActiveServices();
                   </svg>
                   <div>
                     <p class="font-heading text-sm font-bold text-deepest">
-                      Horario de Atención
+                      {dict.contactPage.hoursTitle}
                     </p>
                     <p class="font-heading text-xs text-deepest/70 mt-1">
-                      Lun - Vie: 8:00 AM - 5:00 PM
+                      {dict.contactPage.hoursWeekday}
                     </p>
                     <p class="font-heading text-xs text-deepest/70">
-                      Sáb: 9:00 AM - 2:00 PM
+                      {dict.contactPage.hoursSaturday}
                     </p>
                     <p class="font-heading text-xs text-deepest/70">
-                      Domingos: Cerrado
+                      {dict.contactPage.hoursSunday}
                     </p>
                   </div>
                 </div>
@@ -169,7 +170,7 @@ const services = await getAllActiveServices();
               class="rounded-2xl bg-gradient-to-br from-deepest to-primary p-6 shadow-lg text-white"
             >
               <h3 class="font-heading text-xl font-bold mb-4">
-                ¿Por Qué Agendar?
+                {dict.contactPage.whyTitle}
               </h3>
 
               <ul class="space-y-3">
@@ -188,10 +189,10 @@ const services = await getAllActiveServices();
                   </svg>
                   <div>
                     <p class="font-heading text-sm font-bold">
-                      Consulta Gratuita
+                      {dict.contactPage.why1Title}
                     </p>
                     <p class="font-heading text-xs text-light/80">
-                      Primera sesión sin costo
+                      {dict.contactPage.why1Sub}
                     </p>
                   </div>
                 </li>
@@ -211,10 +212,10 @@ const services = await getAllActiveServices();
                   </svg>
                   <div>
                     <p class="font-heading text-sm font-bold">
-                      Confidencialidad
+                      {dict.contactPage.why2Title}
                     </p>
                     <p class="font-heading text-xs text-light/80">
-                      Tus datos están protegidos
+                      {dict.contactPage.why2Sub}
                     </p>
                   </div>
                 </li>
@@ -234,10 +235,10 @@ const services = await getAllActiveServices();
                   </svg>
                   <div>
                     <p class="font-heading text-sm font-bold">
-                      Asesoría Especializada
+                      {dict.contactPage.why3Title}
                     </p>
                     <p class="font-heading text-xs text-light/80">
-                      Expertos en bienes raíces
+                      {dict.contactPage.why3Sub}
                     </p>
                   </div>
                 </li>
@@ -257,10 +258,10 @@ const services = await getAllActiveServices();
                   </svg>
                   <div>
                     <p class="font-heading text-sm font-bold">
-                      Atención Personalizada
+                      {dict.contactPage.why4Title}
                     </p>
                     <p class="font-heading text-xs text-light/80">
-                      Soluciones a tu medida
+                      {dict.contactPage.why4Sub}
                     </p>
                   </div>
                 </li>
@@ -270,7 +271,7 @@ const services = await getAllActiveServices();
             <!-- Enlaces Rápidos -->
             <div class="rounded-2xl bg-white p-6 shadow-lg">
               <h3 class="font-heading text-xl font-bold text-deepest mb-4">
-                Enlaces Rápidos
+                {dict.contactPage.quickLinksTitle}
               </h3>
 
               <ul class="space-y-2">
@@ -291,7 +292,7 @@ const services = await getAllActiveServices();
                         stroke-linejoin="round"
                         d="M9 5l7 7-7 7"></path>
                     </svg>
-                    <span>Explora los servicios</span>
+                    <span>{dict.contactPage.quickLinkServices}</span>
                   </a>
                 </li>
                 <li>
@@ -311,7 +312,7 @@ const services = await getAllActiveServices();
                         stroke-linejoin="round"
                         d="M9 5l7 7-7 7"></path>
                     </svg>
-                    <span>Explora propiedades</span>
+                    <span>{dict.contactPage.quickLinkProperties}</span>
                   </a>
                 </li>
                 <li>
@@ -331,7 +332,7 @@ const services = await getAllActiveServices();
                         stroke-linejoin="round"
                         d="M9 5l7 7-7 7"></path>
                     </svg>
-                    <span>Conoce sobre nosotros</span>
+                    <span>{dict.contactPage.quickLinkAbout}</span>
                   </a>
                 </li>
               </ul>

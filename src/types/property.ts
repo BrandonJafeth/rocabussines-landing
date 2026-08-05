@@ -17,7 +17,9 @@ export interface Property {
   id: string;
   type: PropertyType;
   title: string;
+  title_en?: string | null;
   description: string | null;
+  description_en?: string | null;
   location: string | null;
   price: number | null;
   currency: Currency | null;
@@ -78,5 +80,5 @@ export interface HomeFeaturedProperty {
   currency: Currency;
   status: PropertyStatus;
   image: string;
-  details: Array<{ label: string; value: string }>;
+  details: Array<{ key: string; value: string }>;
 }

@@ -12,7 +12,10 @@ import {
 } from "../../lib/queries/properties";
 import { getAllActiveServices } from "../../lib/queries/services";
 import { formatPrice } from "../../utils/formatPrice";
+import { getTypeLabel, field } from "../../i18n/labels";
 import type { PropertyRealEstate, PropertyVehicle } from "../../types/property";
+
+const lang = Astro.locals.lang ?? "es";
 
 // Obtener el ID de la propiedad de los parámetros de la URL
 const { id } = Astro.params;
@@ -21,13 +24,13 @@ if (!id) {
   return Astro.redirect("/propiedades");
 }
 
-const property = await getPropertyById(id);
+const property = await getPropertyById(id, lang);
 
 if (!property) {
   return Astro.redirect("/propiedades");
 }
 
-const services = await getAllActiveServices();
+const services = await getAllActiveServices(lang);
 
 const realEstate = Array.isArray(property.property_real_estate)
   ? property.property_real_estate[0]
@@ -44,31 +47,6 @@ const images =
         "https://res.cloudinary.com/dnziwpiec/image/upload/v1771916220/roca-business/propiedades/pexels-scottwebb-1029599_dywxnv.jpg",
       ];
 
-function getTypeLabel(type: string): string {
-  const labels: Record<string, string> = {
-    casa: "Casa",
-    finca: "Finca",
-    lote: "Lote",
-    carro: "Vehículo",
-    construccion_en_lote: "Construcción en Lote",
-  };
-  return labels[type] || type;
-}
-
-function getStatusLabel(status: string): string {
-  if (status === "vendido") return "Vendida";
-  if (status === "pendiente_revision") return "Pendiente";
-  if (status === "inactivo") return "Inactiva";
-  return "Activa";
-}
-
-function getStatusClass(status: string): string {
-  if (status === "vendido") return "bg-[#E3B83A] text-deepest";
-  if (status === "pendiente_revision") return "bg-mid/40 text-deepest";
-  if (status === "inactivo") return "bg-deepest/70 text-white";
-  return "bg-[#2D9E6B] text-white";
-}
-
 function formatNumber(value: number | null | undefined): string {
   if (!value) return "—";
   return new Intl.NumberFormat("es-CR").format(value);
@@ -81,7 +59,7 @@ const propertySchema = property.type === "carro" ? {
   "@type": "Product",
   "@id": propertyUrl,
   "name": property.title,
-  "description": property.description ?? "Vehículo en venta en Costa Rica",
+  "description": property.description ?? (lang === "en" ? "Vehicle for sale in Costa Rica" : "Vehículo en venta en Costa Rica"),
   "url": propertyUrl,
   "image": images,
   ...(vehicle?.make ? { "brand": { "@type": "Brand", "name": vehicle.make } } : {}),
@@ -103,7 +81,7 @@ const propertySchema = property.type === "carro" ? {
   "@type": "RealEstateListing",
   "@id": propertyUrl,
   "name": property.title,
-  "description": property.description ?? `${getTypeLabel(property.type)} en ${realEstate?.canton ?? realEstate?.provincia ?? property.location ?? "Costa Rica"}`,
+  "description": property.description ?? `${getTypeLabel(property.type, lang)} ${lang === "en" ? "in" : "en"} ${realEstate?.canton ?? realEstate?.provincia ?? property.location ?? "Costa Rica"}`,
   "url": propertyUrl,
   "image": images,
   ...(property.price && property.currency ? {
@@ -130,8 +108,8 @@ const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Inicio", "item": "https://www.rocabusiness.net/" },
-    { "@type": "ListItem", "position": 2, "name": "Propiedades", "item": "https://www.rocabusiness.net/propiedades" },
+    { "@type": "ListItem", "position": 1, "name": field("breadcrumbHome", lang), "item": "https://www.rocabusiness.net/" },
+    { "@type": "ListItem", "position": 2, "name": field("breadcrumbProperties", lang), "item": "https://www.rocabusiness.net/propiedades" },
     { "@type": "ListItem", "position": 3, "name": property.title, "item": propertyUrl }
   ]
 };
@@ -140,7 +118,7 @@ const breadcrumbSchema = {
 <Layout
   title={`${property.title} | Roca Business`}
   description={property.description ||
-    `${getTypeLabel(property.type)} en ${property.location || "Costa Rica"}. Precio: ${property.price && property.currency ? formatPrice(property.price, property.currency) : "Consultar"}`}
+    `${getTypeLabel(property.type, lang)} ${lang === "en" ? "in" : "en"} ${property.location || "Costa Rica"}. ${field("price", lang)}: ${property.price && property.currency ? formatPrice(property.price, property.currency) : field("onRequest", lang)}`}
 >
   <Navbar />
 
@@ -165,13 +143,13 @@ const breadcrumbSchema = {
             stroke-linejoin="round"
             d="M15 19l-7-7 7-7"></path>
         </svg>
-        <span>Volver Atrás</span>
+        <span>{field("backLink", lang)}</span>
       </a>
       <button
         type="button"
-        onclick="navigator.share ? navigator.share({title: document.title, url: window.location.href}) : navigator.clipboard.writeText(window.location.href).then(() => alert('Enlace copiado al portapapeles'))"
+        onclick={`navigator.share ? navigator.share({title: document.title, url: window.location.href}) : navigator.clipboard.writeText(window.location.href).then(() => alert('${field("linkCopied", lang)}'))`}
         class="flex items-center gap-2 rounded-lg border border-mid/30 bg-surface px-4 py-2 font-heading text-sm text-deepest transition-all hover:border-primary hover:bg-primary/5"
-        aria-label="Compartir propiedad"
+        aria-label={field("shareAria", lang)}
       >
         <svg
           class="h-4 w-4"
@@ -186,7 +164,7 @@ const breadcrumbSchema = {
           <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
           <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
         </svg>
-        <span class="hidden sm:inline">Compartir</span>
+        <span class="hidden sm:inline">{field("share", lang)}</span>
       </button>
     </div>
   </div>
@@ -240,7 +218,7 @@ const breadcrumbSchema = {
                 stroke-linejoin="round"></path>
             </svg>
             <span class="font-heading text-xs text-primary/70 uppercase"
-              >Precio</span
+              >{field("price", lang)}</span
             >
           </div>
           <p
@@ -249,7 +227,7 @@ const breadcrumbSchema = {
             {
               property.price && property.currency
                 ? formatPrice(property.price, property.currency)
-                : "Consultar"
+                : field("onRequest", lang)
             }
           </p>
         </div>
@@ -462,7 +440,7 @@ const breadcrumbSchema = {
             property.description && (
               <section class="mb-6 rounded-2xl bg-white p-6 shadow-md">
                 <h2 class="mb-4 font-heading text-xl font-bold text-deepest">
-                  Descripción
+                  {field("description", lang)}
                 </h2>
                 <p class="whitespace-pre-line font-heading text-sm text-deepest/80 leading-relaxed">
                   {property.description}
@@ -476,7 +454,7 @@ const breadcrumbSchema = {
             property.type !== "carro" && realEstate && (
               <section class="mb-6 rounded-2xl bg-white p-6 shadow-md">
                 <h2 class="mb-6 font-heading text-xl font-bold text-deepest">
-                  Características
+                  {field("characteristics", lang)}
                 </h2>
 
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -512,7 +490,7 @@ const breadcrumbSchema = {
                           {realEstate.bedrooms}
                         </p>
                         <p class="font-heading text-xs text-deepest/60">
-                          Habitaciones
+                          {field("bedrooms", lang)}
                         </p>
                       </div>
                     </div>
@@ -540,7 +518,7 @@ const breadcrumbSchema = {
                             {realEstate.bathrooms}
                           </p>
                           <p class="font-heading text-xs text-deepest/60">
-                            Baños
+                            {field("bathrooms", lang)}
                           </p>
                         </div>
                       </div>
@@ -577,7 +555,7 @@ const breadcrumbSchema = {
                           {formatNumber(realEstate.area_m2)}
                         </p>
                         <p class="font-heading text-xs text-deepest/60">
-                          m² área
+                          {field("areaM2", lang)}
                         </p>
                       </div>
                     </div>
@@ -611,7 +589,7 @@ const breadcrumbSchema = {
                             {realEstate.parking_spots}
                           </p>
                           <p class="font-heading text-xs text-deepest/60">
-                            Parqueos
+                            {field("parking", lang)}
                           </p>
                         </div>
                       </div>
@@ -639,7 +617,7 @@ const breadcrumbSchema = {
                           {realEstate.hectares}
                         </p>
                         <p class="font-heading text-xs text-deepest/60">
-                          Hectáreas
+                          {field("hectares", lang)}
                         </p>
                       </div>
                     </div>
@@ -667,7 +645,7 @@ const breadcrumbSchema = {
                           {realEstate.zoning}
                         </p>
                         <p class="font-heading text-xs text-deepest/60">
-                          Zonificación
+                          {field("zoning", lang)}
                         </p>
                       </div>
                     </div>
@@ -705,7 +683,7 @@ const breadcrumbSchema = {
                               realEstate.provincia}
                           </p>
                           <p class="font-heading text-xs text-deepest/60">
-                            Ubicación
+                            {field("location", lang)}
                           </p>
                         </div>
                       </div>
@@ -741,7 +719,7 @@ const breadcrumbSchema = {
                             {realEstate.vereda}
                           </p>
                           <p class="font-heading text-xs text-deepest/60">
-                            Vereda
+                            {field("vereda", lang)}
                           </p>
                         </div>
                       </div>
@@ -781,7 +759,7 @@ const breadcrumbSchema = {
                       </svg>
                     </div>
                     <h2 class="font-heading text-xl font-bold text-deepest">
-                      Amenidades y Servicios
+                      {field("amenities", lang)}
                     </h2>
                   </div>
 
@@ -798,7 +776,7 @@ const breadcrumbSchema = {
                           </svg>
                         </div>
                         <span class="font-heading text-sm font-medium text-deepest">
-                          Cocina
+                          {field("kitchen", lang)}
                         </span>
                       </div>
                     )}
@@ -815,7 +793,7 @@ const breadcrumbSchema = {
                           </svg>
                         </div>
                         <span class="font-heading text-sm font-medium text-deepest">
-                          Sala
+                          {field("livingRoom", lang)}
                         </span>
                       </div>
                     )}
@@ -832,7 +810,7 @@ const breadcrumbSchema = {
                           </svg>
                         </div>
                         <span class="font-heading text-sm font-medium text-deepest">
-                          Cochera
+                          {field("garage", lang)}
                         </span>
                       </div>
                     )}
@@ -849,7 +827,7 @@ const breadcrumbSchema = {
                           </svg>
                         </div>
                         <span class="font-heading text-sm font-medium text-deepest">
-                          Agua disponible
+                          {field("water", lang)}
                         </span>
                       </div>
                     )}
@@ -866,7 +844,7 @@ const breadcrumbSchema = {
                           </svg>
                         </div>
                         <span class="font-heading text-sm font-medium text-deepest">
-                          Electricidad
+                          {field("electricity", lang)}
                         </span>
                       </div>
                     )}
@@ -884,7 +862,7 @@ const breadcrumbSchema = {
                             </svg>
                           </div>
                           <span class="font-heading text-sm font-medium text-deepest">
-                            Construcción en {realEstate.construction_type}
+                            {field("constructionIn", lang)} {realEstate.construction_type}
                           </span>
                         </div>
                       )}
@@ -901,7 +879,7 @@ const breadcrumbSchema = {
                           </svg>
                         </div>
                         <span class="font-heading text-sm font-medium text-deepest">
-                          Vereda: {realEstate.vereda}
+                          {field("veredaPrefix", lang)} {realEstate.vereda}
                         </span>
                       </div>
                     )}
@@ -918,7 +896,7 @@ const breadcrumbSchema = {
                           </svg>
                         </div>
                         <span class="font-heading text-sm font-medium text-deepest">
-                          Zonificación: {realEstate.zoning}
+                          {field("zoningPrefix", lang)} {realEstate.zoning}
                         </span>
                       </div>
                     )}
@@ -932,7 +910,7 @@ const breadcrumbSchema = {
             property.type === "carro" && vehicle && (
               <section class="mb-6 rounded-2xl bg-white p-6 shadow-md">
                 <h2 class="mb-6 font-heading text-xl font-bold text-deepest">
-                  Especificaciones del Vehículo
+                  {field("vehicleSpecs", lang)}
                 </h2>
 
                 <div class="grid grid-cols-2 gap-6">
@@ -955,7 +933,7 @@ const breadcrumbSchema = {
                       </div>
                       <div>
                         <p class="font-heading text-xs text-deepest/60 mb-1">
-                          Marca
+                          {field("brand", lang)}
                         </p>
                         <p class="font-heading text-sm font-bold text-deepest">
                           {vehicle.make}
@@ -988,7 +966,7 @@ const breadcrumbSchema = {
                       </div>
                       <div>
                         <p class="font-heading text-xs text-deepest/60 mb-1">
-                          Modelo
+                          {field("model", lang)}
                         </p>
                         <p class="font-heading text-sm font-bold text-deepest">
                           {vehicle.model}
@@ -1025,7 +1003,7 @@ const breadcrumbSchema = {
                       </div>
                       <div>
                         <p class="font-heading text-xs text-deepest/60 mb-1">
-                          Año
+                          {field("year", lang)}
                         </p>
                         <p class="font-heading text-sm font-bold text-deepest">
                           {vehicle.year}
@@ -1060,7 +1038,7 @@ const breadcrumbSchema = {
                       </div>
                       <div>
                         <p class="font-heading text-xs text-deepest/60 mb-1">
-                          Kilometraje
+                          {field("mileage", lang)}
                         </p>
                         <p class="font-heading text-sm font-bold text-deepest">
                           {formatNumber(vehicle.mileage)} km
@@ -1104,7 +1082,7 @@ const breadcrumbSchema = {
                       </div>
                       <div>
                         <p class="font-heading text-xs text-deepest/60 mb-1">
-                          Transmisión
+                          {field("transmission", lang)}
                         </p>
                         <p class="font-heading text-sm font-bold text-deepest">
                           {vehicle.transmission}
@@ -1142,7 +1120,7 @@ const breadcrumbSchema = {
                       </div>
                       <div>
                         <p class="font-heading text-xs text-deepest/60 mb-1">
-                          Combustible
+                          {field("fuel", lang)}
                         </p>
                         <p class="font-heading text-sm font-bold text-deepest">
                           {vehicle.fuel_type}
@@ -1179,7 +1157,7 @@ const breadcrumbSchema = {
                       </div>
                       <div>
                         <p class="font-heading text-xs text-deepest/60 mb-1">
-                          Cilindraje
+                          {field("engineCc", lang)}
                         </p>
                         <p class="font-heading text-sm font-bold text-deepest">
                           {formatNumber(vehicle.engine_cc)} cc
@@ -1207,7 +1185,7 @@ const breadcrumbSchema = {
                       </div>
                       <div class="flex-1">
                         <p class="font-heading text-xs text-deepest/60 mb-2">
-                          Color
+                          {field("color", lang)}
                         </p>
                         <div class="flex items-center gap-3">
                           <div
@@ -1240,9 +1218,10 @@ const breadcrumbSchema = {
                       : ""
                   }
                   propertyLocation={property.location || ""}
-                  propertyType={getTypeLabel(property.type)}
+                  propertyType={getTypeLabel(property.type, lang)}
                   propertyImage={images[0] || ""}
                   services={services}
+                  lang={lang}
                 />
               </section>
             </div>

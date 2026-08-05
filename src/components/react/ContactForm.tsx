@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import type { HomeService } from '../../types/service';
+import { es } from '../../i18n/dictionaries/es';
+import { en } from '../../i18n/dictionaries/en';
+import type { Lang } from '../../i18n/config';
 
 interface ContactFormProps {
   propertyId?: string;
@@ -10,11 +13,13 @@ interface ContactFormProps {
   propertyType?: string;
   propertyImage?: string;
   services?: HomeService[];
+  lang?: Lang;
 }
 
 type ConsultType = 'propiedad' | 'servicio' | 'informacion' | 'otro';
 
-export default function ContactForm({ propertyId, propertyTitle, propertyPrice, propertyLocation, propertyType, propertyImage, services = [] }: ContactFormProps) {
+export default function ContactForm({ propertyId, propertyTitle, propertyPrice, propertyLocation, propertyType, propertyImage, services = [], lang = 'es' }: ContactFormProps) {
+  const dict = lang === 'en' ? en : es;
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -46,14 +51,14 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
     try {
       // Validación básica
       if (!formData.fullName || !formData.email || !formData.phone) {
-        setErrorMessage('Por favor completa todos los campos requeridos');
+        setErrorMessage(dict.contactForm.errorRequiredFields);
         setSubmitStatus('error');
         return;
       }
 
       // Si hay propertyId, usar ese; si no, validar consultType
       if (!propertyId && !formData.consultType) {
-        setErrorMessage('Por favor selecciona un servicio');
+        setErrorMessage(dict.contactForm.errorSelectService);
         setSubmitStatus('error');
         return;
       }
@@ -149,7 +154,7 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
       });
     } catch (error: any) {
       console.error('Error al enviar formulario:', error);
-      setErrorMessage(error.message || 'Ocurrió un error al enviar el formulario');
+      setErrorMessage(error.message || dict.contactForm.errorDefault);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -164,14 +169,14 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white font-heading font-bold text-sm">
             1
           </div>
-          <h3 className="font-heading text-lg font-bold text-deepest">Información Personal</h3>
+          <h3 className="font-heading text-lg font-bold text-deepest">{dict.contactForm.step1Title}</h3>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Nombre */}
           <div>
             <label htmlFor="fullName" className="mb-1.5 block font-heading text-sm text-deepest">
-              Nombre
+              {dict.contactForm.firstNameLabel}
             </label>
             <input
               type="text"
@@ -179,7 +184,7 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="Tu nombre"
+              placeholder={dict.contactForm.firstNamePlaceholder}
               required
               className="w-full rounded-lg border border-mid/30 bg-white px-4 py-2.5 font-heading text-sm text-deepest placeholder:text-deepest/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
@@ -188,13 +193,13 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
           {/* Apellido */}
           <div>
             <label htmlFor="lastName" className="mb-1.5 block font-heading text-sm text-deepest">
-              Apellido
+              {dict.contactForm.lastNameLabel}
             </label>
             <input
               type="text"
               id="lastName"
               name="lastName"
-              placeholder="Tu apellido"
+              placeholder={dict.contactForm.lastNamePlaceholder}
               className="w-full rounded-lg border border-mid/30 bg-white px-4 py-2.5 font-heading text-sm text-deepest placeholder:text-deepest/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
@@ -204,7 +209,7 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
           {/* Email */}
           <div>
             <label htmlFor="email" className="mb-1.5 block font-heading text-sm text-deepest">
-              Email
+              {dict.contactForm.emailLabel}
             </label>
             <input
               type="email"
@@ -212,7 +217,7 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="correo@ejemplo.com"
+              placeholder={dict.contactForm.emailPlaceholder}
               required
               className="w-full rounded-lg border border-mid/30 bg-white px-4 py-2.5 font-heading text-sm text-deepest placeholder:text-deepest/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
@@ -221,7 +226,7 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
           {/* Teléfono */}
           <div>
             <label htmlFor="phone" className="mb-1.5 block font-heading text-sm text-deepest">
-              Teléfono
+              {dict.contactForm.phoneLabel}
             </label>
             <input
               type="tel"
@@ -229,7 +234,7 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="+1 (555) 000-0000"
+              placeholder={dict.contactForm.phonePlaceholder}
               required
               className="w-full rounded-lg border border-mid/30 bg-white px-4 py-2.5 font-heading text-sm text-deepest placeholder:text-deepest/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
@@ -244,12 +249,12 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white font-heading font-bold text-sm">
               2
             </div>
-            <h3 className="font-heading text-lg font-bold text-deepest">Servicio de Interés</h3>
+            <h3 className="font-heading text-lg font-bold text-deepest">{dict.contactForm.step2ServiceTitle}</h3>
           </div>
 
           <div>
             <label htmlFor="consultType" className="mb-1.5 block font-heading text-sm text-deepest">
-              ¿Qué servicio te interesa? <span className="text-[#D64045]">*</span>
+              {dict.contactForm.serviceQuestion} <span className="text-[#D64045]">*</span>
             </label>
             <select
               id="consultType"
@@ -259,7 +264,7 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
               required
               className="w-full rounded-lg border border-mid/30 bg-white px-4 py-2.5 font-heading text-sm text-deepest focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             >
-              <option value="">Selecciona un servicio</option>
+              <option value="">{dict.contactForm.selectServicePlaceholder}</option>
               {services.length > 0 ? (
                 services.map((service) => (
                   <option key={service.id} value={service.id}>
@@ -268,11 +273,11 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
                 ))
               ) : (
                 <>
-                  <option value="servicio">Asesoría de servicios</option>
-                  <option value="informacion">Información general</option>
+                  <option value="servicio">{dict.contactForm.serviceAdvisory}</option>
+                  <option value="informacion">{dict.contactForm.generalInfo}</option>
                 </>
               )}
-              <option value="otro">Otro</option>
+              <option value="otro">{dict.contactForm.other}</option>
             </select>
           </div>
         </div>
@@ -285,10 +290,10 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white font-heading font-bold text-sm">
               2
             </div>
-            <h3 className="font-heading text-lg font-bold text-deepest">Propiedad de Interés</h3>
+            <h3 className="font-heading text-lg font-bold text-deepest">{dict.contactForm.step2PropertyTitle}</h3>
           </div>
           <div className="rounded-lg border border-mid/30 bg-surface/50 p-4">
-            <p className="font-heading text-sm text-mid mb-1">Estás solicitando información sobre:</p>
+            <p className="font-heading text-sm text-mid mb-1">{dict.contactForm.requestingInfoAbout}</p>
             <p className="font-heading text-base font-bold text-deepest">{propertyTitle}</p>
           </div>
         </div>
@@ -300,25 +305,25 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white font-heading font-bold text-sm">
             {propertyId ? '3' : '3'}
           </div>
-          <h3 className="font-heading text-lg font-bold text-deepest">Detalles de la Consulta</h3>
+          <h3 className="font-heading text-lg font-bold text-deepest">{dict.contactForm.step3Title}</h3>
         </div>
 
         <div>
           <label htmlFor="message" className="mb-1.5 block font-heading text-sm text-deepest">
-            Cuéntanos sobre tu solicitud
+            {dict.contactForm.messageLabel}
           </label>
           <textarea
             id="message"
             name="message"
             value={formData.message}
             onChange={handleChange}
-            placeholder="Describe brevemente qué necesitas o qué dudas tienes. Incluye cualquier información relevante que quieras compartir con nosotros."
+            placeholder={dict.contactForm.messagePlaceholder}
             rows={5}
             maxLength={500}
             className="w-full resize-none rounded-lg border border-mid/30 bg-white px-4 py-2.5 font-heading text-sm text-deepest placeholder:text-deepest/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
           <p className="mt-1.5 text-right font-heading text-xs text-deepest/50">
-            {formData.message.length} / 500 caracteres
+            {formData.message.length} / 500 {dict.contactForm.charCount}
           </p>
         </div>
       </div>
@@ -335,14 +340,14 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span>Enviando...</span>
+            <span>{dict.contactForm.sending}</span>
           </>
         ) : (
           <>
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            <span>Contactar con un asesor</span>
+            <span>{dict.contactForm.submit}</span>
           </>
         )}
       </button>
@@ -356,10 +361,10 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
             </svg>
             <div>
               <p className="font-heading text-sm font-bold text-[#2D9E6B]">
-                ¡Solicitud enviada exitosamente!
+                {dict.contactForm.successTitle}
               </p>
               <p className="mt-1 font-heading text-xs text-[#2D9E6B]/80">
-                Hemos recibido tu solicitud. Un miembro de nuestro equipo se pondrá en contacto contigo pronto.
+                {dict.contactForm.successText}
               </p>
             </div>
           </div>
@@ -374,10 +379,10 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
             </svg>
             <div>
               <p className="font-heading text-sm font-bold text-[#D64045]">
-                Error al enviar la solicitud
+                {dict.contactForm.errorTitle}
               </p>
               <p className="mt-1 font-heading text-xs text-[#D64045]/80">
-                {errorMessage || 'Por favor intenta nuevamente más tarde.'}
+                {errorMessage || dict.contactForm.errorDefault}
               </p>
             </div>
           </div>
@@ -386,7 +391,7 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
 
       {/* Nota de privacidad */}
       <p className="text-center font-heading text-xs text-deepest/50 leading-relaxed">
-        Al enviar este formulario, aceptas nuestra política de privacidad y términos de servicio.
+        {dict.contactForm.privacyNote}
       </p>
     </form>
   );

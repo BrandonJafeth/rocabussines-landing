@@ -11,18 +11,30 @@ interface Props {
   description?: string;
 }
 
+const lang = Astro.locals.lang ?? "es";
+const dict = Astro.locals.dict;
+
 const {
-  title = "Bienes Raíces en Guanacaste y todo Costa Rica | Roca Business",
-  description = "Especialistas en Real Estate en Guanacaste y Costa Rica. Encuentra las mejores casas, fincas, lotes y oportunidades de inversión inmobiliaria. Contáctanos.",
+  title = dict.seo.home.title,
+  description = dict.seo.home.description,
 } = Astro.props;
 
 // Construimos la URL canónica
 const canonicalURL = new URL(Astro.url.pathname, Astro.site || "https://www.rocabusiness.net/");
 const shareImage = "https://res.cloudinary.com/dxrzwnjee/image/upload/v1771881666/jhznh9nfygztx5q8ry4m.png";
+const ogLocale = lang === "en" ? "en_US" : "es_CR";
+const orgDescription =
+  lang === "en"
+    ? "Firm specialized in real estate and comprehensive advisory in Guanacaste and throughout Costa Rica. Buying, selling, renting, appraisal, and property management."
+    : "Firma especializada en bienes raíces y asesoría integral en Guanacaste y toda Costa Rica. Compra, venta, alquiler, valuación y administración de propiedades.";
+const websiteDescription =
+  lang === "en"
+    ? "Real estate and property advisory in Guanacaste and Costa Rica"
+    : "Bienes raíces y asesoría inmobiliaria en Guanacaste y Costa Rica";
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -47,7 +59,7 @@ const shareImage = "https://res.cloudinary.com/dxrzwnjee/image/upload/v177188166
     <meta property="og:site_name" content="Roca Business" />
     <meta property="og:image" content={shareImage} />
     <meta property="og:image:alt" content="Roca Business Logo" />
-    <meta property="og:locale" content="es_CR" />
+    <meta property="og:locale" content={ogLocale} />
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -71,7 +83,7 @@ const shareImage = "https://res.cloudinary.com/dxrzwnjee/image/upload/v177188166
         "@context": "https://schema.org",
         "@type": "RealEstateAgent",
         "name": "Roca Business",
-        "description": "Firma especializada en bienes raíces y asesoría integral en Guanacaste y toda Costa Rica. Compra, venta, alquiler, valuación y administración de propiedades.",
+        "description": orgDescription,
         "image": shareImage,
         "@id": "https://www.rocabusiness.net/#organization",
         "url": "https://www.rocabusiness.net/",
@@ -128,8 +140,8 @@ const shareImage = "https://res.cloudinary.com/dxrzwnjee/image/upload/v177188166
         "@id": "https://www.rocabusiness.net/#website",
         "url": "https://www.rocabusiness.net/",
         "name": "Roca Business",
-        "description": "Bienes raíces y asesoría inmobiliaria en Guanacaste y Costa Rica",
-        "inLanguage": "es",
+        "description": websiteDescription,
+        "inLanguage": lang,
         "publisher": {
           "@id": "https://www.rocabusiness.net/#organization"
         }
@@ -139,7 +151,7 @@ const shareImage = "https://res.cloudinary.com/dxrzwnjee/image/upload/v177188166
   <body>
     <Navbar />
     <!-- Floating Buttons (WhatsApp y Scroll to Top) -->
-    <FloatingButtons client:load />
+    <FloatingButtons client:load lang={lang} />
 
     <div class="cursor-follower" aria-hidden="true">
       <div class="cursor-follower__dot"></div>

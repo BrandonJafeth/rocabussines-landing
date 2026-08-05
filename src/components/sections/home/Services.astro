@@ -1,45 +1,17 @@
 ---
 import { getActiveServicesForHome } from "../../../lib/queries/services";
 
-const fallbackServices = [
-  {
-    id: "fallback-1",
-    title: "Asesoría en Bienes y Raíces",
-    description:
-      "Acompañamiento integral en compra, venta e inversión inmobiliaria con análisis de mercado y respaldo estratégico.",
-    icon: "chart",
-  },
-  {
-    id: "fallback-2",
-    title: "Asesoría Contable",
-    description:
-      "Gestión y planificación contable especializada para proyectos inmobiliarios, cumpliendo normativa y control financiero.",
-    icon: "document",
-  },
-  {
-    id: "fallback-3",
-    title: "Asesoría Financiera",
-    description:
-      "Evaluación y estructuración financiera para inversiones y adquisición de propiedades, maximizando rentabilidad.",
-    icon: "currency",
-  },
-  {
-    id: "fallback-4",
-    title: "Asesoría y Dirección en Proyectos Constructivos",
-    description:
-      "Supervisión y dirección técnica de proyectos de construcción, desde la planificación hasta la ejecución.",
-    icon: "building",
-  },
-  {
-    id: "fallback-5",
-    title: "Asesoría en Recursos Humanos",
-    description:
-      "Desarrollo y gestión de talento humano, contratación y optimización del desempeño para equipos empresariales.",
-    icon: "users",
-  },
-];
+const dict = Astro.locals.dict;
+const lang = Astro.locals.lang ?? "es";
 
-const servicesFromDb = await getActiveServicesForHome(20);
+const fallbackServices = dict.homeServices.fallback.map((service, index) => ({
+  id: `fallback-${index + 1}`,
+  title: service.title,
+  description: service.description,
+  icon: service.icon,
+}));
+
+const servicesFromDb = await getActiveServicesForHome(20, lang);
 const services = servicesFromDb.length > 0 ? servicesFromDb : fallbackServices;
 const shouldUseCarousel = services.length > 4;
 ---
@@ -50,12 +22,11 @@ const shouldUseCarousel = services.length > 4;
       <h2
         class="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-deepest"
       >
-        Soluciones Inmobiliarias Integrales
+        {dict.homeServices.heading}
       </h2>
       <div class="w-20 h-1 bg-primary rounded-full mx-auto mt-4 mb-6"></div>
       <p class="text-deepest/75 font-heading text-base sm:text-lg">
-        Servicios profesionales diseñados para proteger tu inversión y acelerar
-        tus resultados con criterio estratégico.
+        {dict.homeServices.intro}
       </p>
     </div>
 
@@ -175,7 +146,7 @@ const shouldUseCarousel = services.length > 4;
               type="button"
               class="services-side-btn services-side-btn--prev inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary/25 bg-white text-primary shadow-md transition-colors hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
               data-services-prev
-              aria-label="Servicio anterior"
+              aria-label={dict.homeServices.prevAria}
             >
               <svg
                 class="h-5 w-5"
@@ -302,7 +273,7 @@ const shouldUseCarousel = services.length > 4;
               type="button"
               class="services-side-btn services-side-btn--next inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary/25 bg-white text-primary shadow-md transition-colors hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
               data-services-next
-              aria-label="Siguiente servicio"
+              aria-label={dict.homeServices.nextAria}
             >
               <svg
                 class="h-5 w-5"
@@ -432,7 +403,7 @@ const shouldUseCarousel = services.length > 4;
         href="/servicios"
         class="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-primary text-white font-heading font-semibold tracking-wide transition-colors duration-300 hover:bg-deepest"
       >
-        Ver más
+        {dict.homeServices.ctaMore}
       </a>
     </div>
   </div>

@@ -2,49 +2,13 @@
 import { Image } from "astro:assets";
 import { getFeaturedProperties } from "../../../lib/queries/properties";
 import { formatPrice } from "../../../utils/formatPrice";
-import type {
-  PropertyType,
-} from "../../../types/property";
+import { getTypeLabel, getStatusLabel, getStatusClass, getSpecLabel, getSpecIcon } from "../../../i18n/labels";
 
-function getTypeLabel(type: PropertyType): string {
-  if (type === "construccion_en_lote") return "Construcción";
-  return type.charAt(0).toUpperCase() + type.slice(1);
-}
-
-function getStatusLabel(status: string): string {
-  if (status === "vendido") return "Vendida";
-  if (status === "pendiente_revision") return "Pendiente";
-  if (status === "inactivo") return "Inactiva";
-  return "Activa";
-}
-
-function getStatusClass(status: string): string {
-  if (status === "vendido") return "bg-[#E3B83A] text-deepest";
-  if (status === "pendiente_revision") return "bg-mid/40 text-deepest";
-  if (status === "inactivo") return "bg-deepest/70 text-white";
-  return "bg-[#2D9E6B] text-white";
-}
-
-function getSpecIcon(label: string): string {
-  const normalizedLabel = label
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-
-  if (normalizedLabel === "hab" || normalizedLabel === "habitaciones") return "bed";
-  if (normalizedLabel === "banos" || normalizedLabel === "baños") return "bath";
-  if (normalizedLabel === "area" || normalizedLabel === "m2") return "area";
-  if (normalizedLabel === "hectareas") return "area"; // Usar mismo icono que área
-  if (normalizedLabel === "ano" || normalizedLabel === "año") return "calendar";
-  if (normalizedLabel === "transmision" || normalizedLabel === "transmisión") return "gear";
-  if (normalizedLabel === "kilometraje" || normalizedLabel === "km") return "speedometer";
-  if (normalizedLabel === "zonificacion") return "map";
-  if (normalizedLabel === "distrito") return "location";
-  return "default";
-}
+const dict = Astro.locals.dict;
+const lang = Astro.locals.lang ?? "es";
 
 // Ya no limitamos a 3, traemos todas las destacadas
-const propertiesFromDb = await getFeaturedProperties(12); // Fetches up to 12 featured properties, but you can remove the limit if you want *all*
+const propertiesFromDb = await getFeaturedProperties(12, lang); // Fetches up to 12 featured properties, but you can remove the limit if you want *all*
 const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
 ---
 
@@ -54,39 +18,38 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
       <h2
         class="text-3xl sm:text-4xl lg:text-5xl font-heading font-bold text-deepest"
       >
-        Propiedades Destacadas
+        {dict.featuredProperties.heading}
       </h2>
       <div class="w-20 h-1 bg-primary rounded-full mx-auto mt-4 mb-6"></div>
       <p class="text-deepest/75 font-heading text-base sm:text-lg">
-        Explorá casas, fincas, lotes y más en Guanacaste y toda Costa Rica —
-        propiedades seleccionadas para inversión y vivienda.
+        {dict.featuredProperties.intro}
       </p>
     </div>
 
     <!-- Contenedor del Carrusel -->
-    <div class="relative px-0 sm:px-12 lg:px-16"> 
-      
+    <div class="relative px-0 sm:px-12 lg:px-16">
+
       <!-- Botón Anterior (Solo Desktop) -->
-      <button 
-        id="prevBtn" 
+      <button
+        id="prevBtn"
         class="hidden sm:flex absolute left-0 top-[40%] -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 bg-white border border-primary/10 rounded-full shadow-[0_4px_15px_-4px_rgba(0,0,0,0.15)] items-center justify-center text-primary hover:bg-primary hover:text-white hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-primary disabled:hover:scale-100"
-        aria-label="Anterior propiedad"
+        aria-label={dict.featuredProperties.prevAria}
       >
         <svg class="w-5 h-5 lg:w-6 lg:h-6 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
       </button>
 
       <!-- Botón Siguiente (Solo Desktop) -->
-      <button 
-        id="nextBtn" 
+      <button
+        id="nextBtn"
         class="hidden sm:flex absolute right-0 top-[40%] -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 bg-white border border-primary/10 rounded-full shadow-[0_4px_15px_-4px_rgba(0,0,0,0.15)] items-center justify-center text-primary hover:bg-primary hover:text-white hover:scale-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:text-primary disabled:hover:scale-100"
-        aria-label="Siguiente propiedad"
+        aria-label={dict.featuredProperties.nextAria}
       >
         <svg class="w-5 h-5 lg:w-6 lg:h-6 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
       </button>
 
       <!-- Lista deslizable (Snap scrolling en móvil, normal / js scroll en desktop) -->
-      <div 
-        id="slider" 
+      <div
+        id="slider"
         class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-12 pt-4 px-4 sm:px-0 -mx-4 sm:mx-0 scrollbar-hide scroll-smooth"
       >
         {
@@ -104,14 +67,14 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                         class="h-56 w-full object-cover transition-all duration-500 group-hover:scale-110"
                         loading="lazy"
                       />
-                      
+
                       <!-- Overlay con gradiente diagonal -->
                       <div class="absolute inset-0 bg-gradient-to-br from-deepest/70 via-transparent to-transparent opacity-40 group-hover:opacity-60 transition-opacity"></div>
 
                       <!-- Badge de tipo en esquina inferior izquierda -->
                       <div class="absolute bottom-4 left-4">
                         <span class="inline-block bg-white/95 backdrop-blur-sm px-3 py-1.5 text-xs font-heading font-bold text-deepest shadow-lg rounded-full">
-                          {getTypeLabel(property.type)}
+                          {getTypeLabel(property.type, lang)}
                         </span>
                       </div>
                     </div>
@@ -125,7 +88,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                         </span>
                        </div>
                           <span class={`inline-block px-3 py-1.5 text-xs font-heading font-bold shadow-lg rounded-full ${getStatusClass(property.status)}`}>
-                        {getStatusLabel(property.status)}
+                        {getStatusLabel(property.status, lang)}
                       </span>
                       </div>
 
@@ -155,10 +118,10 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                       <!-- Características en grid flexible -->
                       <div class="flex items-center justify-center flex-wrap gap-3 pb-4 border-b border-mid/20">
                         {property.details.map(
-                          (detail: { label: string; value: string }) => (
+                          (detail: { key: string; value: string }) => (
                             <div class="flex flex-col items-center flex-1 min-w-0">
                               <div class="mb-1">
-                                {getSpecIcon(detail.label) === "bed" && (
+                                {getSpecIcon(detail.key) === "bed" && (
                                   <svg
                                     class="h-5 w-5 text-primary"
                                     viewBox="0 0 24 24"
@@ -173,7 +136,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                                     />
                                   </svg>
                                 )}
-                                {getSpecIcon(detail.label) === "bath" && (
+                                {getSpecIcon(detail.key) === "bath" && (
                                   <svg
                                     class="h-5 w-5 text-primary"
                                     viewBox="0 0 24 24"
@@ -188,7 +151,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                                     />
                                   </svg>
                                 )}
-                                {getSpecIcon(detail.label) === "area" && (
+                                {getSpecIcon(detail.key) === "area" && (
                                   <svg
                                     class="h-5 w-5 text-primary"
                                     viewBox="0 0 24 24"
@@ -203,7 +166,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                                     />
                                   </svg>
                                 )}
-                                {getSpecIcon(detail.label) === "calendar" && (
+                                {getSpecIcon(detail.key) === "calendar" && (
                                   <svg
                                     class="h-5 w-5 text-primary"
                                     viewBox="0 0 24 24"
@@ -218,7 +181,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                                     />
                                   </svg>
                                 )}
-                                {getSpecIcon(detail.label) === "speedometer" && (
+                                {getSpecIcon(detail.key) === "speedometer" && (
                                   <svg
                                     class="h-5 w-5 text-primary"
                                     viewBox="0 0 24 24"
@@ -233,7 +196,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                                     />
                                   </svg>
                                 )}
-                                {getSpecIcon(detail.label) === "gear" && (
+                                {getSpecIcon(detail.key) === "gear" && (
                                   <svg
                                     class="h-5 w-5 text-primary"
                                     viewBox="0 0 24 24"
@@ -248,7 +211,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                                     />
                                   </svg>
                                 )}
-                                {getSpecIcon(detail.label) === "map" && (
+                                {getSpecIcon(detail.key) === "map" && (
                                   <svg
                                     class="h-5 w-5 text-primary"
                                     viewBox="0 0 24 24"
@@ -263,7 +226,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                                     />
                                   </svg>
                                 )}
-                                {getSpecIcon(detail.label) === "location" && (
+                                {getSpecIcon(detail.key) === "location" && (
                                   <svg
                                     class="h-5 w-5 text-primary"
                                     viewBox="0 0 24 24"
@@ -283,7 +246,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                                     />
                                   </svg>
                                 )}
-                                {getSpecIcon(detail.label) === "default" && (
+                                {getSpecIcon(detail.key) === "default" && (
                                   <svg
                                     class="h-5 w-5 text-primary"
                                     viewBox="0 0 24 24"
@@ -303,7 +266,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                                 {detail.value}
                               </p>
                               <p class="text-[10px] font-heading text-deepest/50 truncate w-full text-center uppercase tracking-wide">
-                                {detail.label}
+                                {getSpecLabel(detail.key, lang)}
                               </p>
                             </div>
                           ),
@@ -313,7 +276,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
                       <!-- CTA con flecha -->
                       <div class="mt-4 flex items-center justify-between group/cta">
                         <span class="font-heading text-sm text-deepest font-semibold group-hover:text-primary transition-colors">
-                          Ver detalles
+                          {dict.featuredProperties.viewDetails}
                         </span>
                         <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-primary text-white transition-all duration-300 group-hover:bg-deepest group-hover:scale-110 group-hover:rotate-45">
                           <svg
@@ -344,7 +307,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
         href="/propiedades"
         class="inline-flex items-center justify-center px-7 py-3 rounded-xl bg-primary text-white font-heading font-semibold tracking-wide transition-all duration-300 hover:bg-deepest hover:shadow-lg hover:-translate-y-0.5"
       >
-        Ver el Catálogo Completo
+        {dict.featuredProperties.viewCatalog}
       </a>
     </div>
   </div>
@@ -388,7 +351,7 @@ const properties = propertiesFromDb.length > 0 ? propertiesFromDb : [];
     };
 
     slider.addEventListener('scroll', updateButtons, { passive: true });
-    
+
     // Check inicial
     updateButtons();
   });

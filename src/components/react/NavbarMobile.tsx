@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { es } from '../../i18n/dictionaries/es';
+import { en } from '../../i18n/dictionaries/en';
+import type { Lang } from '../../i18n/config';
 
 interface NavLink {
   name: string;
@@ -8,9 +11,11 @@ interface NavLink {
 interface NavbarMobileProps {
   navLinks: NavLink[];
   currentPath: string;
+  lang?: Lang;
 }
 
-export default function NavbarMobile({ navLinks, currentPath }: NavbarMobileProps) {
+export default function NavbarMobile({ navLinks, currentPath, lang = 'es' }: NavbarMobileProps) {
+  const dict = lang === 'en' ? en : es;
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -53,7 +58,7 @@ export default function NavbarMobile({ navLinks, currentPath }: NavbarMobileProp
       <button
         onClick={toggleMenu}
         className="md:hidden relative w-10 h-10 flex items-center justify-center text-deepest hover:bg-mid/10 rounded-lg transition-colors"
-        aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}
+        aria-label={isOpen ? dict.nav.closeMenu : dict.nav.openMenu}
         aria-expanded={isOpen}
         type="button"
       >
@@ -84,7 +89,7 @@ export default function NavbarMobile({ navLinks, currentPath }: NavbarMobileProp
           }`}
           role="dialog"
           aria-modal="true"
-          aria-label="Menú de navegación"
+          aria-label={dict.nav.menuLabel}
         >
           {/* Overlay */}
           <div
@@ -114,7 +119,7 @@ export default function NavbarMobile({ navLinks, currentPath }: NavbarMobileProp
               <button
                 onClick={closeMenu}
                 className="p-2 rounded-lg text-light hover:bg-light/10 transition-colors"
-                aria-label="Cerrar menú"
+                aria-label={dict.nav.closeMenu}
                 type="button"
               >
                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,8 +174,24 @@ export default function NavbarMobile({ navLinks, currentPath }: NavbarMobileProp
                   onClick={closeMenu}
                   className="block w-full px-4 py-3 bg-primary text-white text-center font-heading rounded-lg transition-all duration-300 hover:bg-light hover:text-deepest"
                 >
-                  Contáctanos
+                  {dict.nav.cta}
                 </a>
+
+                <div className="flex items-center justify-center gap-2 font-heading text-sm" role="group" aria-label="Language / Idioma">
+                  <a
+                    href="?lang=es"
+                    className={`px-1 transition-colors ${lang === 'es' ? 'font-bold text-white' : 'text-white/50 hover:text-white'}`}
+                  >
+                    ES
+                  </a>
+                  <span className="text-white/30" aria-hidden="true">|</span>
+                  <a
+                    href="?lang=en"
+                    className={`px-1 transition-colors ${lang === 'en' ? 'font-bold text-white' : 'text-white/50 hover:text-white'}`}
+                  >
+                    EN
+                  </a>
+                </div>
 
                 <div className="flex items-center justify-center gap-4">
                   {socialLinks.map((social) => (

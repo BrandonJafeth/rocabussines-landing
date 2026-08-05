@@ -1,4 +1,5 @@
 ---
+const dict = Astro.locals.dict;
 ---
 
 <section class="py-24 lg:py-32 bg-gradient-to-br from-primary via-deepest to-black relative overflow-hidden">
@@ -10,7 +11,7 @@
     <!-- Decorative Header -->
     <div class="flex items-center gap-4 mb-4 lg:mb-6">
       <div class="w-12 h-[1px] bg-mid/50"></div>
-      <span class="text-mid font-heading tracking-[0.2em] text-xs uppercase font-medium">Nuestra Esencia</span>
+      <span class="text-mid font-heading tracking-[0.2em] text-xs uppercase font-medium">{dict.mission.eyebrow}</span>
     </div>
 
     <!-- Creative Grid Layout -->
@@ -19,8 +20,8 @@
       <!-- Typography Block: Title -->
       <div class="col-span-1 md:col-span-2 mb-4 lg:mb-8">
         <h2 class="text-5xl md:text-6xl lg:text-7xl font-heading font-medium text-white leading-[1.1] tracking-tight max-w-4xl">
-          Solidez que <br class="hidden sm:block" />
-          <span class="italic text-mid font-serif font-light">Nos Define</span>
+          {dict.mission.headingLine1} <br class="hidden sm:block" />
+          <span class="italic text-mid font-serif font-light">{dict.mission.headingItalic}</span>
         </h2>
       </div>
 
@@ -34,13 +35,9 @@
               <circle cx="12" cy="12" r="2"></circle>
             </svg>
           </div>
-          <h3 class="text-3xl font-heading font-bold text-deepest tracking-tight">Misión</h3>
+          <h3 class="text-3xl font-heading font-bold text-deepest tracking-tight">{dict.mission.missionTitle}</h3>
         </div>
-        <p class="text-lg text-deepest/75 font-body leading-relaxed">
-          Transformar proyectos en realidades firmes, brindando asesoría integral con 
-          <strong class="text-deepest font-semibold">ética, innovación</strong> y 
-          <strong class="text-deepest font-semibold">compromiso</strong> inquebrantable.
-        </p>
+        <p class="text-lg text-deepest/75 font-body leading-relaxed" set:html={dict.mission.missionText} />
       </article>
 
       <!-- Visión Card -->
@@ -52,12 +49,9 @@
               <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
             </svg>
           </div>
-          <h3 class="text-3xl font-heading font-bold text-deepest tracking-tight">Visión</h3>
+          <h3 class="text-3xl font-heading font-bold text-deepest tracking-tight">{dict.mission.visionTitle}</h3>
         </div>
-        <p class="text-lg text-deepest/75 font-body leading-relaxed">
-          Ser la empresa <strong class="text-deepest font-semibold">sólida y confiable</strong> en asesorías inmobiliarias, 
-          reconocida por nuestra excelencia y compromiso inquebrantable con cada cliente.
-        </p>
+        <p class="text-lg text-deepest/75 font-body leading-relaxed" set:html={dict.mission.visionText} />
       </article>
 
     </div>
