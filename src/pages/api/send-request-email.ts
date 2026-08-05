@@ -162,7 +162,7 @@ export const POST: APIRoute = async ({ request }) => {
                   Un asesor te contactará pronto. Si necesitás atención inmediata:
                 </p>
                 <p style="margin: 0 0 24px 0; font-size: 14px; color: #0B2545; font-weight: 600;">
-                  +506 8888-8888
+                  +506 7044-2878
                 </p>
 
                 <table cellpadding="0" cellspacing="0" style="margin: 0 auto;">
