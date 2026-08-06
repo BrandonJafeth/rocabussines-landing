@@ -116,11 +116,22 @@ const dict = Astro.locals.dict;
       </script>
     </div>
   </div>
-  <!-- Fundido suave hacia la sección blanca siguiente -->
+  <!-- Decorative wave separator -->
   <div
-    class="absolute bottom-0 left-0 right-0 z-20 h-36 pointer-events-none bg-gradient-to-b from-transparent via-white/55 to-white"
-    aria-hidden="true"
+    class="absolute -bottom-px left-0 right-0 z-20 leading-none pointer-events-none overflow-hidden"
   >
+    <svg
+      viewBox="0 0 1440 120"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      class="block w-full h-auto translate-y-px"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M0 124L60 111C120 101 240 81 360 71C480 61 600 61 720 66C840 71 960 81 1080 86C1200 91 1320 91 1380 91L1440 91V121H1380C1320 121 1200 121 1080 121C960 121 840 121 720 121C600 121 480 121 360 121C240 121 120 121 60 121H0Z"
+        fill="#ffffff"></path>
+    </svg>
   </div>
 </section>
 

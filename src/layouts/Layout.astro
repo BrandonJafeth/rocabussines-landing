@@ -390,30 +390,20 @@ const websiteDescription =
     }
   }
 
-  /* Decorative background wash for white-background sections (see SectionBlobs.astro).
-     Percentage-sized radial gradients: always covers exactly 100% of the section,
-     edge to edge, and fades to fully transparent mathematically -- never clipped. */
+  /* Decorative diagonal line pattern for white-background sections (see SectionBlobs.astro).
+     "Opción D — Diagonal amplia": primary blue at 3.2% opacity, 45°, every 52px. */
   .section-blob-layer {
     position: absolute;
     inset: 0;
     z-index: 0;
     overflow: hidden;
     pointer-events: none;
-    background-repeat: no-repeat;
-    background-image:
-      radial-gradient(78% 82% at 4% 6%, rgba(19, 64, 116, 0.13) 0%, rgba(19, 64, 116, 0.07) 28%, rgba(19, 64, 116, 0.025) 52%, transparent 78%),
-      radial-gradient(72% 76% at 96% 96%, rgba(141, 169, 196, 0.17) 0%, rgba(141, 169, 196, 0.09) 30%, rgba(141, 169, 196, 0.025) 55%, transparent 80%),
-      radial-gradient(52% 52% at 80% 8%, rgba(11, 37, 69, 0.06) 0%, rgba(11, 37, 69, 0.02) 40%, transparent 75%);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .section-blob-layer {
-      animation: blobDrift 34s ease-in-out infinite;
-    }
-  }
-
-  @keyframes blobDrift {
-    0%, 100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
-    50% { background-position: 2% 3%, -2% -3%, -1% 2%; }
+    background-image: repeating-linear-gradient(
+      135deg,
+      rgba(19, 64, 116, 0.032) 0px,
+      rgba(19, 64, 116, 0.032) 1px,
+      transparent 1px,
+      transparent 52px
+    );
   }
 </style>
