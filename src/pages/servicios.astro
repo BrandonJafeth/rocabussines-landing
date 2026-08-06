@@ -86,7 +86,7 @@ function getGridClass(index: number, total: number): string {
     <!-- Bento Grid de Servicios -->
     <section class="-mt-16 pb-20 relative overflow-hidden">
       <SectionBlobs />
-      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {
           services.length === 0 ? (
             <div class="rounded-2xl border border-mid/25 bg-white px-6 py-16 text-center shadow-sm">
@@ -128,7 +128,7 @@ function getGridClass(index: number, total: number): string {
         }
       </div>
       <div
-        class="relative mx-auto max-w-4xl mt-16 px-4 text-center sm:px-6 lg:px-8"
+        class="relative z-10 mx-auto max-w-4xl mt-16 px-4 text-center sm:px-6 lg:px-8"
       >
         <h2 class="font-heading text-3xl font-bold text-deepest sm:text-4xl">
           {dict.servicesPage.ctaHeading}

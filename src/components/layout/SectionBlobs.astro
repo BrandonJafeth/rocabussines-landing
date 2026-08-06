@@ -1,9 +1,11 @@
 ---
-// Decorative blurred organic blobs for white-background sections.
-// Usage: drop as the FIRST child inside a section with class="relative overflow-hidden".
+// Decorative background wash for white-background sections.
+// Uses percentage-sized radial gradients (not a blurred+clipped shape), so it always
+// covers exactly 100% of the section's width/height and fades to fully transparent
+// mathematically -- there is no hard edge for `overflow` to clip, at any section size.
+//
+// Usage: drop as the FIRST child inside a section with class="relative" (overflow-hidden
+// optional, kept only as a safety net -- this layer never actually needs clipping).
+// Give sibling content `class="relative z-10"` so it stacks above this layer.
 ---
-<div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-  <div class="section-blob section-blob--1"></div>
-  <div class="section-blob section-blob--2"></div>
-  <div class="section-blob section-blob--3"></div>
-</div>
+<div class="section-blob-layer" aria-hidden="true"></div>
