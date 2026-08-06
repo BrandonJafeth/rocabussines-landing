@@ -389,4 +389,58 @@ const websiteDescription =
       display: none;
     }
   }
+
+  /* Decorative blurred blobs for white-background sections (see SectionBlobs.astro) */
+  .section-blob {
+    position: absolute;
+    border-radius: 60% 40% 32% 68% / 55% 34% 66% 45%;
+    filter: blur(60px);
+    opacity: 0.16;
+  }
+
+  .section-blob--1 {
+    width: 420px;
+    height: 340px;
+    top: -120px;
+    left: -80px;
+    background: var(--color-primary);
+  }
+
+  .section-blob--2 {
+    width: 380px;
+    height: 400px;
+    bottom: -160px;
+    right: -60px;
+    background: var(--color-mid);
+    border-radius: 45% 55% 65% 35% / 40% 60% 40% 60%;
+  }
+
+  .section-blob--3 {
+    width: 260px;
+    height: 240px;
+    top: 40px;
+    right: 18%;
+    background: var(--color-deepest);
+    opacity: 0.06;
+    border-radius: 65% 35% 40% 60% / 50% 50% 50% 50%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .section-blob--1 {
+      animation: blobDrift1 26s ease-in-out infinite;
+    }
+    .section-blob--2 {
+      animation: blobDrift2 32s ease-in-out infinite;
+    }
+  }
+
+  @keyframes blobDrift1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(24px, 18px) scale(1.06); }
+  }
+
+  @keyframes blobDrift2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-20px, -16px) scale(1.05); }
+  }
 </style>
