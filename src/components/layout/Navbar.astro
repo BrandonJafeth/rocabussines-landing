@@ -55,21 +55,22 @@ const isActive = (href: string) => {
         ))}
       </div>
 
-      <!-- Language Switch (Desktop) -->
-      <div class="hidden md:block mr-4">
-        <LanguageSwitch />
+      <!-- Language Switch + CTA Button (grouped so they stay snug together) -->
+      <div class="flex items-center gap-3">
+        <div class="hidden md:block">
+          <LanguageSwitch />
+        </div>
+
+        <a
+          href="/contacto"
+          class="hidden md:block px-6 py-2.5 bg-primary text-white font-heading rounded-lg transition-all duration-300 hover:bg-deepest hover:shadow-lg hover:scale-105"
+        >
+          {dict.nav.cta}
+        </a>
+
+        <!-- Mobile Menu Button wrapped in React Component -->
+        <NavbarMobile client:visible navLinks={navLinks} currentPath={currentPath} lang={lang} />
       </div>
-
-      <!-- CTA Button -->
-      <a
-        href="/contacto"
-        class="hidden md:block px-6 py-2.5 bg-primary text-white font-heading rounded-lg transition-all duration-300 hover:bg-deepest hover:shadow-lg hover:scale-105"
-      >
-        {dict.nav.cta}
-      </a>
-
-      <!-- Mobile Menu Button wrapped in React Component -->
-      <NavbarMobile client:visible navLinks={navLinks} currentPath={currentPath} lang={lang} />
     </div>
   </div>
 </nav>

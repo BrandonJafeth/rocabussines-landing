@@ -177,17 +177,20 @@ export default function NavbarMobile({ navLinks, currentPath, lang = 'es' }: Nav
                   {dict.nav.cta}
                 </a>
 
-                <div className="flex items-center justify-center gap-2 font-heading text-sm" role="group" aria-label="Language / Idioma">
+                <div
+                  className="inline-flex items-center gap-0.5 rounded-full bg-white/15 p-1 font-heading mx-auto w-fit"
+                  role="group"
+                  aria-label="Language / Idioma"
+                >
                   <a
                     href="?lang=es"
-                    className={`px-1 transition-colors ${lang === 'es' ? 'font-bold text-white' : 'text-white/50 hover:text-white'}`}
+                    className={`rounded-full px-3 py-1 text-xs font-bold tracking-wide transition-colors duration-200 ${lang === 'es' ? 'bg-white text-deepest shadow-sm' : 'text-white/60 hover:text-white'}`}
                   >
                     ES
                   </a>
-                  <span className="text-white/30" aria-hidden="true">|</span>
                   <a
                     href="?lang=en"
-                    className={`px-1 transition-colors ${lang === 'en' ? 'font-bold text-white' : 'text-white/50 hover:text-white'}`}
+                    className={`rounded-full px-3 py-1 text-xs font-bold tracking-wide transition-colors duration-200 ${lang === 'en' ? 'bg-white text-deepest shadow-sm' : 'text-white/60 hover:text-white'}`}
                   >
                     EN
                   </a>
