@@ -73,40 +73,43 @@ export default function ContactForm({ propertyId, propertyTitle, propertyPrice, 
         consultTypeLabel = selectedService ? selectedService.title : formData.consultType;
       }
 
+      // IDs generados en el propio formulario, para no tener que leer de vuelta
+      // lo que se acaba de insertar (así no hace falta permiso de lectura pública)
+      const leadId = crypto.randomUUID();
+      const clientId = crypto.randomUUID();
+
       // 1. Crear lead
-      const { data: leadData, error: leadError } = await supabase
+      const { error: leadError } = await supabase
         .from('leads')
         .insert({
+          id: leadId,
           full_name: formData.fullName,
           email: formData.email,
           phone: formData.phone || null,
           message: formData.message || null,
           source: 'web',
           status: 'nuevo',
-        })
-        .select()
-        .single();
+        });
 
       if (leadError) throw leadError;
 
       // 2. Crear cliente basado en el lead
-      const { data: clientData, error: clientError } = await supabase
+      const { error: clientError } = await supabase
         .from('clients')
         .insert({
+          id: clientId,
           name: formData.fullName,
           email: formData.email,
           phone: formData.phone || null,
           notes: `Lead desde formulario web. Tipo de consulta: ${consultTypeLabel}${formData.message ? ` - ${formData.message}` : ''}`,
-        })
-        .select()
-        .single();
+        });
 
       if (clientError) throw clientError;
 
       // 3. Crear request vinculando con propiedad y/o servicio
-      if (clientData && (propertyId || isServiceId)) {
+      if (propertyId || isServiceId) {
         const requestData: any = {
-          client_id: clientData.id,
+          client_id: clientId,
           property_id: propertyId ? propertyId : null,
           service_id: isServiceId ? formData.consultType : null,
           status: 'pendiente',
