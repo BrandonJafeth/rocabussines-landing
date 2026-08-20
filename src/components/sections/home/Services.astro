@@ -1,6 +1,7 @@
 ---
 import { getActiveServicesForHome } from "../../../lib/queries/services";
 import SectionSeam from "../../layout/SectionSeam.astro";
+import TransitionPhotoStrip from "./TransitionPhotoStrip.astro";
 
 const dict = Astro.locals.dict;
 const lang = Astro.locals.lang ?? "es";
@@ -423,6 +424,8 @@ const shouldUseCarousel = services.length > 4;
       <path d="M0,0 L1440,0 L1440,55 C 1080,150 360,150 0,55 Z" fill="#F6F8FB"></path>
     </svg>
   </div>
+
+  <TransitionPhotoStrip />
 </section>
 
 <script>
