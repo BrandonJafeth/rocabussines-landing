@@ -159,6 +159,10 @@ const websiteDescription =
       <div class="cursor-follower__dot"></div>
       <div class="cursor-follower__ring"></div>
     </div>
+
+    <!-- TEMPORAL: contador de depuración para las partículas doradas. Se quita apenas quede confirmado. -->
+    <div id="click-debug-counter" aria-hidden="true">Clics detectados: 0</div>
+
     <slot />
     <Footer />
 
@@ -277,9 +281,18 @@ const websiteDescription =
 
       // Capture phase, on document: fires before any element (button, link, card)
       // can call stopPropagation() to swallow the click during the bubble phase.
+      let clickDebugCount = 0;
       document.addEventListener(
         "click",
-        (e) => starRain(e.clientX, e.clientY),
+        (e) => {
+          // TEMPORAL: cuenta cada clic detectado, sin importar si la partícula
+          // termina viéndose o no -- separa "no se detecta" de "no se ve".
+          clickDebugCount++;
+          const counterEl = document.getElementById("click-debug-counter");
+          if (counterEl) counterEl.textContent = `Clics detectados: ${clickDebugCount}`;
+
+          starRain(e.clientX, e.clientY);
+        },
         true
       );
     </script>
@@ -440,10 +453,34 @@ const websiteDescription =
     );
   }
 
-  /* Click effect: falling golden particles (site-wide) */
+  /* TEMPORAL: contador de depuración de clics -- quitar junto con el div en Layout.astro
+     una vez confirmado el problema. z-index alto a propósito, para que se vea incluso
+     sobre la pantalla de carga inicial (misma razón que las partículas de abajo). */
+  #click-debug-counter {
+    position: fixed;
+    bottom: 12px;
+    left: 12px;
+    z-index: 999999;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff7e0;
+    font-family: monospace;
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(201, 164, 104, 0.6);
+  }
+
+  /* Click effect: falling golden particles (site-wide).
+     z-index must beat every other fixed overlay on the page -- notably
+     .page-loader (z-index 9999, opaque, covers the screen for ~2.6s after
+     load) and .cursor-follower (9998). A click during that loader window
+     used to create particles correctly but they rendered BEHIND it and
+     were invisible -- that's why the effect looked random by location when
+     it was actually about timing (right after a fresh page load). */
   .star-particle {
     position: fixed;
-    z-index: 9997;
+    z-index: 999999;
     pointer-events: none;
     border-radius: 50%;
     background: radial-gradient(circle, #fff7e0 0%, #c9a468 60%, transparent 100%);
