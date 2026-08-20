@@ -53,11 +53,16 @@ const showStrip = photos.length >= 4;
 
 <style>
   .photo-marquee-outer {
+    /* bottom = -height: keeps the TOP edge exactly at the section's own
+       bottom (the curve/boundary line), so the whole strip hangs straight
+       down from it with no gap -- doubling `height` alone (without also
+       moving `bottom` by the same amount) would grow the band from its
+       vertical center instead and leave a gap at the top. */
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -42px;
-    height: 84px;
+    bottom: -168px;
+    height: 168px;
     z-index: 10;
     overflow: hidden;
     pointer-events: auto;
@@ -77,9 +82,12 @@ const showStrip = photos.length >= 4;
   }
 
   .photo-marquee-set {
+    /* align-items: flex-start + no top padding -- card tops sit flush at
+       the same y-position as the outer band's own top, which is pinned to
+       the section boundary (see .photo-marquee-outer above). */
     display: flex;
-    align-items: center;
-    gap: 14px;
+    align-items: flex-start;
+    gap: 18px;
     padding-inline: 7px;
     flex-shrink: 0;
   }
@@ -87,9 +95,9 @@ const showStrip = photos.length >= 4;
   .photo-marquee-card {
     position: relative;
     flex-shrink: 0;
-    width: 120px;
-    height: 68px;
-    border-radius: 10px;
+    width: 230px;
+    height: 140px;
+    border-radius: 12px;
     overflow: hidden;
     border: 2px solid rgba(255, 255, 255, 0.85);
     box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.4);
@@ -106,7 +114,7 @@ const showStrip = photos.length >= 4;
   .photo-marquee-label span {
     display: block;
     color: #fff;
-    font-size: 9px;
+    font-size: 11px;
     line-height: 1.2;
     font-family: var(--font-heading);
     white-space: nowrap;
@@ -132,12 +140,12 @@ const showStrip = photos.length >= 4;
 
   @media (max-width: 640px) {
     .photo-marquee-outer {
-      height: 64px;
-      bottom: -32px;
+      height: 128px;
+      bottom: -128px;
     }
     .photo-marquee-card {
-      width: 96px;
-      height: 52px;
+      width: 172px;
+      height: 104px;
     }
   }
 </style>
