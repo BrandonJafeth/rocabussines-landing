@@ -275,7 +275,13 @@ const websiteDescription =
         }
       };
 
-      document.body.addEventListener("click", (e) => starRain(e.clientX, e.clientY));
+      // Capture phase, on document: fires before any element (button, link, card)
+      // can call stopPropagation() to swallow the click during the bubble phase.
+      document.addEventListener(
+        "click",
+        (e) => starRain(e.clientX, e.clientY),
+        true
+      );
     </script>
   </body>
 </html>

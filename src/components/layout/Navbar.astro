@@ -113,10 +113,12 @@ const isHome = currentPath === '/';
       const nav = document.getElementById("site-nav");
       if (!nav) return;
 
-      const THRESHOLD = 60;
-
+      // Stay glass for as long as the hero section is still on screen; switch to
+      // solid only once its bottom edge scrolls up past the navbar itself.
       const applyState = () => {
-        const scrolled = window.scrollY > THRESHOLD;
+        const hero = document.getElementById("hero");
+        const heroBottom = hero ? hero.getBoundingClientRect().bottom : 0;
+        const scrolled = heroBottom <= nav.offsetHeight;
         nav.classList.toggle("scrolled", scrolled);
         document.documentElement.classList.toggle("nav-scrolled", scrolled);
         window.dispatchEvent(new CustomEvent("roca:navscroll", { detail: { scrolled } }));
@@ -124,6 +126,7 @@ const isHome = currentPath === '/';
 
       applyState();
       window.addEventListener("scroll", applyState, { passive: true });
+      window.addEventListener("resize", applyState);
       document.addEventListener("astro:page-load", applyState);
     })();
   </script>
