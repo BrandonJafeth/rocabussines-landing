@@ -1,21 +1,31 @@
 ---
 // Soft color-blend strip for the top edge of a section, so it doesn't meet
 // the section above with a hard flat line. Uses a plain linear-gradient
-// (no blur, no clipping dependency) fading from the previous section's
-// background color down to transparent.
+// (no blur, no clipping dependency) that HOLDS the previous section's solid
+// color for the first `holdPercent` of its height before fading to
+// transparent over the rest -- a straight 2-stop fade (solid -> transparent)
+// over a short distance reads as a muddy gray "cloud" when the two section
+// colors are far apart (e.g. a light section into a dark one), because the
+// 50%-opacity midpoint visually mixes into an unrelated in-between color.
+// Holding the color solid first, then fading gradually over a much taller
+// strip, avoids that and reads as a natural blend instead.
 //
 // Usage: drop as the FIRST child inside a section with class="relative",
-// passing the exact bg color the section ABOVE ends in.
+// passing the exact bg color the section ABOVE ends in. Use a taller
+// `height` (10-16rem) when the two sections' colors are very different
+// (e.g. light into dark); a short one (4-6rem) is enough between two
+// similar light tones.
 interface Props {
   from: string;
   height?: string;
+  holdPercent?: number;
 }
-const { from, height = "6rem" } = Astro.props;
+const { from, height = "6rem", holdPercent = 30 } = Astro.props;
 ---
 
 <div
   class="pointer-events-none absolute inset-x-0 top-0 z-0"
-  style={`height:${height}; background:linear-gradient(to bottom, ${from}, transparent);`}
+  style={`height:${height}; background:linear-gradient(to bottom, ${from} 0%, ${from} ${holdPercent}%, transparent 100%);`}
   aria-hidden="true"
 >
 </div>
