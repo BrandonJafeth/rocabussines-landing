@@ -249,6 +249,33 @@ const websiteDescription =
         // Inicializar nuevo cursor
         cleanupCursor = initCursor();
       });
+
+      // Lluvia de partículas doradas al hacer clic
+      const starRain = (x, y) => {
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reducedMotion) return;
+
+        const count = 22;
+        for (let i = 0; i < count; i++) {
+          const s = document.createElement("div");
+          s.className = "star-particle";
+          const size = 3 + Math.random() * 4;
+          s.style.width = size + "px";
+          s.style.height = size + "px";
+          s.style.left = x + (Math.random() - 0.5) * 40 + "px";
+          s.style.top = y + "px";
+          const dx = (Math.random() - 0.5) * 14;
+          const dy = 260 + Math.random() * 220;
+          s.style.setProperty("--dx", dx + "px");
+          s.style.setProperty("--dy", dy + "px");
+          s.style.animationDelay = Math.random() * 0.15 + "s";
+          s.style.animation = `starfall ${0.9 + Math.random() * 0.6}s cubic-bezier(.4,0,.7,1) forwards`;
+          document.body.appendChild(s);
+          setTimeout(() => s.remove(), 1800);
+        }
+      };
+
+      document.body.addEventListener("click", (e) => starRain(e.clientX, e.clientY));
     </script>
   </body>
 </html>
@@ -405,5 +432,37 @@ const websiteDescription =
       transparent 1px,
       transparent 52px
     );
+  }
+
+  /* Click effect: falling golden particles (site-wide) */
+  .star-particle {
+    position: fixed;
+    z-index: 9997;
+    pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff7e0 0%, #c9a468 60%, transparent 100%);
+    box-shadow: 0 0 6px 1px rgba(201, 164, 104, 0.6);
+  }
+  @keyframes starfall {
+    0% {
+      transform: translate(0, 0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--dx), var(--dy)) scale(0.3);
+      opacity: 0;
+    }
+  }
+
+  /* Golden glow hugging the border of service/property cards.
+     Uses box-shadow (not a blurred ::before) so it isn't clipped by the
+     card's own overflow-hidden (needed to round the photo corners) --
+     a ::before halo would get cut off the same way the old background
+     blobs did before that was fixed. */
+  .glow-card {
+    box-shadow:
+      0 0 0 1px rgba(201, 164, 104, 0.18),
+      0 10px 30px -8px rgba(201, 164, 104, 0.4),
+      0 0 40px -12px rgba(201, 164, 104, 0.5);
   }
 </style>

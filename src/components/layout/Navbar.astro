@@ -17,23 +17,55 @@ const isActive = (href: string) => {
   if (href === '/') return currentPath === '/';
   return currentPath.startsWith(href);
 };
+
+const isHome = currentPath === '/';
 ---
 
-<nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-mid/20 shadow-sm">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<nav
+  id="site-nav"
+  class:list={[
+    "fixed top-0 left-0 right-0 z-50 transition-colors duration-300",
+    isHome ? "" : "bg-white border-b border-mid/20 shadow-sm",
+  ]}
+>
+  {isHome && <div class="nav-scrim" aria-hidden="true"></div>}
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
     <div class="flex items-center justify-between h-20">
       <!-- Logo -->
       <a href="/" class="flex items-center group lg:-ml-8 xl:-ml-12">
-        <img 
-          src="https://res.cloudinary.com/dxrzwnjee/image/upload/v1771881666/jhznh9nfygztx5q8ry4m.png" 
-          alt="Roca Business Logo" 
+        <img
+          src="https://res.cloudinary.com/dxrzwnjee/image/upload/v1771881666/jhznh9nfygztx5q8ry4m.png"
+          alt="Roca Business Logo"
           class="h-16 md:h-20 lg:h-24 w-auto transition-transform group-hover:scale-105"
         />
       </a>
-      
 
-      <!-- Desktop Navigation -->
-      <div class="hidden md:flex items-center space-x-1">
+      {isHome && (
+        <!-- Glass navigation: visible only while floating over the hero video -->
+        <>
+          <div class="hidden md:flex items-center gap-2 nav-glass-group">
+            {navLinks.map((link) => (
+              <a
+                href={link.href}
+                class:list={["nav-pill", isActive(link.href) && "nav-pill--active"]}
+              >
+                {link.name}
+              </a>
+            ))}
+          </div>
+          <div class="flex items-center gap-3 nav-glass-group">
+            <div class="hidden md:block">
+              <LanguageSwitch variant="glass" />
+            </div>
+            <a href="/contacto" class="hidden md:block nav-pill nav-pill--cta">
+              {dict.nav.cta}
+            </a>
+          </div>
+        </>
+      )}
+
+      <!-- Solid navigation: default everywhere else, and on home once scrolled past the hero -->
+      <div class:list={["hidden md:flex items-center space-x-1", isHome && "nav-solid-group"]}>
         {navLinks.map((link) => (
           <a
             href={link.href}
@@ -56,7 +88,7 @@ const isActive = (href: string) => {
       </div>
 
       <!-- Language Switch + CTA Button (grouped so they stay snug together) -->
-      <div class="flex items-center gap-3">
+      <div class:list={["flex items-center gap-3", isHome && "nav-solid-group"]}>
         <div class="hidden md:block">
           <LanguageSwitch />
         </div>
@@ -67,10 +99,102 @@ const isActive = (href: string) => {
         >
           {dict.nav.cta}
         </a>
-
-        <!-- Mobile Menu Button wrapped in React Component -->
-        <NavbarMobile client:visible navLinks={navLinks} currentPath={currentPath} lang={lang} />
       </div>
+
+      <!-- Mobile Menu Button wrapped in React Component (always rendered once; styles itself for glass vs solid) -->
+      <NavbarMobile client:visible navLinks={navLinks} currentPath={currentPath} lang={lang} homeGlass={isHome} />
     </div>
   </div>
 </nav>
+
+{isHome && (
+  <script>
+    (function () {
+      const nav = document.getElementById("site-nav");
+      if (!nav) return;
+
+      const THRESHOLD = 60;
+
+      const applyState = () => {
+        const scrolled = window.scrollY > THRESHOLD;
+        nav.classList.toggle("scrolled", scrolled);
+        document.documentElement.classList.toggle("nav-scrolled", scrolled);
+        window.dispatchEvent(new CustomEvent("roca:navscroll", { detail: { scrolled } }));
+      };
+
+      applyState();
+      window.addEventListener("scroll", applyState, { passive: true });
+      document.addEventListener("astro:page-load", applyState);
+    })();
+  </script>
+)}
+
+<style>
+  .nav-scrim {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 170px;
+    background: linear-gradient(180deg, rgba(4, 10, 17, 0.55) 0%, rgba(4, 10, 17, 0.25) 45%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .nav-pill {
+    position: relative;
+    color: #eef4ed;
+    text-decoration: none;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.03));
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 3px 10px rgba(0, 0, 0, 0.18);
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+  }
+
+  .nav-pill:hover {
+    background: linear-gradient(180deg, rgba(201, 164, 104, 0.55), rgba(201, 164, 104, 0.25));
+    border-color: rgba(201, 164, 104, 0.5);
+    transform: translateY(-1px);
+  }
+
+  .nav-pill--active {
+    background: linear-gradient(180deg, rgba(201, 164, 104, 0.4), rgba(201, 164, 104, 0.15));
+    border-color: rgba(201, 164, 104, 0.4);
+  }
+
+  .nav-pill--cta {
+    font-weight: 600;
+  }
+
+  /* Home page: glass nav visible at top, swaps to the standard solid nav once scrolled */
+  .nav-glass-group {
+    display: flex;
+  }
+  .nav-solid-group {
+    display: none;
+  }
+  #site-nav.scrolled {
+    background: #fff;
+    border-bottom: 1px solid rgba(141, 169, 196, 0.2);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  #site-nav.scrolled .nav-scrim {
+    opacity: 0;
+  }
+  #site-nav.scrolled .nav-glass-group {
+    display: none;
+  }
+  #site-nav.scrolled .nav-solid-group {
+    display: flex;
+  }
+</style>

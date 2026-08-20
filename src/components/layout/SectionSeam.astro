@@ -1,0 +1,21 @@
+---
+// Soft color-blend strip for the top edge of a section, so it doesn't meet
+// the section above with a hard flat line. Uses a plain linear-gradient
+// (no blur, no clipping dependency) fading from the previous section's
+// background color down to transparent.
+//
+// Usage: drop as the FIRST child inside a section with class="relative",
+// passing the exact bg color the section ABOVE ends in.
+interface Props {
+  from: string;
+  height?: string;
+}
+const { from, height = "6rem" } = Astro.props;
+---
+
+<div
+  class="pointer-events-none absolute inset-x-0 top-0 z-0"
+  style={`height:${height}; background:linear-gradient(to bottom, ${from}, transparent);`}
+  aria-hidden="true"
+>
+</div>
