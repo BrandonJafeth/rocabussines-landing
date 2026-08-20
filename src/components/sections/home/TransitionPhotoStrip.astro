@@ -35,8 +35,8 @@ const showStrip = photos.length >= 4;
               <Image
                 src={property.image}
                 alt=""
-                width={160}
-                height={100}
+                width={480}
+                height={300}
                 class="h-full w-full object-cover"
                 loading="lazy"
               />
@@ -53,17 +53,24 @@ const showStrip = photos.length >= 4;
 
 <style>
   .photo-marquee-outer {
-    /* bottom = -height: keeps the TOP edge exactly at the section's own
-       bottom (the curve/boundary line), so the whole strip hangs straight
-       down from it with no gap -- doubling `height` alone (without also
-       moving `bottom` by the same amount) would grow the band from its
-       vertical center instead and leave a gap at the top. */
+    /* PREVIOUS BUG: this was pinned to the section's own bottom edge (the
+       abstract boundary line), not to the curve itself. The curve
+       (.section-wave-divider, bottom:-80px, height:160px, path dipping to
+       ~y=126 of its own 160px) actually dips down to about 46px BELOW that
+       boundary at its deepest point. Because this strip started exactly AT
+       the boundary and is taller than that 46px, it fully covered the
+       curve's dip -- the curve was rendering, just entirely hidden behind
+       an opaque strip on top of it. That's why no wave was visible.
+       Fix: start the strip where the curve's deepest point actually is
+       (boundary + 46px), with a few px of intentional overlap (38 instead
+       of 46) so there's no hairline gap, and z-index BELOW the divider so
+       any overlap favors the curve, not the strip, covering it again. */
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -168px;
+    bottom: -206px;
     height: 168px;
-    z-index: 10;
+    z-index: 4;
     overflow: hidden;
     pointer-events: auto;
     mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
@@ -141,7 +148,7 @@ const showStrip = photos.length >= 4;
   @media (max-width: 640px) {
     .photo-marquee-outer {
       height: 128px;
-      bottom: -128px;
+      bottom: -166px;
     }
     .photo-marquee-card {
       width: 172px;
