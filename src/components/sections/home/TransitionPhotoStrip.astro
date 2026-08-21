@@ -1,0 +1,150 @@
+---
+// Franja de fotos deslizándose en la transición Servicios -> Nuestra Esencia.
+// Sin curva ni sombra: línea recta, el carrusel pegado justo debajo del
+// contenido de Servicios (el propio <section> ya no tiene padding inferior,
+// así que su borde queda exactamente en el botón "Ver más").
+import { Image } from "astro:assets";
+import { getCatalogProperties } from "../../../lib/queries/properties";
+
+const lang = Astro.locals.lang ?? "es";
+
+const allProperties = await getCatalogProperties({}, lang);
+
+// Selección aleatoria (se recalcula en cada visita, ya que esta página no usa prerender).
+function shuffle<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+const STRIP_COUNT = 16;
+const photos = shuffle(allProperties).slice(0, STRIP_COUNT);
+// Se necesita un mínimo razonable de fotos para que el loop no se sienta repetitivo/vacío.
+const showStrip = photos.length >= 4;
+---
+
+{showStrip && (
+  <div class="photo-marquee-outer" aria-hidden="true">
+    <div class="photo-marquee-track">
+      {[photos, photos].map((set) => (
+        <div class="photo-marquee-set">
+          {set.map((property) => (
+            <a href={`/propiedades/${property.id}`} class="photo-marquee-card" tabindex="-1">
+              <Image
+                src={property.image}
+                alt=""
+                width={480}
+                height={300}
+                class="h-full w-full object-cover"
+                loading="lazy"
+              />
+              <div class="photo-marquee-label">
+                <span>{property.title}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
+<style>
+  .photo-marquee-outer {
+    /* bottom = -height pins the TOP edge exactly at the section's own
+       bottom edge -- Services.astro has no bottom padding, so that edge is
+       the "Ver más" button itself. Straight line, no gap, no curve. */
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -168px;
+    height: 168px;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: auto;
+    mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  }
+
+  .photo-marquee-track {
+    display: flex;
+    width: max-content;
+    height: 100%;
+    animation: photo-marquee-scroll 55s linear infinite;
+  }
+
+  .photo-marquee-outer:hover .photo-marquee-track {
+    animation-play-state: paused;
+  }
+
+  .photo-marquee-set {
+    /* align-items: flex-start + no top padding -- card tops sit flush at
+       the same y-position as the outer band's own top, which is pinned to
+       the section boundary (see .photo-marquee-outer above). */
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding-inline: 7px;
+    flex-shrink: 0;
+  }
+
+  .photo-marquee-card {
+    position: relative;
+    flex-shrink: 0;
+    width: 230px;
+    height: 140px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.4);
+    display: block;
+  }
+
+  .photo-marquee-label {
+    position: absolute;
+    inset: auto 0 0 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+    padding: 3px 6px 4px;
+  }
+
+  .photo-marquee-label span {
+    display: block;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1.2;
+    font-family: var(--font-heading);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @keyframes photo-marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      /* Cada set (photos duplicado) ocupa exactamente el 50% del ancho total del track */
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .photo-marquee-track {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .photo-marquee-outer {
+      height: 128px;
+      bottom: -128px;
+    }
+    .photo-marquee-card {
+      width: 172px;
+      height: 104px;
+    }
+  }
+</style>

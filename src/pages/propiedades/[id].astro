@@ -4,7 +4,6 @@ export const prerender = false;
 
 import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
-import Navbar from "../../components/layout/Navbar.astro";
 import ContactForm from "../../components/react/ContactForm";
 import {
   getPropertyById,
@@ -120,7 +119,6 @@ const breadcrumbSchema = {
   description={property.description ||
     `${getTypeLabel(property.type, lang)} ${lang === "en" ? "in" : "en"} ${property.location || "Costa Rica"}. ${field("price", lang)}: ${property.price && property.currency ? formatPrice(property.price, property.currency) : field("onRequest", lang)}`}
 >
-  <Navbar />
 
   <!-- Barra de Navegación Secundaria -->
   <div class="sticky top-20 z-40 border-b border-mid/20 bg-white shadow-sm">

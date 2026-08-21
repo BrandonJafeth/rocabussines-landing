@@ -159,6 +159,7 @@ const websiteDescription =
       <div class="cursor-follower__dot"></div>
       <div class="cursor-follower__ring"></div>
     </div>
+
     <slot />
     <Footer />
 
@@ -249,6 +250,39 @@ const websiteDescription =
         // Inicializar nuevo cursor
         cleanupCursor = initCursor();
       });
+
+      // Lluvia de partículas doradas al hacer clic
+      const starRain = (x, y) => {
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reducedMotion) return;
+
+        const count = 22;
+        for (let i = 0; i < count; i++) {
+          const s = document.createElement("div");
+          s.className = "star-particle";
+          const size = 3 + Math.random() * 4;
+          s.style.width = size + "px";
+          s.style.height = size + "px";
+          s.style.left = x + (Math.random() - 0.5) * 40 + "px";
+          s.style.top = y + "px";
+          const dx = (Math.random() - 0.5) * 14;
+          const dy = 260 + Math.random() * 220;
+          s.style.setProperty("--dx", dx + "px");
+          s.style.setProperty("--dy", dy + "px");
+          s.style.animationDelay = Math.random() * 0.15 + "s";
+          s.style.animation = `starfall ${0.9 + Math.random() * 0.6}s cubic-bezier(.4,0,.7,1) forwards`;
+          document.body.appendChild(s);
+          setTimeout(() => s.remove(), 1800);
+        }
+      };
+
+      // Capture phase, on document: fires before any element (button, link, card)
+      // can call stopPropagation() to swallow the click during the bubble phase.
+      document.addEventListener(
+        "click",
+        (e) => starRain(e.clientX, e.clientY),
+        true
+      );
     </script>
   </body>
 </html>
@@ -406,4 +440,35 @@ const websiteDescription =
       transparent 52px
     );
   }
+
+  /* Click effect: falling golden particles (site-wide).
+     z-index must beat every other fixed overlay on the page -- notably
+     .page-loader (z-index 9999, opaque, covers the screen for ~2.6s after
+     load) and .cursor-follower (9998). A click during that loader window
+     used to create particles correctly but they rendered BEHIND it and
+     were invisible -- that's why the effect looked random by location when
+     it was actually about timing (right after a fresh page load). */
+  .star-particle {
+    position: fixed;
+    z-index: 999999;
+    pointer-events: none;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff7e0 0%, #c9a468 60%, transparent 100%);
+    box-shadow: 0 0 6px 1px rgba(201, 164, 104, 0.6);
+  }
+  @keyframes starfall {
+    0% {
+      transform: translate(0, 0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--dx), var(--dy)) scale(0.3);
+      opacity: 0;
+    }
+  }
+
+  /* .glow-card / .card-inner: the two-layer split from the card markup is
+     kept (harmless, avoids re-touching 6 templates), but the glow itself
+     was removed -- it read as a heavy orange smear in production, not the
+     subtle halo intended. */
 </style>

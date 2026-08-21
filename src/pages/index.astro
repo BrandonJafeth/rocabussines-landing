@@ -3,7 +3,6 @@
 export const prerender = false;
 
 import Layout from "../layouts/Layout.astro";
-import Navbar from "../components/layout/Navbar.astro";
 import Hero from "../components/sections/home/Hero.astro";
 import About from "../components/sections/home/About.astro";
 import MissionVision from "../components/sections/home/MissionVision.astro";
@@ -15,7 +14,6 @@ import FeaturedProperties from "../components/sections/home/FeaturedProperties.a
   title={Astro.locals.dict.seo.home.title}
   description={Astro.locals.dict.seo.home.description}
 >
-  <Navbar />
   <main>
     <Hero />
     <FeaturedProperties />

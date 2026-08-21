@@ -12,16 +12,34 @@ interface NavbarMobileProps {
   navLinks: NavLink[];
   currentPath: string;
   lang?: Lang;
+  /** True on the home page, where this button floats over the hero video until the user scrolls. */
+  homeGlass?: boolean;
 }
 
-export default function NavbarMobile({ navLinks, currentPath, lang = 'es' }: NavbarMobileProps) {
+export default function NavbarMobile({ navLinks, currentPath, lang = 'es', homeGlass = false }: NavbarMobileProps) {
   const dict = lang === 'en' ? en : es;
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(!homeGlass);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!homeGlass) return;
+
+    setScrolled(document.documentElement.classList.contains('nav-scrolled'));
+
+    const onNavScroll = (e: Event) => {
+      setScrolled((e as CustomEvent<{ scrolled: boolean }>).detail.scrolled);
+    };
+
+    window.addEventListener('roca:navscroll', onNavScroll);
+    return () => window.removeEventListener('roca:navscroll', onNavScroll);
+  }, [homeGlass]);
+
+  const glassMode = homeGlass && !scrolled;
 
   useEffect(() => {
     if (isOpen) {
@@ -57,7 +75,11 @@ export default function NavbarMobile({ navLinks, currentPath, lang = 'es' }: Nav
       {/* Hamburger Button */}
       <button
         onClick={toggleMenu}
-        className="md:hidden relative w-10 h-10 flex items-center justify-center text-deepest hover:bg-mid/10 rounded-lg transition-colors"
+        className={`md:hidden relative w-10 h-10 flex items-center justify-center rounded-full transition-colors duration-300 ${
+          glassMode
+            ? 'text-[#eef4ed] bg-white/10 border border-white/25 backdrop-blur-sm hover:bg-white/20'
+            : 'text-deepest hover:bg-mid/10 rounded-lg'
+        }`}
         aria-label={isOpen ? dict.nav.closeMenu : dict.nav.openMenu}
         aria-expanded={isOpen}
         type="button"

@@ -4,7 +4,6 @@ export const prerender = false;
 
 import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
-import Navbar from "../../components/layout/Navbar.astro";
 import PropertyFilters from "../../components/react/PropertyFilters";
 import { getCatalogProperties } from "../../lib/queries/properties";
 import { formatPrice } from "../../utils/formatPrice";
@@ -52,8 +51,6 @@ const properties = await getCatalogProperties(
   title={dict.seo.properties.title}
   description={dict.seo.properties.description}
 >
-  <Navbar />
-
   <main class="bg-[#F5F7FA]">
     <section
       class="relative isolate overflow-hidden bg-gradient-to-br from-primary via-deepest to-black pb-28 pt-28  sm:pt-32 lg:pt-36"
@@ -107,8 +104,8 @@ const properties = await getCatalogProperties(
           ) : (
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {properties.map((property: HomeFeaturedProperty) => (
-                <article class="group relative bg-white rounded-2xl shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
-                  <a href={`/propiedades/${property.id}`} class="block">
+                <article class="group relative isolate glow-card">
+                  <a href={`/propiedades/${property.id}`} class="card-inner relative z-[1] block bg-white rounded-2xl shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden">
 
                     <div class="relative overflow-hidden rounded-t-2xl">
                       <Image
