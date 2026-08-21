@@ -1,7 +1,8 @@
 ---
-// Franja de fotos deslizándose sobre la curva de transición Servicios -> Nuestra Esencia.
-// Se suma a la curva/burbuja (SectionWaveDivider en Services.astro), no la reemplaza:
-// se posiciona en la misma zona, con un z-index más alto para quedar por encima.
+// Franja de fotos deslizándose en la transición Servicios -> Nuestra Esencia.
+// Sin curva ni sombra: línea recta, el carrusel pegado justo debajo del
+// contenido de Servicios (el propio <section> ya no tiene padding inferior,
+// así que su borde queda exactamente en el botón "Ver más").
 import { Image } from "astro:assets";
 import { getCatalogProperties } from "../../../lib/queries/properties";
 
@@ -53,22 +54,15 @@ const showStrip = photos.length >= 4;
 
 <style>
   .photo-marquee-outer {
-    /* Positioned relative to the curve's own deepest point (computed from
-       its cubic bezier, not eyeballed), with a small intentional overlap,
-       and z-index BELOW the divider so any overlap favors the curve.
-       The curve's path itself (in Services.astro) was also redesigned with
-       a much shorter flat lead-in at its sides (55px -> 15px) so the wave
-       becomes visible almost immediately below the section content instead
-       of after a long flat stretch that reads as empty space -- that flat
-       stretch, not real padding, was the "gap" the user kept seeing above
-       the "Ver más" button. Its deepest point is now ~29px below the
-       section boundary (was ~46px), so this strip starts higher too. */
+    /* bottom = -height pins the TOP edge exactly at the section's own
+       bottom edge -- Services.astro has no bottom padding, so that edge is
+       the "Ver más" button itself. Straight line, no gap, no curve. */
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -190px;
+    bottom: -168px;
     height: 168px;
-    z-index: 4;
+    z-index: 1;
     overflow: hidden;
     pointer-events: auto;
     mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
@@ -146,7 +140,7 @@ const showStrip = photos.length >= 4;
   @media (max-width: 640px) {
     .photo-marquee-outer {
       height: 128px;
-      bottom: -150px;
+      bottom: -128px;
     }
     .photo-marquee-card {
       width: 172px;

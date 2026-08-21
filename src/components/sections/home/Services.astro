@@ -18,7 +18,7 @@ const services = servicesFromDb.length > 0 ? servicesFromDb : fallbackServices;
 const shouldUseCarousel = services.length > 4;
 ---
 
-<section id="servicios" class="relative z-20 py-20 bg-[#F6F8FB] scroll-mt-28">
+<section id="servicios" class="relative z-20 pt-20 pb-0 bg-[#F6F8FB] scroll-mt-28">
   <SectionSeam from="#ffffff" />
   <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center max-w-3xl mx-auto mb-14">
@@ -411,20 +411,6 @@ const shouldUseCarousel = services.length > 4;
     </div>
   </div>
 
-  <!-- Organic "floating" divider into the next (navy) section: the light
-       background dips down in a bubble-like curve, revealing the dark
-       section behind it, with a drop-shadow so this layer reads as
-       floating above an infinite dark background rather than a hard seam. -->
-  <div class="section-wave-divider" aria-hidden="true">
-    <svg
-      viewBox="0 0 1440 160"
-      preserveAspectRatio="none"
-      class="block w-full h-full"
-    >
-      <path d="M0,0 L1440,0 L1440,15 C 1080,140 360,140 0,15 Z" fill="#F6F8FB"></path>
-    </svg>
-  </div>
-
   <TransitionPhotoStrip />
 </section>
 
@@ -510,17 +496,6 @@ const shouldUseCarousel = services.length > 4;
 <style>
   .service-head {
     clip-path: ellipse(90% 100% at 50% 0%);
-  }
-
-  .section-wave-divider {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -80px;
-    height: 160px;
-    z-index: 5;
-    pointer-events: none;
-    filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.35));
   }
 
   .services-carousel {
