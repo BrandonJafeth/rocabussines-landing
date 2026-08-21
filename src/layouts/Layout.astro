@@ -469,13 +469,21 @@ const websiteDescription =
 
   /* Golden glow hugging the border of service/property cards.
      Uses box-shadow (not a blurred ::before) so it isn't clipped by the
-     card's own overflow-hidden (needed to round the photo corners) --
-     a ::before halo would get cut off the same way the old background
-     blobs did before that was fixed. */
+     card's own overflow-hidden (needed to round the photo corners) -- a
+     ::before halo would get cut off the same way the old background blobs
+     did before that was fixed.
+     BUG FOUND (2026-08-21): these cards also carry Tailwind's `shadow-lg`
+     utility, which sets the SAME `box-shadow` property. Two rules setting
+     one property don't combine -- whichever wins the cascade replaces the
+     other outright, silently. `!important` here makes the glow win
+     deterministically instead of depending on stylesheet load order (which
+     is exactly the kind of thing that can flip during an unrelated future
+     edit). Also boosted opacity/spread -- the old values technically won
+     in dev testing but were too faint to read as an actual glow. */
   .glow-card {
     box-shadow:
-      0 0 0 1px rgba(201, 164, 104, 0.18),
-      0 10px 30px -8px rgba(201, 164, 104, 0.4),
-      0 0 40px -12px rgba(201, 164, 104, 0.5);
+      0 0 0 2px rgba(201, 164, 104, 0.35),
+      0 0 45px 8px rgba(201, 164, 104, 0.55),
+      0 0 75px 18px rgba(201, 164, 104, 0.3) !important;
   }
 </style>
