@@ -467,44 +467,8 @@ const websiteDescription =
     }
   }
 
-  /* Golden glow hugging the border of service/property cards -- exact
-     technique from the user's reference: a blurred ::before behind the
-     card, not a box-shadow.
-     Why the earlier box-shadow attempt existed and was reverted: these
-     cards need `overflow:hidden` on the element that actually gets rounded
-     corners (to clip the photo/header inside it) -- a ::before with a
-     negative inset on THAT SAME element gets clipped by its own
-     overflow:hidden, same failure mode as the old background-blob bug.
-     Fixed for real this time by splitting each card into two layers
-     (see Services.astro / FeaturedProperties.astro / propiedades/index.astro
-     / servicios.astro): an outer `.glow-card` that owns ONLY this ::before
-     and has no overflow-hidden of its own, and an inner `.card-inner` that
-     owns the rounded corners + overflow-hidden + the card's normal
-     Tailwind shadow. The blur is free to extend past the outer box because
-     nothing on that box clips it.
-     `!important` kept per request, as insurance against the same silent
-     box-shadow-property collision with Tailwind's `shadow-lg` -- though
-     with the glow now living on `background`/`filter` of a separate
-     pseudo-element instead of `box-shadow` on the card itself, that
-     specific collision no longer applies. */
-  .glow-card {
-    position: relative;
-  }
-  .glow-card::before {
-    content: "";
-    position: absolute;
-    top: -32px;
-    left: -32px;
-    right: -32px;
-    bottom: -32px;
-    border-radius: 36px;
-    background: rgba(201, 164, 104, 0.65) !important;
-    filter: blur(20px);
-    z-index: 0;
-    pointer-events: none;
-  }
-  .glow-card .card-inner {
-    position: relative;
-    z-index: 1;
-  }
+  /* .glow-card / .card-inner: the two-layer split from the card markup is
+     kept (harmless, avoids re-touching 6 templates), but the glow itself
+     was removed -- it read as a heavy orange smear in production, not the
+     subtle halo intended. */
 </style>
