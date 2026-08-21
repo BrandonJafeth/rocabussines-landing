@@ -38,7 +38,8 @@ const shouldUseCarousel = services.length > 4;
         <>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-12 lg:hidden">
             {services.map((service) => (
-              <article class="service-card glow-card group relative isolate min-h-[320px] min-w-[250px] rounded-[1.6rem] border border-mid/20 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
+              <article class="glow-card group relative isolate min-h-[320px] min-w-[250px]">
+               <div class="card-inner relative z-[1] h-full rounded-[1.6rem] border border-mid/20 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
                 <div class="service-head absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-deepest via-primary to-deepest" />
 
                 <div class="relative z-30 p-6 pt-20 text-center flex flex-col items-center gap-4">
@@ -136,6 +137,7 @@ const shouldUseCarousel = services.length > 4;
 
                   <div class="mt-4 h-1.5 w-10 rounded-full bg-primary/70 transition-all duration-300 group-hover:w-16 group-hover:bg-deepest" />
                 </div>
+               </div>
               </article>
             ))}
           </div>
@@ -169,7 +171,8 @@ const shouldUseCarousel = services.length > 4;
             <div class="services-viewport overflow-x-hidden overflow-y-visible w-[100%] p-4">
               <div class="services-track flex gap-8" data-services-track>
                 {services.map((service) => (
-                  <article class="service-card service-slide group relative isolate min-h-[320px] rounded-[1.6rem] border border-mid/20 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
+                  <article class="glow-card service-slide group relative isolate min-h-[320px]">
+                   <div class="card-inner relative z-[1] h-full rounded-[1.6rem] border border-mid/20 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
                     <div class="service-head absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-deepest via-primary to-deepest" />
 
                     <div class="relative z-30 p-6 pt-20 text-center flex flex-col items-center gap-4">
@@ -267,6 +270,7 @@ const shouldUseCarousel = services.length > 4;
 
                       <div class="mt-4 h-1.5 w-10 rounded-full bg-primary/70 transition-all duration-300 group-hover:w-16 group-hover:bg-deepest" />
                     </div>
+                   </div>
                   </article>
                 ))}
               </div>
@@ -297,7 +301,8 @@ const shouldUseCarousel = services.length > 4;
       ) : (
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-12 xl:gap-12 2xl:gap-16">
           {services.map((service) => (
-            <article class="service-card group relative isolate min-h-[320px] min-w-[250px] rounded-[1.6rem] border border-mid/20 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
+            <article class="glow-card group relative isolate min-h-[320px] min-w-[250px]">
+             <div class="card-inner relative z-[1] h-full rounded-[1.6rem] border border-mid/20 bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl">
               <div class="service-head absolute inset-x-0 top-0 h-32 bg-gradient-to-r from-deepest via-primary to-deepest" />
 
               <div class="relative z-30 p-6 pt-20 text-center flex flex-col items-center gap-4">
@@ -395,6 +400,7 @@ const shouldUseCarousel = services.length > 4;
 
                 <div class="mt-4 h-1.5 w-10 rounded-full bg-primary/70 transition-all duration-300 group-hover:w-16 group-hover:bg-deepest" />
               </div>
+             </div>
             </article>
           ))}
         </div>
