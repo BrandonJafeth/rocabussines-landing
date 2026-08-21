@@ -53,22 +53,20 @@ const showStrip = photos.length >= 4;
 
 <style>
   .photo-marquee-outer {
-    /* PREVIOUS BUG: this was pinned to the section's own bottom edge (the
-       abstract boundary line), not to the curve itself. The curve
-       (.section-wave-divider, bottom:-80px, height:160px, path dipping to
-       ~y=126 of its own 160px) actually dips down to about 46px BELOW that
-       boundary at its deepest point. Because this strip started exactly AT
-       the boundary and is taller than that 46px, it fully covered the
-       curve's dip -- the curve was rendering, just entirely hidden behind
-       an opaque strip on top of it. That's why no wave was visible.
-       Fix: start the strip where the curve's deepest point actually is
-       (boundary + 46px), with a few px of intentional overlap (38 instead
-       of 46) so there's no hairline gap, and z-index BELOW the divider so
-       any overlap favors the curve, not the strip, covering it again. */
+    /* Positioned relative to the curve's own deepest point (computed from
+       its cubic bezier, not eyeballed), with a small intentional overlap,
+       and z-index BELOW the divider so any overlap favors the curve.
+       The curve's path itself (in Services.astro) was also redesigned with
+       a much shorter flat lead-in at its sides (55px -> 15px) so the wave
+       becomes visible almost immediately below the section content instead
+       of after a long flat stretch that reads as empty space -- that flat
+       stretch, not real padding, was the "gap" the user kept seeing above
+       the "Ver más" button. Its deepest point is now ~29px below the
+       section boundary (was ~46px), so this strip starts higher too. */
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -206px;
+    bottom: -190px;
     height: 168px;
     z-index: 4;
     overflow: hidden;
@@ -148,7 +146,7 @@ const showStrip = photos.length >= 4;
   @media (max-width: 640px) {
     .photo-marquee-outer {
       height: 128px;
-      bottom: -166px;
+      bottom: -150px;
     }
     .photo-marquee-card {
       width: 172px;
